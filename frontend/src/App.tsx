@@ -15,7 +15,7 @@ export default function App() {
     createdAt: string;
   };
 
-  // 🔹 Rejestracja użytkownika
+  //Rejestracja
   const register = async () => {
     const res = await fetch(`${API_URL}/auth/register`, {
       method: "POST",
@@ -26,7 +26,7 @@ export default function App() {
     console.log("Rejestracja:", data);
   };
 
-  // 🔹 Logowanie użytkownika
+  //Logowanie
   const login = async () => {
     const res = await fetch(`${API_URL}/auth/login`, {
       method: "POST",
@@ -41,7 +41,7 @@ export default function App() {
     }
   };
 
-  // 🔹 Dodawanie faktury (tylko po zalogowaniu)
+  //Dodawanie faktury (TODO: tylko po zalogowaniu)
   const addInvoice = async () => {
     if (!token) return alert("Musisz być zalogowany!");
     const res = await fetch(`${API_URL}/invoices`, {
@@ -57,11 +57,11 @@ export default function App() {
     fetchInvoices();
   };
 
-  // 🔹 Pobieranie faktur
+  // Pobieranie faktur
   const fetchInvoices = async () => {
     if (!token) return alert("Musisz być zalogowany!");
-    const decodedToken = JSON.parse(atob(token.split(".")[1])); // ❗ Dekodowanie payloadu JWT
-    const userId = decodedToken.sub; // `sub` to zazwyczaj ID użytkownika
+    const decodedToken = JSON.parse(atob(token.split(".")[1])); //Dekodowanie
+    const userId = decodedToken.sub; // to ID użytkownika
     console.log("User ID from token:", userId);
     const res = await fetch(`${API_URL}/invoices/${userId}`, {
       method: "GET",
@@ -74,9 +74,8 @@ export default function App() {
 
   return (
     <div style={{ textAlign: "center", padding: "20px" }}>
-      <h1>Faktury App</h1>
+      <h1>Faktury</h1>
 
-      {/* Rejestracja */}
       <input
         type="email"
         placeholder="Email"
@@ -90,7 +89,6 @@ export default function App() {
       <button onClick={register}>Rejestracja</button>
       <button onClick={login}>Logowanie</button>
 
-      {/* Akcje dostępne po zalogowaniu */}
       {token && (
         <>
           <h2>Dodaj Fakturę</h2>
