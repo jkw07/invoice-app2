@@ -11,16 +11,163 @@ model User {
   id            String  @id @default(uuid())
   email         String  @unique
   password_hash String
-  createdAt     DateTime @default(now())
-  invoices      Invoice[]
+  createdAt     DateTime @default(now()) 
+  companies     Company[]
 }
+
+model Company {
+  id            Int       @id @default(autoincrement())
+  userId        String       
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName      String
+  shortName     String?
+  tin           String?   @map("tin")
+  bin           String?   @map("bin")
+  street        String?
+  buildingNo    String?
+  apartmentNo   String?
+  zipCode       String?
+  city          String?
+  province      String?
+  county        String?
+  municipality  String?
+  email         String?
+  phone         String?
+  clients       Client[]
+  products      Product[]
+  invoices      Invoice[]
+  setting       Setting[]
+  reminders     Reminder[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt 
+}
+
+model Client {
+  id            Int       @id @default(autoincrement())
+  companyId     Int      
+  company       Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name          String
+  tin           String?
+  bin           String?
+  street        String?
+  buildingNo    String?
+  apartmentNo   String?
+  zipCode       String?
+  city          String?
+  province      String?
+  county        String?
+  municipality  String?
+  email         String?
+  phone         String?
+  invoices      Invoice[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt  
+}
+
+enum Status {
+  DRAFT
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+  PARTIALLY_PAID
+}
+
 
 model Invoice {
-  id        String  @id @default(uuid())
-  userId    String
-  amount    Float
-  createdAt DateTime @default(now())
-
-  user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              Int         @id @default(autoincrement())
+  companyId       Int         
+  company         Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  buyerId      Int
+  buyer        Client @relation(fields: [buyerId], references: [id])
+  recipient    String
+  invoiceType   String
+  invoiceNo       String
+  issuedDate      DateTime
+  transactionDate DateTime?
+  dueDate         DateTime
+  paymentMethod   String
+  paymentDate     DateTime?
+  description     String?
+  totalAmount     Decimal  @db.Decimal(10, 2)
+  status          Status
+  invoiceItems    InvoiceItem[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt  
+  reminders       Reminder[]
+  currency        String
 }
+
+model InvoiceItem {
+  id          Int       @id @default(autoincrement())
+  invoiceId   Int       
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId   Int?     
+  product     Product?  @relation(fields: [productId], references: [id])
+  unit        String?
+  quantity    Decimal   @db.Decimal(10, 2)
+  unitPrice   Decimal   @db.Decimal(10, 2)     
+  taxType     VatRateType
+  taxRate     Decimal?  @db.Decimal(10, 2) 
+  discount    Decimal?   @db.Decimal(10, 2)
+  totalNet        Decimal  @db.Decimal(10, 2)
+  totalTax        Decimal?  @db.Decimal(10, 2)
+  totalGross      Decimal  @db.Decimal(10, 2)
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  companyId   Int       
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  unit        String?
+  taxType     VatRateType
+  taxRate     Decimal?  @db.Decimal(10, 2)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt  
+  invoiceItems InvoiceItem[]
+}
+
+enum VatRateType {
+  STANDARD  // standardowa stawka procentowa (np. 23.00, 8.00)
+  EXEMPT    // zwolniony (ZW)
+  NOT_TAXED // niepodlegający VAT (NP)
+}
+
+model VatRate {
+  id        Int     @id @default(autoincrement())
+  type      VatRateType
+  rate      Decimal?  @db.Decimal(10, 2)  // NULL dla ZW i NP
+  createdAt DateTime  @default(now())
+}
+
+model Payment {
+  id     Int    @id @default(autoincrement())
+  method String
+}
+
+model Setting {
+  id          Int       @id @default(autoincrement())
+  companyId   Int       
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  defaultCurrency    String
+  exemptFromTax Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt  
+}
+
+model Reminder {
+  id          Int       @id @default(autoincrement())
+  companyId   Int      
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoiceId   Int      
+  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  reminderDate DateTime 
+  message     String
+  createdAt   DateTime @default(now())    
+}
+
+
 
