@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-redundant-type-constituents */
 import {
   Injectable,
   ForbiddenException,
@@ -86,7 +85,7 @@ export class InvoiceService {
 
     const hasAccess = await this.checkUserCompanyAccess(
       userId,
-      invoice.companyId as number,
+      invoice.companyId,
     );
     if (!hasAccess) {
       throw new ForbiddenException('Access denied to this company');
@@ -108,7 +107,6 @@ export class InvoiceService {
     companyId: number,
   ): Promise<boolean> {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       const company: Company | null = await this.prisma.company?.findFirst({
         where: {
           id: companyId,

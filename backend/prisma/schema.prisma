@@ -6,53 +6,56 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
+ 
 model User {
   id            String  @id @default(uuid())
   email         String  @unique
-  password_hash String
-  createdAt     DateTime @default(now()) 
+  password_hash String  
   companies     Company[]
+  createdAt     DateTime @default(now())  @map("created_at")
+  updatedAt     DateTime @updatedAt       @map("updated_at")
+  @@map("users")
 }
 
 model Company {
   id            Int       @id @default(autoincrement())
-  userId        String       
+  userId        String    @map("user_id")     
   user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fullName      String
-  shortName     String?
-  tin           String?   @map("tin")
-  bin           String?   @map("bin")
-  street        String?
-  buildingNo    String?
-  apartmentNo   String?
-  zipCode       String?
-  city          String?
-  province      String?
-  county        String?
-  municipality  String?
+  fullName      String    @map("full_name")
+  shortName     String?   @map("short_name")
+  tin           String    @map("tin_number")
+  bin           String    @map("bin_number")
+  street        String
+  buildingNo    String    @map("building_no")
+  apartmentNo   String?   @map("apartment_no")
+  zipCode       String    @map("zip_code")
+  city          String
+  province      String
+  county        String
+  municipality  String
   email         String?
   phone         String?
+  settings      Setting[]
+  invoices      Invoice[]
   clients       Client[]
   products      Product[]
-  invoices      Invoice[]
-  setting       Setting[]
   reminders     Reminder[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt 
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt      @map("updated_at")
+  @@map("companies")
 }
 
 model Client {
   id            Int       @id @default(autoincrement())
-  companyId     Int      
-  company       Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId     Int    @map("company_id")     
+  company       Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
   name          String
   tin           String?
   bin           String?
   street        String?
-  buildingNo    String?
-  apartmentNo   String?
-  zipCode       String?
+  buildingNo    String?    @map("building_no")
+  apartmentNo   String?   @map("apartment_no")
+  zipCode       String    @map("zip_code")
   city          String?
   province      String?
   county        String?
@@ -60,8 +63,9 @@ model Client {
   email         String?
   phone         String?
   invoices      Invoice[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt  
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt      @map("updated_at")
+  @@map("clients")  
 }
 
 enum Status {
@@ -73,101 +77,111 @@ enum Status {
   PARTIALLY_PAID
 }
 
-
 model Invoice {
   id              Int         @id @default(autoincrement())
-  companyId       Int         
+  companyId       Int      @map("company_id")     
   company         Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  buyerId      Int
-  buyer        Client @relation(fields: [buyerId], references: [id])
-  recipient    String
-  invoiceType   String
-  invoiceNo       String
-  issuedDate      DateTime
-  transactionDate DateTime?
-  dueDate         DateTime
-  paymentMethod   String
-  paymentDate     DateTime?
+  buyerId         Int         @map("buyer_id")
+  buyer           Client      @relation(fields: [buyerId], references: [id])
+  paymentId       Int         @map("payment_id")
+  payment         Payment     @relation(fields: [paymentId], references: [id])
+  recipient       String
+  invoiceType     String      @map("invoice_type")
+  invoiceNo       String      @map("invoice_no")
+  issuedDate      DateTime    @map("issued_date")
+  transactionDate DateTime?   @map("transaction_date")
+  dueDate         DateTime    @map("due_date")
+  paymentMethod   String      @map("payment_method")
+  paymentDate     DateTime?   @map("payment_date")
   description     String?
-  totalAmount     Decimal  @db.Decimal(10, 2)
+  totalAmount     Decimal     @db.Decimal(10, 2)  @map("total_amount")
+  currency        String
   status          Status
   invoiceItems    InvoiceItem[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt  
   reminders       Reminder[]
-  currency        String
+  createdAt       DateTime      @default(now())   @map("created_at")
+  updatedAt       DateTime      @updatedAt        @map("updated_at")
+  @@map("invoices")
 }
 
 model InvoiceItem {
-  id          Int       @id @default(autoincrement())
-  invoiceId   Int       
-  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  productId   Int?     
-  product     Product?  @relation(fields: [productId], references: [id])
-  unit        String?
-  quantity    Decimal   @db.Decimal(10, 2)
-  unitPrice   Decimal   @db.Decimal(10, 2)     
-  taxType     VatRateType
-  taxRate     Decimal?  @db.Decimal(10, 2) 
-  discount    Decimal?   @db.Decimal(10, 2)
-  totalNet        Decimal  @db.Decimal(10, 2)
-  totalTax        Decimal?  @db.Decimal(10, 2)
-  totalGross      Decimal  @db.Decimal(10, 2)
+  id            Int           @id @default(autoincrement())
+  invoiceId     Int           @map("invoice_id")  
+  invoice       Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  productId     Int?          @map("product_id") 
+  product       Product?      @relation(fields: [productId], references: [id])
+  unit          String?
+  quantity      Decimal       @db.Decimal(10, 2)
+  unitPrice     Decimal       @db.Decimal(10, 2)  @map("unit_price")    
+  taxType       VatRateType   @map("tax_type")
+  taxRate       Decimal?      @db.Decimal(10, 2)  @map("tax_rate")
+  discount      Decimal?      @db.Decimal(10, 2)
+  totalNet      Decimal       @db.Decimal(10, 2)  @map("total_net")
+  totalTax      Decimal?      @db.Decimal(10, 2)  @map("total_tax")
+  totalGross    Decimal       @db.Decimal(10, 2)  @map("total_gross")
+  @@map("invoice_items")
 }
 
 model Product {
-  id          Int       @id @default(autoincrement())
-  companyId   Int       
-  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  name        String
-  description String?
-  price       Decimal  @db.Decimal(10, 2)
-  unit        String?
-  taxType     VatRateType
-  taxRate     Decimal?  @db.Decimal(10, 2)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt  
-  invoiceItems InvoiceItem[]
+  id            Int           @id @default(autoincrement())
+  companyId     Int        @map("company_id")     
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  price         Decimal       @db.Decimal(10, 2)
+  unit          String?
+  taxType       VatRateType   @map("tax_type")
+  taxRate       Decimal?      @db.Decimal(10, 2)    @map("tax_rate")
+  invoiceItems  InvoiceItem[]
+  createdAt     DateTime      @default(now())       @map("created_at")
+  updatedAt     DateTime      @updatedAt            @map("updated_at")
+  @@map("products")  
 }
 
 enum VatRateType {
-  STANDARD  // standardowa stawka procentowa (np. 23.00, 8.00)
-  EXEMPT    // zwolniony (ZW)
-  NOT_TAXED // niepodlegający VAT (NP)
+  STANDARD  
+  EXEMPT    
+  NOT_TAXED 
 }
 
 model VatRate {
-  id        Int     @id @default(autoincrement())
-  type      VatRateType
-  rate      Decimal?  @db.Decimal(10, 2)  // NULL dla ZW i NP
-  createdAt DateTime  @default(now())
+  id          Int           @id @default(autoincrement())
+  type        VatRateType
+  rate        Decimal?      @db.Decimal(10, 2) 
+  createdAt   DateTime      @default(now())     @map("created_at")
+  @@map("vat_rates")
 }
 
 model Payment {
-  id     Int    @id @default(autoincrement())
-  method String
+  id          Int       @id @default(autoincrement())
+  method      String
+  invoices    Invoice[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  @@map("payments")
 }
 
 model Setting {
-  id          Int       @id @default(autoincrement())
-  companyId   Int       
-  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  defaultCurrency    String
-  exemptFromTax Boolean @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt  
+  id                 Int        @id @default(autoincrement())
+  companyId          Int     @map("company_id")     
+  company            Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  defaultCurrency    String     @map("default_currency")
+  exemptFromTax      Boolean    @default(false)     @map("exempt_from_tax")
+  createdAt          DateTime   @default(now())     @map("created_at")
+  updatedAt          DateTime   @updatedAt          @map("updated_at")
+  @@map("settings")  
 }
 
 model Reminder {
-  id          Int       @id @default(autoincrement())
-  companyId   Int      
-  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  invoiceId   Int      
-  invoice     Invoice   @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
-  reminderDate DateTime 
-  message     String
-  createdAt   DateTime @default(now())    
+  id              Int         @id @default(autoincrement())
+  companyId       Int         @map("company_id")     
+  company         Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  invoiceId       Int?        @map("invoice_id")
+  invoice         Invoice?    @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  reminderType    String      @map("reminder_type")
+  reminderDate    DateTime    @map("reminder_date")
+  completed       Boolean     @default(false)
+  message         String
+  createdAt       DateTime    @default(now())   @map("created_at")
+  updatedAt       DateTime    @updatedAt        @map("updated_at")
+  @@map("reminders")    
 }
-
-
-
