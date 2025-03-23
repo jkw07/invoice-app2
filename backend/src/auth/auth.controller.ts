@@ -15,7 +15,23 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() body: AuthDto) {
-    return this.authService.login(body.email, body.password);
+    const { access_token } = await this.authService.login(
+      body.email,
+      body.password,
+    );
+    const user = await this.authService.findByEmail(body.email);
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    return {
+      access_token,
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+    };
   }
 
   @Post('logout')

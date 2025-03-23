@@ -1,0 +1,140 @@
+@use 'variables' as *;
+
+#root {
+  font-family: "Russo One", sans-serif;
+  color: $text-color;
+  background-color: $primary-background-color;
+  text-align: center;
+}
+
+.app {
+  display: flex;
+  h1 {
+    font-size: 48px;
+  }
+}
+.main-logo {
+   animation: slideInFromBottom 2s ease-out;
+   height: 80px;
+   img {
+    height: 100%;
+   }
+}
+
+@keyframes slideInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateX(150px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  height: fit-content;
+}
+
+.sidebar {
+  width: 130px;
+  background: $logo-dark-blue;
+  color: $primary-background-color;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  border: none;
+  background: none;
+  color: $primary-background-color;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.sidebar-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-button.active {
+  background: $primary-blue;
+  color: white;
+}
+
+
+.sidebar-tooltip {
+  position: absolute;
+  left: 60px;
+  background: $logo-light-blue;
+  color: $primary-background-color;
+  padding: 5px 10px;
+  border-radius: 5px;
+  white-space: nowrap;
+  font-size: 14px;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+}
+
+.sidebar-button:hover .sidebar-tooltip {
+  opacity: 1;
+  transform: scale(1);
+}
+
+
+.content {
+  flex-grow: 1;
+  padding-left: 40px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.sidebar-logo {
+  width: 120px;
+  margin: 15px 0;
+  img {
+    width: 100%;
+  }
+}
+
+.login-form {
+  border: 4px solid $logo-dark-blue;
+  padding: 20px;
+  width: fit-content;
+  min-height: 150px;
+  margin: 20px auto;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.links-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: center;
+  margin-top: 20px;
+}

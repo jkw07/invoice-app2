@@ -11,6 +11,10 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
+  async findByEmail(email: string) {
+    return this.prisma.user.findUnique({ where: { email } });
+  }
+
   async register(
     email: string,
     password: string,
