@@ -19,7 +19,7 @@ export class JwtAuthGuard implements CanActivate {
       throw new UnauthorizedException('No token provided');
     }
 
-    const token = authHeader.split(' ')[1]; // "Bearer TOKEN"
+    const token = authHeader.split(' ')[1];
 
     try {
       const decoded = this.jwtService.verify(token);
@@ -27,7 +27,7 @@ export class JwtAuthGuard implements CanActivate {
         throw new UnauthorizedException('Invalid token');
       }
 
-      request.user = decoded; // ✅ TERAZ TypeScript widzi, że `user` zawsze istnieje
+      request.user = decoded;
       return true;
     } catch (error) {
       console.log(error);

@@ -1,101 +1,80 @@
 import {
   Controller,
-  Post,
   Get,
+  Post,
   Delete,
   Body,
   Param,
-  UseGuards,
   Req,
+  UseGuards,
   ForbiddenException,
+  Put,
 } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { JwtAuthGuard } from '../auth/auth.guard';
 import { Request } from 'express';
-import { Status } from '@prisma/client';
+import { CreateInvoiceDto } from './dto/create-invoice.dto';
+import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+import { Invoice } from 'src/@generated/invoice/invoice.model';
 
 @Controller('invoices')
 export class InvoiceController {
-  constructor(private invoiceService: InvoiceService) {}
+  constructor(private readonly invoiceService: InvoiceService) {}
 
-  @Post()
   @UseGuards(JwtAuthGuard)
+  @Post()
   async addInvoice(
     @Req() req: Request,
-    @Body()
-    body: {
-      companyId: number;
-      buyerId: number;
-      recipient: string;
-      invoiceType: string;
-      invoiceNo: string;
-      issuedDate: Date;
-      transactionDate?: Date;
-      dueDate: Date;
-      paymentMethod: string;
-      paymentDate?: Date;
-      description?: string;
-      totalAmount: number;
-      status: Status;
-      currency: string;
-    },
-  ) {
-    if (!req.user) {
-      throw new ForbiddenException('User not found in request');
-    }
+    @Body() body: CreateInvoiceDto,
+  ): Promise<Invoice> {
+    if (!req.user) throw new ForbiddenException('Unauthorized');
 
-    return this.invoiceService.addInvoice(
-      req.user.sub,
-      body.companyId,
-      body.buyerId,
-      body.recipient,
-      body.invoiceType,
-      body.invoiceNo,
-      body.issuedDate,
-      body.transactionDate || null,
-      body.dueDate,
-      body.paymentMethod,
-      body.paymentDate || null,
-      body.description || null,
-      body.totalAmount,
-      body.status,
-      body.currency,
-    );
+    return this.invoiceService.addInvoice(req.user.sub, body);
   }
 
-  @Get(':companyId')
   @UseGuards(JwtAuthGuard)
+  @Get(':companyId')
   async getInvoices(
     @Req() req: Request,
     @Param('companyId') companyId: number,
   ) {
-    if (!req.user) {
-      throw new ForbiddenException('User not found in request');
-    }
-
-    return this.invoiceService.getInvoices(req.user.sub, companyId);
+    if (!req.user) throw new ForbiddenException('Unauthorized');
+    return this.invoiceService.getInvoices(req.user.sub, Number(companyId));
   }
 
-  @Get('single/:invoiceId')
   @UseGuards(JwtAuthGuard)
+  @Get('single/:invoiceId')
   async getInvoiceById(
     @Req() req: Request,
     @Param('invoiceId') invoiceId: number,
   ) {
-    if (!req.user) {
-      throw new ForbiddenException('User not found in request');
-    }
-
-    return this.invoiceService.getInvoiceById(req.user.sub, invoiceId);
+    if (!req.user) throw new ForbiddenException('Unauthorized');
+    return this.invoiceService.getInvoiceById(req.user.sub, Number(invoiceId));
   }
 
-  @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteInvoice(@Req() req: Request, @Param('id') id: number) {
-    if (!req.user) {
-      throw new ForbiddenException('User not found in request');
-    }
+  @Delete(':invoiceId')
+  async deleteInvoice(
+    @Req() req: Request,
+    @Param('invoiceId') invoiceId: number,
+  ) {
+    if (!req.user) throw new ForbiddenException('Unauthorized');
+    return this.invoiceService.deleteInvoice(req.user.sub, Number(invoiceId));
+  }
 
-    return this.invoiceService.deleteInvoice(req.user.sub, id);
+  @Put(':invoiceId')
+  @UseGuards(JwtAuthGuard)
+  async updateInvoice(
+    @Req() req: Request,
+    @Param('invoiceId') invoiceId: number,
+    @Body() body: UpdateInvoiceDto,
+  ) {
+    if (!req.user) throw new ForbiddenException('Unauthorized');
+
+    return this.invoiceService.updateInvoice(
+      req.user.sub,
+      Number(invoiceId),
+      body,
+    );
   }
 }

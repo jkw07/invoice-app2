@@ -55,7 +55,7 @@ model Client {
   street        String?
   buildingNo    String?    @map("building_no")
   apartmentNo   String?   @map("apartment_no")
-  zipCode       String    @map("zip_code")
+  zipCode       String?    @map("zip_code")
   city          String?
   province      String?
   county        String?
@@ -85,7 +85,7 @@ model Invoice {
   buyer           Client      @relation(fields: [buyerId], references: [id])
   paymentId       Int         @map("payment_id")
   payment         Payment     @relation(fields: [paymentId], references: [id])
-  recipient       String
+  recipient       String?
   invoiceType     String      @map("invoice_type")
   invoiceNo       String      @map("invoice_no")
   issuedDate      DateTime    @map("issued_date")
@@ -150,11 +150,12 @@ model VatRate {
   rate        Decimal?      @db.Decimal(10, 2) 
   createdAt   DateTime      @default(now())     @map("created_at")
   @@map("vat_rates")
+  @@unique([type, rate])
 }
 
 model Payment {
   id          Int       @id @default(autoincrement())
-  method      String
+  method      String    @unique
   invoices    Invoice[]
   createdAt   DateTime  @default(now()) @map("created_at")
   @@map("payments")
@@ -184,4 +185,11 @@ model Reminder {
   createdAt       DateTime    @default(now())   @map("created_at")
   updatedAt       DateTime    @updatedAt        @map("updated_at")
   @@map("reminders")    
+}
+
+generator nestgraphql {
+  provider = "prisma-nestjs-graphql"
+  output   = "../src/@generated"
+  previewFeatures = ["clientExtensions"]
+  emitEnumSchema  = true
 }

@@ -1,0 +1,313 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Client {
+  _count: ClientCount!
+  apartmentNo: String
+  bin: String
+  buildingNo: String
+  city: String
+  company: Company!
+  companyId: Int!
+  county: String
+  createdAt: DateTime!
+  email: String
+  id: ID!
+  invoices: [Invoice!]
+  municipality: String
+  name: String!
+  phone: String
+  province: String
+  street: String
+  tin: String
+  updatedAt: DateTime!
+  zipCode: String
+}
+
+type ClientCount {
+  invoices: Int!
+}
+
+type Company {
+  _count: CompanyCount!
+  apartmentNo: String
+  bin: String!
+  buildingNo: String!
+  city: String!
+  clients: [Client!]
+  county: String!
+  createdAt: DateTime!
+  email: String
+  fullName: String!
+  id: ID!
+  invoices: [Invoice!]
+  municipality: String!
+  phone: String
+  products: [Product!]
+  province: String!
+  reminders: [Reminder!]
+  settings: [Setting!]
+  shortName: String
+  street: String!
+  tin: String!
+  updatedAt: DateTime!
+  user: User!
+  userId: String!
+  zipCode: String!
+}
+
+type CompanyCount {
+  clients: Int!
+  invoices: Int!
+  products: Int!
+  reminders: Int!
+  settings: Int!
+}
+
+input CreateCompanyInput {
+  apartmentNo: String
+  bin: String!
+  buildingNo: String!
+  city: String!
+  county: String!
+  email: String
+  fullName: String!
+  municipality: String!
+  phone: String
+  province: String!
+  shortName: String
+  street: String!
+  tin: String!
+  zipCode: String!
+}
+
+input CreateInvoiceInput {
+  buyerId: Int!
+  companyId: Int!
+  currency: String!
+  description: String
+  dueDate: String!
+  invoiceNo: String!
+  invoiceType: String!
+  issuedDate: String!
+  paymentDate: String
+  paymentId: Int!
+  paymentMethod: String!
+  recipient: String
+  status: Status!
+  totalAmount: Float!
+  transactionDate: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""An arbitrary-precision Decimal type"""
+scalar Decimal
+
+type Invoice {
+  _count: InvoiceCount!
+  buyer: Client!
+  buyerId: Int!
+  company: Company!
+  companyId: Int!
+  createdAt: DateTime!
+  currency: String!
+  description: String
+  dueDate: DateTime!
+  id: ID!
+  invoiceItems: [InvoiceItem!]
+  invoiceNo: String!
+  invoiceType: String!
+  issuedDate: DateTime!
+  payment: Payment!
+  paymentDate: DateTime
+  paymentId: Int!
+  paymentMethod: String!
+  recipient: String
+  reminders: [Reminder!]
+  status: Status!
+  totalAmount: Decimal!
+  transactionDate: DateTime
+  updatedAt: DateTime!
+}
+
+type InvoiceCount {
+  invoiceItems: Int!
+  reminders: Int!
+}
+
+type InvoiceItem {
+  discount: Decimal
+  id: ID!
+  invoice: Invoice!
+  invoiceId: Int!
+  product: Product
+  productId: Int
+  quantity: Decimal!
+  taxRate: Decimal
+  taxType: VatRateType!
+  totalGross: Decimal!
+  totalNet: Decimal!
+  totalTax: Decimal
+  unit: String
+  unitPrice: Decimal!
+}
+
+type Mutation {
+  addClient(apartmentNo: String, bin: String, buildingNo: String, city: String, companyId: Int!, county: String, email: String, municipality: String, name: String!, phone: String, province: String, street: String, tin: String, zipCode: String): Client!
+  addInvoice(data: CreateInvoiceInput!): Invoice!
+  createCompany(data: CreateCompanyInput!): Company!
+  deleteClient(clientId: Int!): Client!
+  deleteCompany(companyId: Int!): Company!
+  deleteInvoice(invoiceId: Int!): Invoice!
+  updateClient(clientId: Int!, data: UpdateClientInput!): Client!
+  updateCompany(companyId: Int!, data: UpdateCompanyInput!): Company!
+  updateInvoice(data: UpdateInvoiceInput!, invoiceId: Int!): Invoice!
+}
+
+type Payment {
+  _count: PaymentCount!
+  createdAt: DateTime!
+  id: ID!
+  invoices: [Invoice!]
+  method: String!
+}
+
+type PaymentCount {
+  invoices: Int!
+}
+
+type Product {
+  _count: ProductCount!
+  company: Company!
+  companyId: Int!
+  createdAt: DateTime!
+  description: String
+  id: ID!
+  invoiceItems: [InvoiceItem!]
+  name: String!
+  price: Decimal!
+  taxRate: Decimal
+  taxType: VatRateType!
+  unit: String
+  updatedAt: DateTime!
+}
+
+type ProductCount {
+  invoiceItems: Int!
+}
+
+type Query {
+  getClientById(clientId: Int!): Client!
+  getClients(companyId: Int!): [Client!]!
+  getCompanies: [Company!]!
+  getInvoiceById(invoiceId: Int!): Invoice!
+  getInvoices(companyId: Int!): [Invoice!]!
+}
+
+type Reminder {
+  company: Company!
+  companyId: Int!
+  completed: Boolean!
+  createdAt: DateTime!
+  id: ID!
+  invoice: Invoice
+  invoiceId: Int
+  message: String!
+  reminderDate: DateTime!
+  reminderType: String!
+  updatedAt: DateTime!
+}
+
+type Setting {
+  company: Company!
+  companyId: Int!
+  createdAt: DateTime!
+  defaultCurrency: String!
+  exemptFromTax: Boolean!
+  id: ID!
+  updatedAt: DateTime!
+}
+
+enum Status {
+  CANCELLED
+  DRAFT
+  OVERDUE
+  PAID
+  PARTIALLY_PAID
+  PENDING
+}
+
+input UpdateClientInput {
+  apartmentNo: String
+  bin: String
+  buildingNo: String
+  city: String
+  county: String
+  email: String
+  municipality: String
+  name: String
+  phone: String
+  province: String
+  street: String
+  tin: String
+  zipCode: String
+}
+
+input UpdateCompanyInput {
+  apartmentNo: String
+  bin: String
+  buildingNo: String
+  city: String
+  county: String
+  email: String
+  fullName: String
+  municipality: String
+  phone: String
+  province: String
+  shortName: String
+  street: String
+  tin: String
+  zipCode: String
+}
+
+input UpdateInvoiceInput {
+  buyerId: Int
+  currency: String
+  description: String
+  dueDate: String
+  invoiceNo: String
+  invoiceType: String
+  issuedDate: String
+  paymentDate: String
+  paymentId: Int
+  paymentMethod: String
+  recipient: String
+  status: Status
+  totalAmount: Float
+  transactionDate: String
+}
+
+type User {
+  _count: UserCount!
+  companies: [Company!]
+  createdAt: DateTime!
+  email: String!
+  id: ID!
+  password_hash: String!
+  updatedAt: DateTime!
+}
+
+type UserCount {
+  companies: Int!
+}
+
+enum VatRateType {
+  EXEMPT
+  NOT_TAXED
+  STANDARD
+}

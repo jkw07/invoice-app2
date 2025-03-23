@@ -4,51 +4,41 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Status } from '@prisma/client';
-import type { Company } from '@prisma/client';
+import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+import { CreateInvoiceDto } from './dto/create-invoice.dto';
 
 @Injectable()
 export class InvoiceService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async addInvoice(
+  async checkUserCompanyAccess(
     userId: string,
     companyId: number,
-    buyerId: number,
-    recipient: string,
-    invoiceType: string,
-    invoiceNo: string,
-    issuedDate: Date,
-    transactionDate: Date | null,
-    dueDate: Date,
-    paymentMethod: string,
-    paymentDate: Date | null,
-    description: string | null,
-    totalAmount: number,
-    status: Status,
-    currency: string,
-  ) {
-    const hasAccess = await this.checkUserCompanyAccess(userId, companyId);
-    if (!hasAccess) {
-      throw new ForbiddenException('Access denied to this company');
-    }
+  ): Promise<boolean> {
+    const company = await this.prisma.company.findFirst({
+      where: {
+        id: companyId,
+        userId: userId,
+      },
+    });
 
+    return !!company;
+  }
+
+  async addInvoice(userId: string, data: CreateInvoiceDto) {
+    const hasAccess = await this.checkUserCompanyAccess(userId, data.companyId);
+    if (!hasAccess) {
+      throw new ForbiddenException('You do not have access to this company');
+    }
     return this.prisma.invoice.create({
       data: {
-        companyId,
-        buyerId,
-        recipient,
-        invoiceType,
-        invoiceNo,
-        issuedDate,
-        transactionDate,
-        dueDate,
-        paymentMethod,
-        paymentDate,
-        description,
-        totalAmount,
-        status,
-        currency,
+        ...data,
+        recipient: data.recipient ?? null,
+        transactionDate: data.transactionDate ?? null,
+        paymentDate: data.paymentDate ?? null,
+        description: data.description ?? null,
+        issuedDate: new Date(data.issuedDate),
+        dueDate: new Date(data.dueDate),
       },
     });
   }
@@ -56,7 +46,7 @@ export class InvoiceService {
   async getInvoices(userId: string, companyId: number) {
     const hasAccess = await this.checkUserCompanyAccess(userId, companyId);
     if (!hasAccess) {
-      throw new ForbiddenException('Access denied to this company');
+      throw new ForbiddenException('You do not have access to this company');
     }
 
     return this.prisma.invoice.findMany({
@@ -88,7 +78,7 @@ export class InvoiceService {
       invoice.companyId,
     );
     if (!hasAccess) {
-      throw new ForbiddenException('Access denied to this company');
+      throw new ForbiddenException('You do not have access to this company');
     }
 
     return invoice;
@@ -96,28 +86,35 @@ export class InvoiceService {
 
   async deleteInvoice(userId: string, invoiceId: number) {
     await this.getInvoiceById(userId, invoiceId);
-
     return this.prisma.invoice.delete({
       where: { id: invoiceId },
     });
   }
 
-  async checkUserCompanyAccess(
+  async updateInvoice(
     userId: string,
-    companyId: number,
-  ): Promise<boolean> {
-    try {
-      const company: Company | null = await this.prisma.company?.findFirst({
-        where: {
-          id: companyId,
-          userId: userId,
-        },
-      });
+    invoiceId: number,
+    data: UpdateInvoiceDto,
+  ) {
+    const invoice = await this.prisma.invoice.findUnique({
+      where: { id: invoiceId },
+    });
 
-      return !!company;
-    } catch (error) {
-      console.error('Error checking company access:', error);
-      return false;
+    if (!invoice) {
+      throw new NotFoundException('Invoice not found');
     }
+
+    const hasAccess = await this.checkUserCompanyAccess(
+      userId,
+      invoice.companyId,
+    );
+    if (!hasAccess) {
+      throw new ForbiddenException('Access denied to this company');
+    }
+
+    return this.prisma.invoice.update({
+      where: { id: invoiceId },
+      data,
+    });
   }
 }

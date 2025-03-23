@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
@@ -16,6 +15,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<{ access_token: string }> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user: User = await this.prisma.user.create({
@@ -34,7 +34,8 @@ export class AuthService {
     });
 
     const isMatch: boolean = user
-      ? await bcrypt.compare(password, user.password_hash)
+      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        await bcrypt.compare(password, user.password_hash)
       : false;
 
     if (!user || !isMatch) {
