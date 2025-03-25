@@ -1,86 +1,55 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { Company } from '@prisma/client';
-import { UpdateCompanyDto } from './dto/update-company.dto';
-import { CreateCompanyDto } from './dto/create-company.dto';
+import { UpdateCompanyInput } from './dto/update-company.input';
+import { CreateCompanyInput } from './dto/create-company.input';
+import { CompanyRepository } from '../repositories/company.repository';
 
 @Injectable()
 export class CompanyService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly companyRepository: CompanyRepository) {}
 
-  async createCompany(userId: string, data: CreateCompanyDto) {
-    return this.prisma.company.create({
-      data: {
-        userId,
-        fullName: data.fullName,
-        shortName: data.shortName ?? null,
-        tin: data.tin,
-        bin: data.bin,
-        street: data.street,
-        buildingNo: data.buildingNo,
-        apartmentNo: data.apartmentNo ?? null,
-        zipCode: data.zipCode,
-        city: data.city,
-        province: data.province,
-        county: data.county,
-        municipality: data.municipality,
-        email: data.email ?? null,
-        phone: data.phone ?? null,
-      },
-    });
+  async createCompany(userId: string, data: CreateCompanyInput) {
+    return this.companyRepository.createCompany(userId, data);
   }
 
-  async getCompanies(userId: string): Promise<Company[]> {
-    return this.prisma.company.findMany({
-      where: { userId },
-    });
+  async getCompaniesByUser(userId: string): Promise<Company[]> {
+    return this.companyRepository.getCompaniesByUser(userId);
   }
 
   async getCompanyById(userId: string, companyId: number): Promise<Company> {
-    const company = await this.prisma.company.findUnique({
-      where: { id: companyId },
-    });
-
-    if (!company || company.userId !== userId) {
-      throw new ForbiddenException('Access denied or company not found');
+    const company = await this.companyRepository.getCompanyById(companyId);
+    if (!company) {
+      throw new ForbiddenException('Company not found');
     }
-
+    if (company.userId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
     return company;
   }
 
   async updateCompany(
     userId: string,
     companyId: number,
-    data: UpdateCompanyDto,
+    data: UpdateCompanyInput,
   ): Promise<Company> {
-    const company = await this.getCompanyById(userId, companyId);
-
-    return this.prisma.company.update({
-      where: { id: company.id },
-      data: {
-        fullName: data.fullName,
-        shortName: data.shortName ?? null,
-        tin: data.tin,
-        bin: data.bin,
-        street: data.street,
-        buildingNo: data.buildingNo,
-        apartmentNo: data.apartmentNo ?? null,
-        zipCode: data.zipCode,
-        city: data.city,
-        province: data.province,
-        county: data.county,
-        municipality: data.municipality,
-        email: data.email ?? null,
-        phone: data.phone ?? null,
-      },
-    });
+    const company = await this.companyRepository.getCompanyById(companyId);
+    if (!company) {
+      throw new ForbiddenException('Company not found');
+    }
+    if (company.userId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+    return this.companyRepository.updateCompany(companyId, data);
   }
 
   async deleteCompany(userId: string, companyId: number): Promise<Company> {
-    const company = await this.getCompanyById(userId, companyId);
-
-    return this.prisma.company.delete({
-      where: { id: company.id },
-    });
+    const company = await this.companyRepository.getCompanyById(companyId);
+    if (!company) {
+      throw new ForbiddenException('Company not found');
+    }
+    if (company.userId !== userId) {
+      throw new ForbiddenException('Access denied');
+    }
+    return this.companyRepository.deleteCompany(companyId);
   }
 }

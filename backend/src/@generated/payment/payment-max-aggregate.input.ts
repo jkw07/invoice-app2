@@ -8,6 +8,9 @@ export class PaymentMaxAggregateInput {
     id?: true;
 
     @Field(() => Boolean, {nullable:true})
+    userId?: true;
+
+    @Field(() => Boolean, {nullable:true})
     method?: true;
 
     @Field(() => Boolean, {nullable:true})

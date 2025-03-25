@@ -4,6 +4,8 @@ import { StringFieldUpdateOperationsInput } from '../prisma/string-field-update-
 import { DateTimeFieldUpdateOperationsInput } from '../prisma/date-time-field-update-operations.input';
 import { CompanyUncheckedUpdateManyWithoutUserNestedInput } from '../company/company-unchecked-update-many-without-user-nested.input';
 import { Type } from 'class-transformer';
+import { VatRateUncheckedUpdateManyWithoutUserNestedInput } from '../vat-rate/vat-rate-unchecked-update-many-without-user-nested.input';
+import { PaymentUncheckedUpdateManyWithoutUserNestedInput } from '../payment/payment-unchecked-update-many-without-user-nested.input';
 
 @InputType()
 export class UserUncheckedUpdateInput {
@@ -26,4 +28,12 @@ export class UserUncheckedUpdateInput {
     @Field(() => CompanyUncheckedUpdateManyWithoutUserNestedInput, {nullable:true})
     @Type(() => CompanyUncheckedUpdateManyWithoutUserNestedInput)
     companies?: CompanyUncheckedUpdateManyWithoutUserNestedInput;
+
+    @Field(() => VatRateUncheckedUpdateManyWithoutUserNestedInput, {nullable:true})
+    @Type(() => VatRateUncheckedUpdateManyWithoutUserNestedInput)
+    vatRates?: VatRateUncheckedUpdateManyWithoutUserNestedInput;
+
+    @Field(() => PaymentUncheckedUpdateManyWithoutUserNestedInput, {nullable:true})
+    @Type(() => PaymentUncheckedUpdateManyWithoutUserNestedInput)
+    payments?: PaymentUncheckedUpdateManyWithoutUserNestedInput;
 }

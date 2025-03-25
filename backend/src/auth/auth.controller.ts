@@ -38,7 +38,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   logout(@Req() req: Request) {
     return {
-      message: `User ${req.user ? req.user['email'] : 'unknown'} logged out successfully`,
+      message: `User ${req.user} logged out successfully`,
     };
   }
 }

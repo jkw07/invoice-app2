@@ -14,6 +14,9 @@ export class VatRateUncheckedCreateInput {
     @Field(() => Int, {nullable:true})
     id?: number;
 
+    @Field(() => String, {nullable:true})
+    userId?: string;
+
     @Field(() => VatRateType, {nullable:false})
     type!: `${VatRateType}`;
 

@@ -9,6 +9,9 @@ export class PaymentMinOrderByAggregateInput {
     id?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})
+    userId?: `${SortOrder}`;
+
+    @Field(() => SortOrder, {nullable:true})
     method?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})

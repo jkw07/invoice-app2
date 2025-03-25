@@ -1,6 +1,7 @@
 import { Field } from '@nestjs/graphql';
 import { InputType } from '@nestjs/graphql';
 import { SortOrder } from '../prisma/sort-order.enum';
+import { SortOrderInput } from '../prisma/sort-order.input';
 import { PaymentCountOrderByAggregateInput } from './payment-count-order-by-aggregate.input';
 import { PaymentAvgOrderByAggregateInput } from './payment-avg-order-by-aggregate.input';
 import { PaymentMaxOrderByAggregateInput } from './payment-max-order-by-aggregate.input';
@@ -12,6 +13,9 @@ export class PaymentOrderByWithAggregationInput {
 
     @Field(() => SortOrder, {nullable:true})
     id?: `${SortOrder}`;
+
+    @Field(() => SortOrderInput, {nullable:true})
+    userId?: SortOrderInput;
 
     @Field(() => SortOrder, {nullable:true})
     method?: `${SortOrder}`;

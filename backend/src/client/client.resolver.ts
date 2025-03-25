@@ -5,7 +5,7 @@ import { ForbiddenException, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Request } from 'express';
 import { UpdateClientInput } from './dto/update-client.input';
-import { CreateClientDto } from './dto/create-client.dto';
+import { CreateClientInput } from './dto/create-client.input';
 
 @Resolver(() => Client)
 export class ClientResolver {
@@ -13,12 +13,12 @@ export class ClientResolver {
 
   @UseGuards(GqlAuthGuard)
   @Query(() => [Client])
-  async getClients(
+  async getClientsByCompany(
     @Context() context: { req: Request },
     @Args('companyId', { type: () => Int }) companyId: number,
   ) {
     const userId = getUserIdFromContext(context);
-    return this.clientService.getClients(userId, companyId);
+    return this.clientService.getClientsByCompany(userId, companyId);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -35,39 +35,9 @@ export class ClientResolver {
   @Mutation(() => Client)
   async addClient(
     @Context() context: { req: Request },
-    @Args('companyId', { type: () => Int }) companyId: number,
-    @Args('name') name: string,
-    @Args('tin', { nullable: true }) tin: string,
-    @Args('bin', { nullable: true }) bin: string,
-    @Args('street', { nullable: true }) street: string,
-    @Args('buildingNo', { nullable: true }) buildingNo: string,
-    @Args('apartmentNo', { nullable: true }) apartmentNo: string,
-    @Args('zipCode', { nullable: true }) zipCode: string,
-    @Args('city', { nullable: true }) city: string,
-    @Args('province', { nullable: true }) province: string,
-    @Args('county', { nullable: true }) county: string,
-    @Args('municipality', { nullable: true }) municipality: string,
-    @Args('email', { nullable: true }) email: string,
-    @Args('phone', { nullable: true }) phone: string,
-  ) {
+    @Args('data') data: CreateClientInput,
+  ): Promise<Client> {
     const userId = getUserIdFromContext(context);
-    const data: CreateClientDto = {
-      companyId,
-      name,
-      tin: tin ?? null,
-      bin: bin ?? null,
-      street: street ?? null,
-      buildingNo: buildingNo ?? null,
-      apartmentNo: apartmentNo ?? null,
-      zipCode: zipCode ?? null,
-      city: city ?? null,
-      province: province ?? null,
-      county: county ?? null,
-      municipality: municipality ?? null,
-      email: email ?? null,
-      phone: phone ?? null,
-    };
-
     return this.clientService.addClient(userId, data);
   }
 

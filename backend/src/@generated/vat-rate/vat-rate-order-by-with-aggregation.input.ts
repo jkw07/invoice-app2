@@ -15,6 +15,9 @@ export class VatRateOrderByWithAggregationInput {
     @Field(() => SortOrder, {nullable:true})
     id?: `${SortOrder}`;
 
+    @Field(() => SortOrderInput, {nullable:true})
+    userId?: SortOrderInput;
+
     @Field(() => SortOrder, {nullable:true})
     type?: `${SortOrder}`;
 

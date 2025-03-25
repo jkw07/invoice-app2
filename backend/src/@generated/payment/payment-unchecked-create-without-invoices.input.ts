@@ -8,6 +8,9 @@ export class PaymentUncheckedCreateWithoutInvoicesInput {
     @Field(() => Int, {nullable:true})
     id?: number;
 
+    @Field(() => String, {nullable:true})
+    userId?: string;
+
     @Field(() => String, {nullable:false})
     method!: string;
 

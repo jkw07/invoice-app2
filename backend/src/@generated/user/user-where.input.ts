@@ -4,6 +4,8 @@ import { StringFilter } from '../prisma/string-filter.input';
 import { DateTimeFilter } from '../prisma/date-time-filter.input';
 import { CompanyListRelationFilter } from '../company/company-list-relation-filter.input';
 import { Type } from 'class-transformer';
+import { VatRateListRelationFilter } from '../vat-rate/vat-rate-list-relation-filter.input';
+import { PaymentListRelationFilter } from '../payment/payment-list-relation-filter.input';
 
 @InputType()
 export class UserWhereInput {
@@ -35,4 +37,12 @@ export class UserWhereInput {
     @Field(() => CompanyListRelationFilter, {nullable:true})
     @Type(() => CompanyListRelationFilter)
     companies?: CompanyListRelationFilter;
+
+    @Field(() => VatRateListRelationFilter, {nullable:true})
+    @Type(() => VatRateListRelationFilter)
+    vatRates?: VatRateListRelationFilter;
+
+    @Field(() => PaymentListRelationFilter, {nullable:true})
+    @Type(() => PaymentListRelationFilter)
+    payments?: PaymentListRelationFilter;
 }

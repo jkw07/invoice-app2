@@ -7,4 +7,10 @@ export class UserCount {
 
     @Field(() => Int, {nullable:false})
     companies?: number;
+
+    @Field(() => Int, {nullable:false})
+    vatRates?: number;
+
+    @Field(() => Int, {nullable:false})
+    payments?: number;
 }

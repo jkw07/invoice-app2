@@ -4,9 +4,9 @@ import { StringFieldUpdateOperationsInput } from '../prisma/string-field-update-
 import { NullableStringFieldUpdateOperationsInput } from '../prisma/nullable-string-field-update-operations.input';
 import { DateTimeFieldUpdateOperationsInput } from '../prisma/date-time-field-update-operations.input';
 import { UserUpdateOneRequiredWithoutCompaniesNestedInput } from '../user/user-update-one-required-without-companies-nested.input';
+import { Type } from 'class-transformer';
 import { SettingUpdateManyWithoutCompanyNestedInput } from '../setting/setting-update-many-without-company-nested.input';
 import { ClientUpdateManyWithoutCompanyNestedInput } from '../client/client-update-many-without-company-nested.input';
-import { Type } from 'class-transformer';
 import { ProductUpdateManyWithoutCompanyNestedInput } from '../product/product-update-many-without-company-nested.input';
 import { ReminderUpdateManyWithoutCompanyNestedInput } from '../reminder/reminder-update-many-without-company-nested.input';
 
@@ -62,6 +62,7 @@ export class CompanyUpdateWithoutInvoicesInput {
     updatedAt?: DateTimeFieldUpdateOperationsInput;
 
     @Field(() => UserUpdateOneRequiredWithoutCompaniesNestedInput, {nullable:true})
+    @Type(() => UserUpdateOneRequiredWithoutCompaniesNestedInput)
     user?: UserUpdateOneRequiredWithoutCompaniesNestedInput;
 
     @Field(() => SettingUpdateManyWithoutCompanyNestedInput, {nullable:true})

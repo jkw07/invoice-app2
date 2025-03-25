@@ -1,9 +1,9 @@
 import { Field } from '@nestjs/graphql';
 import { InputType } from '@nestjs/graphql';
 import { UserCreateNestedOneWithoutCompaniesInput } from '../user/user-create-nested-one-without-companies.input';
+import { Type } from 'class-transformer';
 import { SettingCreateNestedManyWithoutCompanyInput } from '../setting/setting-create-nested-many-without-company.input';
 import { InvoiceCreateNestedManyWithoutCompanyInput } from '../invoice/invoice-create-nested-many-without-company.input';
-import { Type } from 'class-transformer';
 import { ClientCreateNestedManyWithoutCompanyInput } from '../client/client-create-nested-many-without-company.input';
 import { ProductCreateNestedManyWithoutCompanyInput } from '../product/product-create-nested-many-without-company.input';
 
@@ -59,6 +59,7 @@ export class CompanyCreateWithoutRemindersInput {
     updatedAt?: Date | string;
 
     @Field(() => UserCreateNestedOneWithoutCompaniesInput, {nullable:false})
+    @Type(() => UserCreateNestedOneWithoutCompaniesInput)
     user!: UserCreateNestedOneWithoutCompaniesInput;
 
     @Field(() => SettingCreateNestedManyWithoutCompanyInput, {nullable:true})

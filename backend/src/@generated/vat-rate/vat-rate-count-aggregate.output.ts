@@ -9,6 +9,9 @@ export class VatRateCountAggregate {
     id!: number;
 
     @Field(() => Int, {nullable:false})
+    userId!: number;
+
+    @Field(() => Int, {nullable:false})
     type!: number;
 
     @Field(() => Int, {nullable:false})

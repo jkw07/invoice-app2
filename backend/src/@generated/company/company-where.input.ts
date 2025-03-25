@@ -5,9 +5,9 @@ import { StringFilter } from '../prisma/string-filter.input';
 import { StringNullableFilter } from '../prisma/string-nullable-filter.input';
 import { DateTimeFilter } from '../prisma/date-time-filter.input';
 import { UserScalarRelationFilter } from '../user/user-scalar-relation-filter.input';
+import { Type } from 'class-transformer';
 import { SettingListRelationFilter } from '../setting/setting-list-relation-filter.input';
 import { InvoiceListRelationFilter } from '../invoice/invoice-list-relation-filter.input';
-import { Type } from 'class-transformer';
 import { ClientListRelationFilter } from '../client/client-list-relation-filter.input';
 import { ProductListRelationFilter } from '../product/product-list-relation-filter.input';
 import { ReminderListRelationFilter } from '../reminder/reminder-list-relation-filter.input';
@@ -79,6 +79,7 @@ export class CompanyWhereInput {
     updatedAt?: DateTimeFilter;
 
     @Field(() => UserScalarRelationFilter, {nullable:true})
+    @Type(() => UserScalarRelationFilter)
     user?: UserScalarRelationFilter;
 
     @Field(() => SettingListRelationFilter, {nullable:true})

@@ -2,6 +2,7 @@ import { registerEnumType } from '@nestjs/graphql';
 
 export enum VatRateScalarFieldEnum {
     id = "id",
+    userId = "userId",
     type = "type",
     rate = "rate",
     createdAt = "createdAt"

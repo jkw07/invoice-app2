@@ -3,9 +3,9 @@ import { InputType } from '@nestjs/graphql';
 import { SortOrder } from '../prisma/sort-order.enum';
 import { SortOrderInput } from '../prisma/sort-order.input';
 import { UserOrderByWithRelationInput } from '../user/user-order-by-with-relation.input';
+import { Type } from 'class-transformer';
 import { SettingOrderByRelationAggregateInput } from '../setting/setting-order-by-relation-aggregate.input';
 import { InvoiceOrderByRelationAggregateInput } from '../invoice/invoice-order-by-relation-aggregate.input';
-import { Type } from 'class-transformer';
 import { ClientOrderByRelationAggregateInput } from '../client/client-order-by-relation-aggregate.input';
 import { ProductOrderByRelationAggregateInput } from '../product/product-order-by-relation-aggregate.input';
 import { ReminderOrderByRelationAggregateInput } from '../reminder/reminder-order-by-relation-aggregate.input';
@@ -68,6 +68,7 @@ export class CompanyOrderByWithRelationInput {
     updatedAt?: `${SortOrder}`;
 
     @Field(() => UserOrderByWithRelationInput, {nullable:true})
+    @Type(() => UserOrderByWithRelationInput)
     user?: UserOrderByWithRelationInput;
 
     @Field(() => SettingOrderByRelationAggregateInput, {nullable:true})

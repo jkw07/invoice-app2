@@ -7,6 +7,11 @@ import { ClientModule } from './client/client.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
+import { PaymentModule } from './payment/payment.module';
+import { SettingModule } from './setting/setting.module';
+import { ProductModule } from './product/product.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import * as redisStore from 'cache-manager-ioredis';
 
 @Module({
   imports: [
@@ -18,11 +23,20 @@ import { join } from 'path';
       playground: true,
       introspection: true,
     }),
+    CacheModule.register({
+      store: redisStore,
+      host: 'localhost',
+      port: 6379,
+      ttl: 300, // domyślny czas życia (w sekundach)
+    }),
     PrismaModule,
     AuthModule,
     InvoiceModule,
     CompanyModule,
     ClientModule,
+    PaymentModule,
+    SettingModule,
+    ProductModule,
   ],
 })
 export class AppModule {}

@@ -12,6 +12,8 @@ model User {
   email         String  @unique
   password_hash String  
   companies     Company[]
+  vatRates      VatRate[]
+  payments      Payment[]
   createdAt     DateTime @default(now())  @map("created_at")
   updatedAt     DateTime @updatedAt       @map("updated_at")
   @@map("users")
@@ -146,6 +148,8 @@ enum VatRateType {
 
 model VatRate {
   id          Int           @id @default(autoincrement())
+  userId      String?    @map("user_id")     
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   type        VatRateType
   rate        Decimal?      @db.Decimal(10, 2) 
   createdAt   DateTime      @default(now())     @map("created_at")
@@ -155,6 +159,8 @@ model VatRate {
 
 model Payment {
   id          Int       @id @default(autoincrement())
+  userId      String?    @map("user_id")     
+  user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   method      String    @unique
   invoices    Invoice[]
   createdAt   DateTime  @default(now()) @map("created_at")

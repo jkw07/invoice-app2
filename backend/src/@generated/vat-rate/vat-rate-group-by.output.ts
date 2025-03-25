@@ -16,6 +16,9 @@ export class VatRateGroupBy {
     @Field(() => Int, {nullable:false})
     id!: number;
 
+    @Field(() => String, {nullable:true})
+    userId?: string;
+
     @Field(() => VatRateType, {nullable:false})
     type!: `${VatRateType}`;
 

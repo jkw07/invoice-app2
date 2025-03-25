@@ -19,9 +19,7 @@ export class AuthService {
     email: string,
     password: string,
   ): Promise<{ access_token: string }> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const user: User = await this.prisma.user.create({
       data: { email, password_hash: hashedPassword },
     });
@@ -38,8 +36,7 @@ export class AuthService {
     });
 
     const isMatch: boolean = user
-      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-        await bcrypt.compare(password, user.password_hash)
+      ? await bcrypt.compare(password, user.password_hash)
       : false;
 
     if (!user || !isMatch) {

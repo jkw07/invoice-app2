@@ -4,6 +4,7 @@ import { EnumVatRateTypeFieldUpdateOperationsInput } from '../prisma/enum-vat-ra
 import { NullableDecimalFieldUpdateOperationsInput } from '../prisma/nullable-decimal-field-update-operations.input';
 import { Type } from 'class-transformer';
 import { DateTimeFieldUpdateOperationsInput } from '../prisma/date-time-field-update-operations.input';
+import { UserUpdateOneWithoutVatRatesNestedInput } from '../user/user-update-one-without-vat-rates-nested.input';
 
 @InputType()
 export class VatRateUpdateInput {
@@ -17,4 +18,8 @@ export class VatRateUpdateInput {
 
     @Field(() => DateTimeFieldUpdateOperationsInput, {nullable:true})
     createdAt?: DateTimeFieldUpdateOperationsInput;
+
+    @Field(() => UserUpdateOneWithoutVatRatesNestedInput, {nullable:true})
+    @Type(() => UserUpdateOneWithoutVatRatesNestedInput)
+    user?: UserUpdateOneWithoutVatRatesNestedInput;
 }

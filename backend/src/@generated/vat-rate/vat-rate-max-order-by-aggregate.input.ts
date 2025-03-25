@@ -9,6 +9,9 @@ export class VatRateMaxOrderByAggregateInput {
     id?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})
+    userId?: `${SortOrder}`;
+
+    @Field(() => SortOrder, {nullable:true})
     type?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})

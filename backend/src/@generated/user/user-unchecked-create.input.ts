@@ -2,6 +2,8 @@ import { Field } from '@nestjs/graphql';
 import { InputType } from '@nestjs/graphql';
 import { CompanyUncheckedCreateNestedManyWithoutUserInput } from '../company/company-unchecked-create-nested-many-without-user.input';
 import { Type } from 'class-transformer';
+import { VatRateUncheckedCreateNestedManyWithoutUserInput } from '../vat-rate/vat-rate-unchecked-create-nested-many-without-user.input';
+import { PaymentUncheckedCreateNestedManyWithoutUserInput } from '../payment/payment-unchecked-create-nested-many-without-user.input';
 
 @InputType()
 export class UserUncheckedCreateInput {
@@ -24,4 +26,12 @@ export class UserUncheckedCreateInput {
     @Field(() => CompanyUncheckedCreateNestedManyWithoutUserInput, {nullable:true})
     @Type(() => CompanyUncheckedCreateNestedManyWithoutUserInput)
     companies?: CompanyUncheckedCreateNestedManyWithoutUserInput;
+
+    @Field(() => VatRateUncheckedCreateNestedManyWithoutUserInput, {nullable:true})
+    @Type(() => VatRateUncheckedCreateNestedManyWithoutUserInput)
+    vatRates?: VatRateUncheckedCreateNestedManyWithoutUserInput;
+
+    @Field(() => PaymentUncheckedCreateNestedManyWithoutUserInput, {nullable:true})
+    @Type(() => PaymentUncheckedCreateNestedManyWithoutUserInput)
+    payments?: PaymentUncheckedCreateNestedManyWithoutUserInput;
 }

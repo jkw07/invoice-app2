@@ -8,6 +8,9 @@ export class VatRateCountAggregateInput {
     id?: true;
 
     @Field(() => Boolean, {nullable:true})
+    userId?: true;
+
+    @Field(() => Boolean, {nullable:true})
     type?: true;
 
     @Field(() => Boolean, {nullable:true})

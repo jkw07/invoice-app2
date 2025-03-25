@@ -18,7 +18,7 @@ export class InvoiceResolver {
     @Args('companyId', { type: () => Int }) companyId: number,
   ) {
     const userId = getUserIdFromContext(context);
-    return this.invoiceService.getInvoices(userId, companyId);
+    return this.invoiceService.getInvoicesByCompany(userId, companyId);
   }
 
   @UseGuards(GqlAuthGuard)

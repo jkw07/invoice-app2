@@ -9,6 +9,9 @@ export class PaymentCountAggregate {
     id!: number;
 
     @Field(() => Int, {nullable:false})
+    userId!: number;
+
+    @Field(() => Int, {nullable:false})
     method!: number;
 
     @Field(() => Int, {nullable:false})

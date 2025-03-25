@@ -9,6 +9,9 @@ export class PaymentMaxAggregate {
     id?: number;
 
     @Field(() => String, {nullable:true})
+    userId?: string;
+
+    @Field(() => String, {nullable:true})
     method?: string;
 
     @Field(() => Date, {nullable:true})

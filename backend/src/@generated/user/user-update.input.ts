@@ -4,6 +4,8 @@ import { StringFieldUpdateOperationsInput } from '../prisma/string-field-update-
 import { DateTimeFieldUpdateOperationsInput } from '../prisma/date-time-field-update-operations.input';
 import { CompanyUpdateManyWithoutUserNestedInput } from '../company/company-update-many-without-user-nested.input';
 import { Type } from 'class-transformer';
+import { VatRateUpdateManyWithoutUserNestedInput } from '../vat-rate/vat-rate-update-many-without-user-nested.input';
+import { PaymentUpdateManyWithoutUserNestedInput } from '../payment/payment-update-many-without-user-nested.input';
 
 @InputType()
 export class UserUpdateInput {
@@ -26,4 +28,12 @@ export class UserUpdateInput {
     @Field(() => CompanyUpdateManyWithoutUserNestedInput, {nullable:true})
     @Type(() => CompanyUpdateManyWithoutUserNestedInput)
     companies?: CompanyUpdateManyWithoutUserNestedInput;
+
+    @Field(() => VatRateUpdateManyWithoutUserNestedInput, {nullable:true})
+    @Type(() => VatRateUpdateManyWithoutUserNestedInput)
+    vatRates?: VatRateUpdateManyWithoutUserNestedInput;
+
+    @Field(() => PaymentUpdateManyWithoutUserNestedInput, {nullable:true})
+    @Type(() => PaymentUpdateManyWithoutUserNestedInput)
+    payments?: PaymentUpdateManyWithoutUserNestedInput;
 }

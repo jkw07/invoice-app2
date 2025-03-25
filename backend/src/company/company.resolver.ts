@@ -23,9 +23,21 @@ export class CompanyResolver {
 
   @UseGuards(GqlAuthGuard)
   @Query(() => [Company])
-  async getCompanies(@Context() context: { req: Request }): Promise<Company[]> {
+  async getCompaniesByUser(
+    @Context() context: { req: Request },
+  ): Promise<Company[]> {
     const userId = getUserIdFromContext(context);
-    return this.companyService.getCompanies(userId);
+    return this.companyService.getCompaniesByUser(userId);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Query(() => Company)
+  async getCompanyById(
+    @Context() context: { req: Request },
+    @Args('companyId', { type: () => Int }) companyId: number,
+  ) {
+    const userId = getUserIdFromContext(context);
+    return this.companyService.getCompanyById(userId, companyId);
   }
 
   @UseGuards(GqlAuthGuard)
