@@ -26,6 +26,7 @@ import * as redisStore from 'cache-manager-ioredis';
     CacheModule.register({
       store: redisStore,
       host: 'localhost',
+      isGlobal: true,
       port: 6379,
       ttl: 300, // domyślny czas życia (w sekundach)
     }),

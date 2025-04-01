@@ -65,6 +65,23 @@ type CompanyCount {
   settings: Int!
 }
 
+input CreateClientInput {
+  apartmentNo: String
+  bin: String
+  buildingNo: String
+  city: String
+  companyId: Int!
+  county: String
+  email: String
+  municipality: String
+  name: String!
+  phone: String
+  province: String
+  street: String
+  tin: String
+  zipCode: String
+}
+
 input CreateCompanyInput {
   apartmentNo: String
   bin: String!
@@ -98,6 +115,27 @@ input CreateInvoiceInput {
   status: Status!
   totalAmount: Float!
   transactionDate: String
+}
+
+input CreatePaymentInput {
+  method: String!
+}
+
+input CreateProductInput {
+  companyId: Int!
+  description: String
+  name: String!
+  price: Float!
+  taxRate: Float
+  taxType: VatRateType!
+  unit: String
+}
+
+input CreateSettingInput {
+  companyId: Int!
+  createdAt: DateTime
+  defaultCurrency: String!
+  exemptFromTax: String!
 }
 
 """
@@ -158,15 +196,24 @@ type InvoiceItem {
 }
 
 type Mutation {
-  addClient(apartmentNo: String, bin: String, buildingNo: String, city: String, companyId: Int!, county: String, email: String, municipality: String, name: String!, phone: String, province: String, street: String, tin: String, zipCode: String): Client!
+  addClient(data: CreateClientInput!): Client!
   addInvoice(data: CreateInvoiceInput!): Invoice!
+  addProduct(data: CreateProductInput!): Product!
+  addSetting(data: CreateSettingInput!): Setting!
   createCompany(data: CreateCompanyInput!): Company!
+  createPaymentMethod(data: CreatePaymentInput!): Payment!
   deleteClient(clientId: Int!): Client!
   deleteCompany(companyId: Int!): Company!
   deleteInvoice(invoiceId: Int!): Invoice!
+  deletePaymentMethod(paymentId: Int!): Payment!
+  deleteProduct(productId: Int!): Product!
+  deleteSetting(settingId: Int!): Setting!
   updateClient(clientId: Int!, data: UpdateClientInput!): Client!
   updateCompany(companyId: Int!, data: UpdateCompanyInput!): Company!
   updateInvoice(data: UpdateInvoiceInput!, invoiceId: Int!): Invoice!
+  updatePaymentMethod(data: UpdatePaymentInput!, paymentId: Int!): Payment!
+  updateProduct(data: UpdateProductInput!, productId: Int!): Product!
+  updateSetting(data: UpdateSettingInput!, settingId: Int!): Setting!
 }
 
 type Payment {
@@ -175,6 +222,8 @@ type Payment {
   id: ID!
   invoices: [Invoice!]
   method: String!
+  user: User
+  userId: String
 }
 
 type PaymentCount {
@@ -203,10 +252,17 @@ type ProductCount {
 
 type Query {
   getClientById(clientId: Int!): Client!
-  getClients(companyId: Int!): [Client!]!
-  getCompanies: [Company!]!
+  getClientsByCompany(companyId: Int!): [Client!]!
+  getCompaniesByUser: [Company!]!
+  getCompanyById(companyId: Int!): Company!
   getInvoiceById(invoiceId: Int!): Invoice!
   getInvoices(companyId: Int!): [Invoice!]!
+  getPaymentMethodById(paymentId: Int!): Payment!
+  getPaymentMethodsByUser: [Payment!]!
+  getProductById(productId: Int!): Product!
+  getProductsByCompany(companyId: Int!): [Product!]!
+  getSettingById(settingId: Int!): Setting!
+  getSettingsByCompany(companyId: Int!): [Client!]!
 }
 
 type Reminder {
@@ -292,6 +348,25 @@ input UpdateInvoiceInput {
   transactionDate: String
 }
 
+input UpdatePaymentInput {
+  method: String
+}
+
+input UpdateProductInput {
+  description: String
+  name: String
+  price: Float
+  status: VatRateType
+  taxRate: Float
+  unit: String
+}
+
+input UpdateSettingInput {
+  createdAt: DateTime
+  defaultCurrency: String
+  exemptFromTax: String
+}
+
 type User {
   _count: UserCount!
   companies: [Company!]
@@ -299,11 +374,24 @@ type User {
   email: String!
   id: ID!
   password_hash: String!
+  payments: [Payment!]
   updatedAt: DateTime!
+  vatRates: [VatRate!]
 }
 
 type UserCount {
   companies: Int!
+  payments: Int!
+  vatRates: Int!
+}
+
+type VatRate {
+  createdAt: DateTime!
+  id: ID!
+  rate: Decimal
+  type: VatRateType!
+  user: User
+  userId: String
 }
 
 enum VatRateType {
