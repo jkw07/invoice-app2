@@ -26,9 +26,10 @@ export class InvoiceResolver {
   async getInvoiceById(
     @Context() context: { req: Request },
     @Args('invoiceId', { type: () => Int }) invoiceId: number,
+    @Args('companyId', { type: () => Int }) companyId: number,
   ) {
     const userId = getUserIdFromContext(context);
-    return this.invoiceService.getInvoiceById(userId, invoiceId);
+    return this.invoiceService.getInvoiceById(userId, invoiceId, companyId);
   }
 
   @UseGuards(GqlAuthGuard)

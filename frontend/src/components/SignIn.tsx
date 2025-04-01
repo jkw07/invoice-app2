@@ -14,17 +14,19 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useState } from "react";
 import { useNavigation } from "../hooks/useNavigation";
-import logo from "../../public/assets/logo/logo1mini.png";
+import logo from "../assets/logo1mini.png";
 import { ForgotPassword } from "./ForgotPassword";
 import { SignUp } from "./SignUp";
-import { loginUser } from "../services/authService";
+import { useMutation } from "@apollo/client";
+import { LOGIN_MUTATION } from "../graphql/auth-queries";
+import { useUserStore } from "../store/currentUserStore";
 
 export const SignIn = () => {
   const [state, setState] = useState({
     email: "",
     password: "",
-    showPassword: false,
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [forgotPasswordDialogOpen, setForgotPasswordDialogOpen] =
     useState(false);
@@ -32,6 +34,7 @@ export const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [loginAlert, setLoginAlert] = useState<string | null>(null);
   const { goToInvoicesModule } = useNavigation();
+  const [login] = useMutation(LOGIN_MUTATION);
 
   const handleOpenPasswordReminder = () => {
     setForgotPasswordDialogOpen(true);
@@ -50,7 +53,7 @@ export const SignIn = () => {
   };
 
   const togglePasswordVisibility = () => {
-    setState((prev) => ({ ...prev, showPassword: !prev.showPassword }));
+    setShowPassword((prev) => !prev);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,7 +67,17 @@ export const SignIn = () => {
     setLoading(true);
     setLoginAlert(null);
     try {
-      await loginUser(state.email, state.password);
+      const res = await login({ variables: { data: state } });
+      const token = res.data.login.accessToken;
+      localStorage.setItem("accessToken", token);
+      const userFromToken = JSON.parse(atob(token.split(".")[1])) as {
+        sub: string;
+        email: string;
+      };
+      useUserStore.getState().setUser({
+        id: userFromToken.sub,
+        email: userFromToken.email,
+      });
       goToInvoicesModule();
     } catch (error) {
       console.error("Login failed: ", error);
@@ -72,8 +85,8 @@ export const SignIn = () => {
       setState({
         email: "",
         password: "",
-        showPassword: false,
       });
+      setShowPassword(false);
     } finally {
       setLoading(false);
     }
@@ -118,7 +131,7 @@ export const SignIn = () => {
             label="Hasło"
             margin="normal"
             name="password"
-            type={state.showPassword ? "text" : "password"}
+            type={showPassword ? "text" : "password"}
             variant="outlined"
             autoComplete="current-password"
             required
@@ -130,7 +143,7 @@ export const SignIn = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton onClick={togglePasswordVisibility} edge="end">
-                      {state.showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),

@@ -32,6 +32,15 @@ export class CompanyResolver {
 
   @UseGuards(GqlAuthGuard)
   @Query(() => Company)
+  async getDefaultCompanyByUser(
+    @Context() context: { req: Request },
+  ): Promise<Company> {
+    const userId = getUserIdFromContext(context);
+    return this.companyService.getDefaultCompanyByUser(userId);
+  }
+
+  @UseGuards(GqlAuthGuard)
+  @Query(() => Company)
   async getCompanyById(
     @Context() context: { req: Request },
     @Args('companyId', { type: () => Int }) companyId: number,

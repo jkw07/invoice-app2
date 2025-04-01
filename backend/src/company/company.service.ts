@@ -16,6 +16,15 @@ export class CompanyService {
     return this.companyRepository.getCompaniesByUser(userId);
   }
 
+  async getDefaultCompanyByUser(userId: string): Promise<Company> {
+    const company =
+      await this.companyRepository.getDefaultCompanyByUser(userId);
+    if (!company) {
+      throw new ForbiddenException('Company not found');
+    }
+    return company;
+  }
+
   async getCompanyById(userId: string, companyId: number): Promise<Company> {
     const company = await this.companyRepository.getCompanyById(companyId);
     if (!company) {

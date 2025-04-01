@@ -13,22 +13,11 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 @Injectable()
 export class InvoiceService {
   constructor(
-    @Inject(CACHE_MANAGER) private cache: Cache,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly invoiceRepository: InvoiceRepository,
   ) {}
 
-  async addInvoice(userId: string, data: CreateInvoiceInput) {
-    const hasAccess = await this.invoiceRepository.checkUserCompanyAccess(
-      userId,
-      data.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
-    return this.invoiceRepository.addInvoice(data);
-  }
-
-  async getInvoicesByCompany(userId: string, companyId: number) {
+  private async checkAccessOrThrow(userId: string, companyId: number) {
     const hasAccess = await this.invoiceRepository.checkUserCompanyAccess(
       userId,
       companyId,
@@ -36,35 +25,44 @@ export class InvoiceService {
     if (!hasAccess) {
       throw new ForbiddenException('You do not have access to this company');
     }
+  }
+
+  async addInvoice(userId: string, data: CreateInvoiceInput) {
+    await this.checkAccessOrThrow(userId, data.companyId);
+    await this.cacheManager.del(`invoiceList:${userId}:${data.companyId}`);
+    return this.invoiceRepository.addInvoice(data);
+  }
+
+  async getInvoicesByCompany(userId: string, companyId: number) {
+    await this.checkAccessOrThrow(userId, companyId);
+    const cacheKey = `invoiceList:${userId}:${companyId}`;
+    const cached = await this.cacheManager.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
     const invoices =
       await this.invoiceRepository.getInvoicesByCompany(companyId);
-
     for (const invoice of invoices) {
-      const key = `invoice:${userId}:${invoice.id}`;
-      await this.cache.set(key, invoice, 300);
+      const itemKey = `invoice:${userId}:${invoice.companyId}:${invoice.id}`;
+      await this.cacheManager.set(itemKey, invoice, 300);
     }
-
+    await this.cacheManager.set(cacheKey, invoices, 300);
     return invoices;
   }
 
-  async getInvoiceById(userId: string, invoiceId: number) {
-    const cacheKey = `invoice:${userId}:${invoiceId}`;
-    const cached = await this.cache.get(cacheKey);
+  async getInvoiceById(userId: string, invoiceId: number, companyId: number) {
+    const cacheKey = `invoice:${userId}:${companyId}:${invoiceId}`;
+    const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
+      await this.checkAccessOrThrow(userId, companyId);
       return cached;
     }
     const invoice = await this.invoiceRepository.getInvoiceById(invoiceId);
     if (!invoice) {
       throw new NotFoundException('Invoice not found');
     }
-    const hasAccess = await this.invoiceRepository.checkUserCompanyAccess(
-      userId,
-      invoice.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
-    await this.cache.set(cacheKey, invoice, 300);
+    await this.checkAccessOrThrow(userId, invoice.companyId);
+    await this.cacheManager.set(cacheKey, invoice, 300);
     return invoice;
   }
 
@@ -73,15 +71,12 @@ export class InvoiceService {
     if (!invoice) {
       throw new NotFoundException('Invoice not found');
     }
-    const hasAccess = await this.invoiceRepository.checkUserCompanyAccess(
-      userId,
-      invoice.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, invoice.companyId);
     const result = await this.invoiceRepository.deleteInvoice(invoiceId);
-    await this.cache.del(`invoice:${userId}:${invoiceId}`);
+    await this.cacheManager.del(
+      `invoice:${userId}:${invoice.companyId}:${invoice.id}`,
+    );
+    await this.cacheManager.del(`invoiceList:${userId}:${invoice.companyId}`);
     return result;
   }
 
@@ -94,15 +89,12 @@ export class InvoiceService {
     if (!invoice) {
       throw new NotFoundException('Invoice not found');
     }
-    const hasAccess = await this.invoiceRepository.checkUserCompanyAccess(
-      userId,
-      invoice.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, invoice.companyId);
     const updated = await this.invoiceRepository.updateInvoice(invoiceId, data);
-    await this.cache.del(`invoice:${userId}:${invoiceId}`);
+    await this.cacheManager.del(
+      `invoice:${userId}:${invoice.companyId}:${invoice.id}`,
+    );
+    await this.cacheManager.del(`invoiceList:${userId}:${invoice.companyId}`);
     return updated;
   }
 }

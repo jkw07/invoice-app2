@@ -2,6 +2,15 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type AppUser {
+  email: String!
+  id: ID!
+}
+
+type AuthPayload {
+  accessToken: String!
+}
+
 type Client {
   _count: ClientCount!
   apartmentNo: String
@@ -195,6 +204,11 @@ type InvoiceItem {
   unitPrice: Decimal!
 }
 
+input LoginInput {
+  email: String!
+  password: String!
+}
+
 type Mutation {
   addClient(data: CreateClientInput!): Client!
   addInvoice(data: CreateInvoiceInput!): Invoice!
@@ -208,6 +222,9 @@ type Mutation {
   deletePaymentMethod(paymentId: Int!): Payment!
   deleteProduct(productId: Int!): Product!
   deleteSetting(settingId: Int!): Setting!
+  login(data: LoginInput!): AuthPayload!
+  logout: Boolean!
+  register(data: RegisterInput!): AuthPayload!
   updateClient(clientId: Int!, data: UpdateClientInput!): Client!
   updateCompany(companyId: Int!, data: UpdateCompanyInput!): Company!
   updateInvoice(data: UpdateInvoiceInput!, invoiceId: Int!): Invoice!
@@ -255,7 +272,8 @@ type Query {
   getClientsByCompany(companyId: Int!): [Client!]!
   getCompaniesByUser: [Company!]!
   getCompanyById(companyId: Int!): Company!
-  getInvoiceById(invoiceId: Int!): Invoice!
+  getDefaultCompanyByUser: Company!
+  getInvoiceById(companyId: Int!, invoiceId: Int!): Invoice!
   getInvoices(companyId: Int!): [Invoice!]!
   getPaymentMethodById(paymentId: Int!): Payment!
   getPaymentMethodsByUser: [Payment!]!
@@ -263,6 +281,12 @@ type Query {
   getProductsByCompany(companyId: Int!): [Product!]!
   getSettingById(settingId: Int!): Setting!
   getSettingsByCompany(companyId: Int!): [Client!]!
+  me: AppUser!
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
 }
 
 type Reminder {

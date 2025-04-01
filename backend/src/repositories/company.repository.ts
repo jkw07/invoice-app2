@@ -16,6 +16,12 @@ export class CompanyRepository {
     });
   }
 
+  async getDefaultCompanyByUser(userId: string) {
+    return this.prisma.company.findFirst({
+      where: { userId },
+    });
+  }
+
   async getCompaniesByUser(userId: string) {
     return this.prisma.company.findMany({
       where: { userId },

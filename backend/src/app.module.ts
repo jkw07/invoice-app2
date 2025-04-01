@@ -12,6 +12,7 @@ import { SettingModule } from './setting/setting.module';
 import { ProductModule } from './product/product.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-ioredis';
+import { UserModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -28,7 +29,7 @@ import * as redisStore from 'cache-manager-ioredis';
       host: 'localhost',
       isGlobal: true,
       port: 6379,
-      ttl: 300, // domyślny czas życia (w sekundach)
+      ttl: 300,
     }),
     PrismaModule,
     AuthModule,
@@ -38,6 +39,7 @@ import * as redisStore from 'cache-manager-ioredis';
     PaymentModule,
     SettingModule,
     ProductModule,
+    UserModule,
   ],
 })
 export class AppModule {}
