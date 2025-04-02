@@ -8,6 +8,16 @@ import { CompanyRepository } from '../repositories/company.repository';
 export class CompanyService {
   constructor(private readonly companyRepository: CompanyRepository) {}
 
+  private async checkAccessOrThrow(userId: string, companyId: number) {
+    const hasAccess = await this.companyRepository.checkUserCompanyAccess(
+      userId,
+      companyId,
+    );
+    if (!hasAccess) {
+      throw new ForbiddenException('You do not have access to this company');
+    }
+  }
+
   async createCompany(userId: string, data: CreateCompanyInput) {
     return this.companyRepository.createCompany(userId, data);
   }

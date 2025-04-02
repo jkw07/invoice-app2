@@ -11,18 +11,7 @@ import { SettingRepository } from '../repositories/setting.repository';
 export class SettingService {
   constructor(private readonly settingRepository: SettingRepository) {}
 
-  async addSetting(userId: string, data: CreateSettingInput) {
-    const hasAccess = await this.settingRepository.checkUserCompanyAccess(
-      userId,
-      data.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
-    return this.settingRepository.addSetting(data);
-  }
-
-  async getSettingsByCompany(userId: string, companyId: number) {
+  private async checkAccessOrThrow(userId: string, companyId: number) {
     const hasAccess = await this.settingRepository.checkUserCompanyAccess(
       userId,
       companyId,
@@ -30,6 +19,15 @@ export class SettingService {
     if (!hasAccess) {
       throw new ForbiddenException('You do not have access to this company');
     }
+  }
+
+  async addSetting(userId: string, data: CreateSettingInput) {
+    await this.checkAccessOrThrow(userId, data.companyId);
+    return this.settingRepository.addSetting(data);
+  }
+
+  async getSettingsByCompany(userId: string, companyId: number) {
+    await this.checkAccessOrThrow(userId, companyId);
     return this.settingRepository.getSettingsByCompany(companyId);
   }
 
@@ -40,13 +38,7 @@ export class SettingService {
       throw new NotFoundException('Setting not found');
     }
 
-    const hasAccess = await this.settingRepository.checkUserCompanyAccess(
-      userId,
-      setting.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, setting.companyId);
 
     return setting;
   }
@@ -56,13 +48,7 @@ export class SettingService {
     if (!setting) {
       throw new NotFoundException('Setting not found');
     }
-    const hasAccess = await this.settingRepository.checkUserCompanyAccess(
-      userId,
-      setting.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, setting.companyId);
     return this.settingRepository.deleteSetting(settingId);
   }
 
@@ -75,13 +61,7 @@ export class SettingService {
     if (!setting) {
       throw new NotFoundException('Setting not found');
     }
-    const hasAccess = await this.settingRepository.checkUserCompanyAccess(
-      userId,
-      setting.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, setting.companyId);
 
     return this.settingRepository.updateSetting(settingId, data);
   }

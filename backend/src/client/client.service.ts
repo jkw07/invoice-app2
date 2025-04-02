@@ -11,18 +11,7 @@ import { ClientRepository } from '../repositories/client.repository';
 export class ClientService {
   constructor(private readonly clientRepository: ClientRepository) {}
 
-  async addClient(userId: string, data: CreateClientInput) {
-    const hasAccess = await this.clientRepository.checkUserCompanyAccess(
-      userId,
-      data.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
-    return this.clientRepository.addClient(data);
-  }
-
-  async getClientsByCompany(userId: string, companyId: number) {
+  private async checkAccessOrThrow(userId: string, companyId: number) {
     const hasAccess = await this.clientRepository.checkUserCompanyAccess(
       userId,
       companyId,
@@ -30,6 +19,15 @@ export class ClientService {
     if (!hasAccess) {
       throw new ForbiddenException('You do not have access to this company');
     }
+  }
+
+  async addClient(userId: string, data: CreateClientInput) {
+    await this.checkAccessOrThrow(userId, data.companyId);
+    return this.clientRepository.addClient(data);
+  }
+
+  async getClientsByCompany(userId: string, companyId: number) {
+    await this.checkAccessOrThrow(userId, companyId);
     return this.clientRepository.getClientsByCompany(companyId);
   }
 
@@ -40,13 +38,7 @@ export class ClientService {
       throw new NotFoundException('Client not found');
     }
 
-    const hasAccess = await this.clientRepository.checkUserCompanyAccess(
-      userId,
-      client.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, client.companyId);
 
     return client;
   }
@@ -56,13 +48,7 @@ export class ClientService {
     if (!client) {
       throw new NotFoundException('Client not found');
     }
-    const hasAccess = await this.clientRepository.checkUserCompanyAccess(
-      userId,
-      client.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, client.companyId);
     return this.clientRepository.deleteClient(clientId);
   }
 
@@ -75,13 +61,7 @@ export class ClientService {
     if (!client) {
       throw new NotFoundException('Client not found');
     }
-    const hasAccess = await this.clientRepository.checkUserCompanyAccess(
-      userId,
-      client.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, client.companyId);
 
     return this.clientRepository.updateClient(clientId, data);
   }

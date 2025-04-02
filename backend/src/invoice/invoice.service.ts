@@ -35,7 +35,7 @@ export class InvoiceService {
 
   async getInvoicesByCompany(userId: string, companyId: number) {
     await this.checkAccessOrThrow(userId, companyId);
-    const cacheKey = `invoiceList:${userId}:${companyId}`;
+    const cacheKey = `${userId}:invoiceList:${companyId}`;
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
       return cached;
@@ -43,7 +43,7 @@ export class InvoiceService {
     const invoices =
       await this.invoiceRepository.getInvoicesByCompany(companyId);
     for (const invoice of invoices) {
-      const itemKey = `invoice:${userId}:${invoice.companyId}:${invoice.id}`;
+      const itemKey = `${userId}:invoice:${invoice.companyId}:${invoice.id}`;
       await this.cacheManager.set(itemKey, invoice, 300);
     }
     await this.cacheManager.set(cacheKey, invoices, 300);

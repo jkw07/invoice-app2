@@ -22,6 +22,7 @@ export const InvoicesList = () => {
   return (
     <>
       <h1>Lista faktur</h1>
+      <h2>Firma: {companyId}</h2>
       <button onClick={goToNewInvoice}>Dodaj nową fakturę</button>
     </>
   );

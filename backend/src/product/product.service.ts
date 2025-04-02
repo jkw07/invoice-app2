@@ -11,18 +11,7 @@ import { ProductRepository } from '../repositories/product.repository';
 export class ProductService {
   constructor(private readonly productRepository: ProductRepository) {}
 
-  async addProduct(userId: string, data: CreateProductInput) {
-    const hasAccess = await this.productRepository.checkUserCompanyAccess(
-      userId,
-      data.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
-    return this.productRepository.addProduct(data);
-  }
-
-  async getProductsByCompany(userId: string, companyId: number) {
+  private async checkAccessOrThrow(userId: string, companyId: number) {
     const hasAccess = await this.productRepository.checkUserCompanyAccess(
       userId,
       companyId,
@@ -30,6 +19,15 @@ export class ProductService {
     if (!hasAccess) {
       throw new ForbiddenException('You do not have access to this company');
     }
+  }
+
+  async addProduct(userId: string, data: CreateProductInput) {
+    await this.checkAccessOrThrow(userId, data.companyId);
+    return this.productRepository.addProduct(data);
+  }
+
+  async getProductsByCompany(userId: string, companyId: number) {
+    await this.checkAccessOrThrow(userId, companyId);
     return this.productRepository.getProductsByCompany(companyId);
   }
 
@@ -40,13 +38,7 @@ export class ProductService {
       throw new NotFoundException('Product not found');
     }
 
-    const hasAccess = await this.productRepository.checkUserCompanyAccess(
-      userId,
-      product.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, product.companyId);
 
     return product;
   }
@@ -56,13 +48,7 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException('Client not found');
     }
-    const hasAccess = await this.productRepository.checkUserCompanyAccess(
-      userId,
-      product.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, product.companyId);
     return this.productRepository.deleteProduct(productId);
   }
 
@@ -75,13 +61,7 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException('Product not found');
     }
-    const hasAccess = await this.productRepository.checkUserCompanyAccess(
-      userId,
-      product.companyId,
-    );
-    if (!hasAccess) {
-      throw new ForbiddenException('You do not have access to this company');
-    }
+    await this.checkAccessOrThrow(userId, product.companyId);
 
     return this.productRepository.updateProduct(productId, data);
   }
