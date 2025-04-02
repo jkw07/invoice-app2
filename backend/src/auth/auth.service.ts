@@ -4,12 +4,29 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { User as PrismaUser } from '@prisma/client';
 
+interface JwtPayload {
+  sub: string;
+  email: string;
+}
+
 @Injectable()
 export class AuthService {
   constructor(
     private prisma: PrismaService,
     private jwt: JwtService,
   ) {}
+
+  private createAccessToken(payload: JwtPayload): string {
+    return this.jwt.sign(payload, {
+      expiresIn: '1h',
+    });
+  }
+
+  private createRefreshToken(payload: JwtPayload): string {
+    return this.jwt.sign(payload, {
+      expiresIn: '7d',
+    });
+  }
 
   async validateUser(
     email: string,
@@ -29,8 +46,10 @@ export class AuthService {
 
   login(user: PrismaUser) {
     const payload = { sub: user.id, email: user.email };
-    const token = this.jwt.sign(payload);
-    return { accessToken: token };
+    return {
+      accessToken: this.createAccessToken(payload),
+      refreshToken: this.createRefreshToken(payload),
+    };
   }
 
   async register(data: { email: string; password: string }) {
@@ -54,5 +73,22 @@ export class AuthService {
   logout() {
     // uniewaznić token - blacklista
     return true;
+  }
+  async refreshToken(oldRefreshToken: string) {
+    try {
+      const decoded = this.jwt.verify<JwtPayload>(oldRefreshToken, {
+        secret: process.env.JWT_SECRET,
+      });
+
+      const user = await this.prisma.user.findUnique({
+        where: { id: decoded.sub },
+      });
+
+      if (!user) throw new UnauthorizedException('Invalid token');
+
+      return this.login(user);
+    } catch {
+      throw new UnauthorizedException('Token expired or invalid');
+    }
   }
 }

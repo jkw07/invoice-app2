@@ -9,13 +9,45 @@ import { setContext } from "@apollo/client/link/context";
 import { paths } from "../utils/paths";
 import { useSnackbarStore } from "../store/snackbarStore";
 import { useUserStore } from "../store/currentUserStore";
+import { clearTokens, getAccessToken } from "../utils/tokenStorage";
+import { refreshAccessToken } from "../api/refreshAccessToken";
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_GRAPHQL_ENDPOINT,
 });
 
-const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem("accessToken");
+let isRefreshing = false;
+let pendingRequests: (() => void)[] = [];
+
+const resolvePendingRequests = () => {
+  pendingRequests.forEach((callback) => callback());
+  pendingRequests = [];
+};
+
+const authLink = setContext(async (_, { headers }) => {
+  let token = getAccessToken();
+  if (!token && !isRefreshing) {
+    isRefreshing = true;
+
+    try {
+      token = await refreshAccessToken();
+      resolvePendingRequests();
+    } catch (err) {
+      console.error(err);
+      pendingRequests = [];
+      clearTokens();
+    } finally {
+      isRefreshing = false;
+    }
+  }
+
+  if (!token && isRefreshing) {
+    await new Promise<void>((resolve) => {
+      pendingRequests.push(resolve);
+    });
+    token = getAccessToken();
+  }
+
   return {
     headers: {
       ...headers,

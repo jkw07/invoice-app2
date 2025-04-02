@@ -19,7 +19,7 @@ import { ForgotPassword } from "./ForgotPassword";
 import { SignUp } from "./SignUp";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/auth-queries";
-import { useUserStore } from "../store/currentUserStore";
+import { handleGraphqlLogin } from "../services/authService";
 
 export const SignIn = () => {
   const [state, setState] = useState({
@@ -68,16 +68,8 @@ export const SignIn = () => {
     setLoginAlert(null);
     try {
       const res = await login({ variables: { data: state } });
-      const token = res.data.login.accessToken;
-      localStorage.setItem("accessToken", token);
-      const userFromToken = JSON.parse(atob(token.split(".")[1])) as {
-        sub: string;
-        email: string;
-      };
-      useUserStore.getState().setUser({
-        id: userFromToken.sub,
-        email: userFromToken.email,
-      });
+      const { accessToken, refreshToken } = res.data.login;
+      handleGraphqlLogin({ accessToken, refreshToken }, rememberMe);
       goToInvoicesModule();
     } catch (error) {
       console.error("Login failed: ", error);
@@ -120,7 +112,7 @@ export const SignIn = () => {
             name="email"
             variant="outlined"
             fullWidth
-            autoComplete="email"
+            autoComplete="username"
             type="email"
             autoFocus
             value={state.email}

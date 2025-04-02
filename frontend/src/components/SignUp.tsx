@@ -9,10 +9,12 @@ import {
   IconButton,
   InputAdornment,
   TextField,
+  Alert,
 } from "@mui/material";
 import { ClipboardPen } from "lucide-react";
 import { useState } from "react";
-import { registerUser } from "../services/authService";
+import { REGISTER_MUTATION } from "../graphql/auth-queries";
+import { useMutation } from "@apollo/client";
 
 interface SignUpProps {
   open: boolean;
@@ -26,6 +28,11 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
     showPassword: false,
   });
   const [loading, setLoading] = useState(false);
+  const [register] = useMutation(REGISTER_MUTATION);
+  const [registerError, setRegisterError] = useState({
+    error: false,
+    message: "",
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState((prev) => ({
@@ -40,11 +47,19 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
 
   const handleRegister = async () => {
     setLoading(true);
+    setRegisterError({
+      error: false,
+      message: "",
+    });
     try {
-      await registerUser(state.email, state.password);
+      await register({ variables: { data: state } });
       handleClose();
     } catch (error) {
       console.error("Registration failed: ", error);
+      setRegisterError({
+        error: true,
+        message: (error as Error).message || "An unknown error occurred",
+      });
     } finally {
       setLoading(false);
     }
@@ -75,6 +90,11 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
       >
         <DialogContentText>
           Wpisz swój adres email oraz zdefiniuj hasło.
+          {registerError.error && (
+            <Alert severity="error">
+              Rejestracja nie powiodła się: {registerError.message}
+            </Alert>
+          )}
         </DialogContentText>
         <TextField
           required
@@ -84,7 +104,7 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
           variant="outlined"
           type="email"
           fullWidth
-          autoComplete="email"
+          autoComplete="username"
           autoFocus
           value={state.email}
           onChange={handleChange}
@@ -95,7 +115,7 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
           name="password"
           type={state.showPassword ? "text" : "password"}
           variant="outlined"
-          autoComplete="current-password"
+          autoComplete="new-password"
           required
           fullWidth
           value={state.password}

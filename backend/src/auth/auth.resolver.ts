@@ -24,4 +24,8 @@ export class AuthResolver {
   logout() {
     return this.authService.logout();
   }
+  @Mutation(() => AuthPayload)
+  async refreshToken(@Args('refreshToken') refreshToken: string) {
+    return this.authService.refreshToken(refreshToken);
+  }
 }
