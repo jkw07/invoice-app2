@@ -15,6 +15,9 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ApolloProvider } from "@apollo/client";
 import { apolloClient } from "./services/apolloClient";
 import { AppSnackbar } from "./components/AppSnackbar";
+import { IdleTimer } from "./components/IdleTimer";
+
+//TODO zapamietaj
 
 export const App = () => {
   const theme = createTheme({}, plPL);
@@ -23,6 +26,7 @@ export const App = () => {
       <ThemeProvider theme={theme}>
         <Router>
           <AppSnackbar />
+          <IdleTimer />
           <Routes>
             <Route path={paths.HOME} element={<MainHomePage />} />
             <Route

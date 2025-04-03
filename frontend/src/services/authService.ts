@@ -25,5 +25,5 @@ export const handleGraphqlLogin = (tokens: LoginData, rememberMe: boolean) => {
 export const logoutUser = () => {
   clearTokens();
   useUserStore.getState().setUser(null);
-  useUserStore.getState().setCompanyId(null);
+  useUserStore.getState().setCompany(null);
 };

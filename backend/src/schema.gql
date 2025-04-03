@@ -9,6 +9,7 @@ type AppUser {
 
 type AuthPayload {
   accessToken: String!
+  refreshToken: String!
 }
 
 type Client {
@@ -224,6 +225,7 @@ type Mutation {
   deleteSetting(settingId: Int!): Setting!
   login(data: LoginInput!): AuthPayload!
   logout: Boolean!
+  refreshToken(refreshToken: String!): AuthPayload!
   register(data: RegisterInput!): AuthPayload!
   updateClient(clientId: Int!, data: UpdateClientInput!): Client!
   updateCompany(companyId: Int!, data: UpdateCompanyInput!): Company!

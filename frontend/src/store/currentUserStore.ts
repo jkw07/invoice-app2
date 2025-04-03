@@ -5,11 +5,16 @@ type User = {
   email: string;
 };
 
+type Company = {
+  id: number;
+  name: string;
+};
+
 interface UserState {
   user: User | null;
-  companyId: number | null;
+  company: Company | null;
   setUser: (user: User | null) => void;
-  setCompanyId: (companyId: number | null) => void;
+  setCompany: (company: Company | null) => void;
 }
 
 const getUserFromStorage = (): User | null => {
@@ -17,14 +22,14 @@ const getUserFromStorage = (): User | null => {
   return stored ? JSON.parse(stored) : null;
 };
 
-const getCompanyFromStorage = (): number | null => {
-  const stored = localStorage.getItem("companyId");
+const getCompanyFromStorage = (): Company | null => {
+  const stored = localStorage.getItem("company");
   return stored ? JSON.parse(stored) : null;
 };
 
 export const useUserStore = create<UserState>((set) => ({
   user: getUserFromStorage(),
-  companyId: getCompanyFromStorage(),
+  company: getCompanyFromStorage(),
   setUser: (user) => {
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
@@ -33,12 +38,12 @@ export const useUserStore = create<UserState>((set) => ({
     }
     set({ user });
   },
-  setCompanyId: (companyId) => {
-    if (companyId) {
-      localStorage.setItem("companyId", JSON.stringify(companyId));
+  setCompany: (company) => {
+    if (company) {
+      localStorage.setItem("company", JSON.stringify(company));
     } else {
-      localStorage.removeItem("companyId");
+      localStorage.removeItem("company");
     }
-    set({ companyId });
+    set({ company });
   },
 }));

@@ -29,7 +29,7 @@ export class InvoiceService {
 
   async addInvoice(userId: string, data: CreateInvoiceInput) {
     await this.checkAccessOrThrow(userId, data.companyId);
-    await this.cacheManager.del(`invoiceList:${userId}:${data.companyId}`);
+    await this.cacheManager.del(`${userId}invoiceList:${data.companyId}`);
     return this.invoiceRepository.addInvoice(data);
   }
 
@@ -43,7 +43,7 @@ export class InvoiceService {
     const invoices =
       await this.invoiceRepository.getInvoicesByCompany(companyId);
     for (const invoice of invoices) {
-      const itemKey = `${userId}:invoice:${invoice.companyId}:${invoice.id}`;
+      const itemKey = `${userId}:invoice:${invoice.companyId}:${invoice.id}`; //GOWNO
       await this.cacheManager.set(itemKey, invoice, 300);
     }
     await this.cacheManager.set(cacheKey, invoices, 300);
@@ -51,7 +51,7 @@ export class InvoiceService {
   }
 
   async getInvoiceById(userId: string, invoiceId: number, companyId: number) {
-    const cacheKey = `invoice:${userId}:${companyId}:${invoiceId}`;
+    const cacheKey = `${userId}:invoice:${companyId}:${invoiceId}`;
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
       await this.checkAccessOrThrow(userId, companyId);

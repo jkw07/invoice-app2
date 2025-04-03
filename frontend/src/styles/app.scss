@@ -62,8 +62,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 70px;
-  height: 70px;
+  width: 50px;
+  height: 50px;
   border: none;
   background: none;
   color: $primary-background-color;
@@ -105,15 +105,15 @@
 
 .content {
   flex-grow: 1;
-  padding-left: 40px;
   text-align: left;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  padding: 0 40px 10px 40px;
 }
 
 .sidebar-logo {
-  width: 120px;
+  width: 80px;
   margin: 15px 0;
   img {
     width: 100%;
@@ -137,4 +137,32 @@
   gap: 10px;
   text-align: center;
   margin-top: 20px;
+}
+
+.topbar {
+  display: flex;
+  text-align: left;
+  align-items: flex-start;
+  gap: 20px;
+  padding-top: 20px;
+  color: $primary-blue;
+  padding: 25px 40px 25px 40px;
+}
+
+.topbar-nav{
+  color: $logo-dark-blue; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50px;
+  button {
+    gap: 10px;
+    display: flex;
+  justify-content: center;
+  align-items: center;
+  }
+}
+
+.main-content {
+  width: 100%;
 }

@@ -63,9 +63,11 @@ const errorLink = onError(({ graphQLErrors }) => {
         err.extensions?.code === "UNAUTHENTICATED" ||
         err.message.includes("Unauthorized")
       ) {
-        localStorage.removeItem("accessToken");
+        clearTokens();
         localStorage.removeItem("user");
+        localStorage.removeItem("companyId");
         useUserStore.getState().setUser(null);
+        useUserStore.getState().setCompany(null);
         useSnackbarStore
           .getState()
           .showSnackbar("Użytkownik został wylogowany.", "warning");
