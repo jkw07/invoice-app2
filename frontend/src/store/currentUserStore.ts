@@ -7,7 +7,7 @@ type User = {
 
 type Company = {
   id: number;
-  name: string;
+  fullName: string;
 };
 
 interface UserState {
@@ -15,6 +15,7 @@ interface UserState {
   company: Company | null;
   setUser: (user: User | null) => void;
   setCompany: (company: Company | null) => void;
+  replaceCompany: (company: Company | null) => void;
 }
 
 const getUserFromStorage = (): User | null => {
@@ -40,6 +41,15 @@ export const useUserStore = create<UserState>((set) => ({
   },
   setCompany: (company) => {
     if (company) {
+      localStorage.setItem("company", JSON.stringify(company));
+    } else {
+      localStorage.removeItem("company");
+    }
+    set({ company });
+  },
+  replaceCompany: (company) => {
+    if (company) {
+      localStorage.removeItem("company");
       localStorage.setItem("company", JSON.stringify(company));
     } else {
       localStorage.removeItem("company");
