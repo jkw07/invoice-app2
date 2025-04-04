@@ -11,7 +11,7 @@ import {
 import { ROUTES } from "../config/routes";
 import { logoutUser } from "../services/authService";
 import logo from "../../public/assets/logo/logo1sidebar.png";
-import { LOGOUT_MUTATION } from "../graphql/auth-queries";
+import { LOGOUT_MUTATION } from "../graphql/mutations/authMutations";
 import { useMutation } from "@apollo/client";
 
 export const Sidebar = () => {

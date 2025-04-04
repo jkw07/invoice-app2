@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { ClipboardPen } from "lucide-react";
 import { useState } from "react";
-import { REGISTER_MUTATION } from "../graphql/auth-queries";
+import { REGISTER_MUTATION } from "../graphql/mutations/authMutations";
 import { useMutation } from "@apollo/client";
 
 interface SignUpProps {

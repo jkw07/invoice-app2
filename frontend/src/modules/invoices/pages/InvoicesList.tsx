@@ -1,7 +1,7 @@
 import { useInvoicesNavigation } from "../hooks/useInvoicesNavigation";
 import { useEffect } from "react";
 import { useQuery } from "@apollo/client";
-import { GET_DEFAULT_COMPANY } from "../../../graphql/company-queries";
+import { GET_DEFAULT_COMPANY } from "../../../graphql/queries/companyQueries";
 import { useUserStore } from "../../../store/currentUserStore";
 export const InvoicesList = () => {
   const { goToNewInvoice } = useInvoicesNavigation();

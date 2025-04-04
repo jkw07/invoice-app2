@@ -23,15 +23,6 @@ export const LOGOUT_MUTATION = gql`
   }
 `;
 
-export const ME_QUERY = gql`
-  query {
-    me {
-      id
-      email
-    }
-  }
-`;
-
 export const REFRESH_TOKEN_MUTATION = gql`
   mutation RefreshToken($refreshToken: String!) {
     refreshToken(refreshToken: $refreshToken) {

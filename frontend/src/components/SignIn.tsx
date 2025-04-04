@@ -18,7 +18,7 @@ import logo from "../assets/logo1mini.png";
 import { ForgotPassword } from "./ForgotPassword";
 import { SignUp } from "./SignUp";
 import { useMutation } from "@apollo/client";
-import { LOGIN_MUTATION } from "../graphql/auth-queries";
+import { LOGIN_MUTATION } from "../graphql/mutations/authMutations";
 import { handleGraphqlLogin } from "../services/authService";
 
 export const SignIn = () => {

@@ -14,15 +14,12 @@ import { useEffect, useRef, useState } from "react";
 import {
   GET_COMPANIES_BY_USER,
   GET_DEFAULT_COMPANY,
-} from "../graphql/company-queries";
+} from "../graphql/queries/companyQueries";
 import { useQuery } from "@apollo/client";
-
-type Company = {
-  id: number;
-  fullName: string;
-};
-
-//TODO nie wyswietla name
+import {
+  getCompaniesByUserQuery,
+  GetDefaultCompanyByUserQuery,
+} from "../graphql/types/company";
 
 export const Topbar = () => {
   const { company, setCompany, replaceCompany, user } = useUserStore();
@@ -33,14 +30,17 @@ export const Topbar = () => {
     data: defaultCompanyData,
     loading,
     error,
-  } = useQuery(GET_DEFAULT_COMPANY, {
+  } = useQuery<GetDefaultCompanyByUserQuery>(GET_DEFAULT_COMPANY, {
     skip: company !== null,
     fetchPolicy: "no-cache",
   });
 
-  const { data: companiesData } = useQuery(GET_COMPANIES_BY_USER, {
-    fetchPolicy: "no-cache",
-  });
+  const { data: companiesData } = useQuery<getCompaniesByUserQuery>(
+    GET_COMPANIES_BY_USER,
+    {
+      fetchPolicy: "no-cache",
+    }
+  );
 
   useEffect(() => {
     if (defaultCompanyData?.getDefaultCompanyByUser && !company) {
@@ -137,7 +137,7 @@ export const Topbar = () => {
                     aria-labelledby="composition-button"
                     onKeyDown={handleListKeyDown}
                   >
-                    {companiesData?.getCompaniesByUser.map((comp: Company) => (
+                    {companiesData?.getCompaniesByUser.map((comp) => (
                       <MenuItem
                         key={comp.id}
                         onClick={() => handleCompanySelect(comp)}
