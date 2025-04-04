@@ -17,7 +17,7 @@ import {
 } from "../graphql/queries/companyQueries";
 import { useQuery } from "@apollo/client";
 import {
-  getCompaniesByUserQuery,
+  GetCompaniesByUserQuery,
   GetDefaultCompanyByUserQuery,
 } from "../graphql/types/company";
 
@@ -35,7 +35,7 @@ export const Topbar = () => {
     fetchPolicy: "no-cache",
   });
 
-  const { data: companiesData } = useQuery<getCompaniesByUserQuery>(
+  const { data: companiesData } = useQuery<GetCompaniesByUserQuery>(
     GET_COMPANIES_BY_USER,
     {
       fetchPolicy: "no-cache",

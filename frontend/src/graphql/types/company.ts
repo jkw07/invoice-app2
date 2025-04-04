@@ -23,7 +23,7 @@ export interface GetDefaultCompanyByUserQuery {
   getDefaultCompanyByUser: CompanyBasic;
 }
 
-export interface getCompaniesByUserQuery {
+export interface GetCompaniesByUserQuery {
   getCompaniesByUser: CompanyBasic[];
 }
 
