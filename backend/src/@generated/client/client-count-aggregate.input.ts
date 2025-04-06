@@ -35,6 +35,9 @@ export class ClientCountAggregateInput {
     city?: true;
 
     @Field(() => Boolean, {nullable:true})
+    country?: true;
+
+    @Field(() => Boolean, {nullable:true})
     province?: true;
 
     @Field(() => Boolean, {nullable:true})

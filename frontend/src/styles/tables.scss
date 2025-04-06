@@ -1,15 +1,19 @@
+@use 'variables' as *;
 
-.clients-actions-container {
+.actions-container {
     margin-top: 20px;
     margin-bottom: 20px;
 }
 
-.clients-table-container {
+.table-container {
     .edit-button {
-        color: green;
+        color: $primary-green;
     }
     .delete-button {
-        color: rgb(233, 63, 63);
+        color: $primary-red;
+    }
+    .info-button {
+        color: $primary-blue
     }
 }
 

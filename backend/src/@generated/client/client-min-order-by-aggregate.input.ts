@@ -36,6 +36,9 @@ export class ClientMinOrderByAggregateInput {
     city?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})
+    country?: `${SortOrder}`;
+
+    @Field(() => SortOrder, {nullable:true})
     province?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})

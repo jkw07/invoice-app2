@@ -49,6 +49,11 @@ export class CreateClientInput {
   @Field(() => String, { nullable: true })
   @IsOptional()
   @IsString()
+  country?: string | null;
+
+  @Field(() => String, { nullable: true })
+  @IsOptional()
+  @IsString()
   province?: string | null;
 
   @Field(() => String, { nullable: true })

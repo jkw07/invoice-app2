@@ -13,7 +13,6 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import { useState } from "react";
-import { useClientsStore } from "../store/clientsStore";
 import { AlertDialog } from "../../../components/AlertDialog";
 
 interface ImportClientProps {
@@ -31,7 +30,6 @@ interface Client {
 }
 
 export const ImportClient = ({ open, handleClose }: ImportClientProps) => {
-  const { setImportedClientData } = useClientsStore();
   const [isLoading, setLoading] = useState(false);
   const [nipValue, setNipValue] = useState("");
   const [alertSeverity, setAlertSeverity] = useState<AlertColor | undefined>(
@@ -65,6 +63,7 @@ export const ImportClient = ({ open, handleClose }: ImportClientProps) => {
         setAlertSeverity("error");
         setAlertMessage("Błąd autoryzacji. Sprawdź poprawność klucza API.");
         setOpenAlert(true);
+        console.log(clientData);
         throw new Error("Unauthorized: Invalid API key");
       }
 
@@ -114,7 +113,6 @@ export const ImportClient = ({ open, handleClose }: ImportClientProps) => {
     event.preventDefault();
     setLoading(true);
     await fetchClientData(nipValue);
-    setImportedClientData(clientData);
     setLoading(false);
     handleClose();
   };

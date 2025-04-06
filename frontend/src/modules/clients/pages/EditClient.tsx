@@ -5,20 +5,22 @@ import "../../../styles/buttons.scss";
 import { AlertDialog } from "../../../components/AlertDialog";
 import Button from "@mui/material/Button";
 import { ClientForm } from "../components/ClientForm";
-import { getClientById, updateClient } from "../../../services/clientService";
 import { useParams } from "react-router-dom";
 import { ClientFull } from "../../../graphql/types/client";
 import { useClientById } from "../../../graphql/services/clientService";
 import { safeId } from "../../../utils/safeId";
+import { useUserStore } from "../../../store/currentUserStore";
 
 export const EditClient = () => {
-  const { id: clientId } = useParams();
+  const { id: clientIdFromUrl } = useParams();
+  const clientId = safeId(clientIdFromUrl);
   const [formData, setFormData] = useState<ClientFull>({} as ClientFull);
   const [openDialog, setOpenDialog] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor | undefined>(
     undefined
   );
   const [alertMessage, setAlertMessage] = useState("");
+  const companyId = useUserStore((state) => state.company?.id);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,7 +35,7 @@ export const EditClient = () => {
     loading,
     error,
     refetch,
-  } = useClientById(safeId(clientId));
+  } = useClientById(clientId, companyId);
 
   useEffect(() => {
     if (clientData?.getClientById) {
@@ -41,18 +43,9 @@ export const EditClient = () => {
     }
   }, [clientData]);
 
-  useEffect(() => {
-    if (!clientId) return;
-    const fetchClientData = async () => {
-      setOpenDialog(false);
-      const data = await getClientById(clientId);
-      setOpenDialog(true);
-      setAlertSeverity("error");
-      setAlertMessage("Nie znaleziono klienta.");
-      console.log(data);
-    };
-    fetchClientData();
-  }, [clientId]);
+  const updateClient = async (clientId: number, formData: ClientFull) => {
+    console.log("Updating client with ID:", clientId, formData);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +86,12 @@ export const EditClient = () => {
         <Alert
           severity="error"
           action={
-            <Button color="inherit" size="small" onClick={() => refetch()}>
+            <Button
+              color="inherit"
+              size="small"
+              disabled={loading}
+              onClick={() => refetch()}
+            >
               Spróbuj ponownie
             </Button>
           }

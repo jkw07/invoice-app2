@@ -29,13 +29,13 @@ export class InvoiceService {
 
   async addInvoice(userId: string, data: CreateInvoiceInput) {
     await this.checkAccessOrThrow(userId, data.companyId);
-    await this.cacheManager.del(`${userId}invoiceList:${data.companyId}`);
+    await this.cacheManager.del(`${userId}:invoicesList:${data.companyId}`);
     return this.invoiceRepository.addInvoice(data);
   }
 
   async getInvoicesByCompany(userId: string, companyId: number) {
     await this.checkAccessOrThrow(userId, companyId);
-    const cacheKey = `${userId}:invoiceList:${companyId}`;
+    const cacheKey = `${userId}:invoicesList:${companyId}`;
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
       return cached;
@@ -43,10 +43,10 @@ export class InvoiceService {
     const invoices =
       await this.invoiceRepository.getInvoicesByCompany(companyId);
     for (const invoice of invoices) {
-      const itemKey = `${userId}:invoice:${invoice.companyId}:${invoice.id}`; //GOWNO
-      await this.cacheManager.set(itemKey, invoice, 300);
+      const itemKey = `${userId}:invoice:${invoice.companyId}:${invoice.id}`; //TODO wersje + pobierac zawsze wersje, nie usuwac
+      await this.cacheManager.set(itemKey, invoice, 120);
     }
-    await this.cacheManager.set(cacheKey, invoices, 300);
+    await this.cacheManager.set(cacheKey, invoices, 120);
     return invoices;
   }
 
@@ -62,7 +62,7 @@ export class InvoiceService {
       throw new NotFoundException('Invoice not found');
     }
     await this.checkAccessOrThrow(userId, invoice.companyId);
-    await this.cacheManager.set(cacheKey, invoice, 300);
+    await this.cacheManager.set(cacheKey, invoice, 120);
     return invoice;
   }
 
@@ -74,9 +74,9 @@ export class InvoiceService {
     await this.checkAccessOrThrow(userId, invoice.companyId);
     const result = await this.invoiceRepository.deleteInvoice(invoiceId);
     await this.cacheManager.del(
-      `invoice:${userId}:${invoice.companyId}:${invoice.id}`,
+      `${userId}:invoice:${invoice.companyId}:${invoice.id}`,
     );
-    await this.cacheManager.del(`invoiceList:${userId}:${invoice.companyId}`);
+    await this.cacheManager.del(`${userId}:invoicesList:${invoice.companyId}`);
     return result;
   }
 
@@ -92,9 +92,9 @@ export class InvoiceService {
     await this.checkAccessOrThrow(userId, invoice.companyId);
     const updated = await this.invoiceRepository.updateInvoice(invoiceId, data);
     await this.cacheManager.del(
-      `invoice:${userId}:${invoice.companyId}:${invoice.id}`,
+      `${userId}:invoice:${invoice.companyId}:${invoice.id}`,
     );
-    await this.cacheManager.del(`invoiceList:${userId}:${invoice.companyId}`);
+    await this.cacheManager.del(`${userId}:invoicesList:${invoice.companyId}`);
     return updated;
   }
 }

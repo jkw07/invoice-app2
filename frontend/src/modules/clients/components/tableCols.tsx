@@ -1,16 +1,20 @@
 import { IconButton, Tooltip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Info } from "lucide-react";
+
+interface TableColsClientsProps {
+  handleDeleteClient: (id: string) => void;
+  handleGoToEditClientForm: (id: string) => void;
+  handleGoToClientInfo: (id: string) => void;
+}
 
 export const tableColsClients = ({
   handleDeleteClient,
   handleGoToEditClientForm,
-}: {
-  handleDeleteClient: (id: string) => void;
-  handleGoToEditClientForm: (id: string) => void;
-}) => {
+  handleGoToClientInfo,
+}: TableColsClientsProps) => {
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 100 },
+    { field: "id", headerName: "ID", width: 50 },
     {
       field: "name",
       headerName: "Nazwa",
@@ -19,12 +23,27 @@ export const tableColsClients = ({
     {
       field: "taxId",
       headerName: "NIP",
-      width: 150,
+      width: 200,
     },
     {
-      field: "address",
+      field: "addressDisplay",
       headerName: "Adres",
-      width: 300,
+      width: 350,
+      renderCell: (params) => {
+        const { street, buildingNo, apartmentNo, zipCode, city } = params.row;
+
+        const parts = [];
+
+        if (street) parts.push(`ul. ${street}`);
+        if (buildingNo) parts.push(buildingNo);
+        if (apartmentNo) parts.push(`/${apartmentNo}`);
+        if (zipCode) parts.push(zipCode);
+        if (city) parts.push(city);
+
+        const value = parts.join(" ");
+
+        return <span>{value}</span>;
+      },
     },
     {
       field: "email",
@@ -39,16 +58,24 @@ export const tableColsClients = ({
     {
       field: "actions",
       headerName: "Akcje",
-      width: 130,
+      width: 150,
       renderCell: (params) => {
         return (
           <div
             style={{
               display: "flex",
               justifyContent: "space-evenly",
-              gap: "8px",
+              gap: "4px",
             }}
           >
+            <Tooltip title="Szczegóły">
+              <IconButton
+                onClick={() => handleGoToClientInfo(params.row.id)}
+                aria-label="Info"
+              >
+                <Info className="info-button" />
+              </IconButton>
+            </Tooltip>
             <Tooltip title="Edytuj">
               <IconButton
                 onClick={() => handleGoToEditClientForm(params.row.id)}

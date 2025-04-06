@@ -11,36 +11,28 @@ import {
 import { useUserStore } from "../store/currentUserStore";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import { useEffect, useRef, useState } from "react";
+import { useNavigation } from "../hooks/useNavigation";
 import {
-  GET_COMPANIES_BY_USER,
-  GET_DEFAULT_COMPANY,
-} from "../graphql/queries/companyQueries";
-import { useQuery } from "@apollo/client";
-import {
-  GetCompaniesByUserQuery,
-  GetDefaultCompanyByUserQuery,
-} from "../graphql/types/company";
+  useDefaultCompany,
+  useCompaniesByUser,
+} from "../graphql/services/companyService";
+import { Building2 } from "lucide-react";
+import { AddNewCompany } from "./AddNewCompany";
 
 export const Topbar = () => {
   const { company, setCompany, replaceCompany, user } = useUserStore();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
+  const { goToInvoicesModule } = useNavigation();
+  const [addNewCompanyOpen, setAddNewCompanyOpen] = useState(false);
 
   const {
     data: defaultCompanyData,
     loading,
     error,
-  } = useQuery<GetDefaultCompanyByUserQuery>(GET_DEFAULT_COMPANY, {
-    skip: company !== null,
-    fetchPolicy: "no-cache",
-  });
+  } = useDefaultCompany(company !== null);
 
-  const { data: companiesData } = useQuery<GetCompaniesByUserQuery>(
-    GET_COMPANIES_BY_USER,
-    {
-      fetchPolicy: "no-cache",
-    }
-  );
+  const { data: companiesData } = useCompaniesByUser();
 
   useEffect(() => {
     if (defaultCompanyData?.getDefaultCompanyByUser && !company) {
@@ -73,6 +65,14 @@ export const Topbar = () => {
     }
   }
 
+  const handleCloseAddNewCompanyDialog = () => {
+    setAddNewCompanyOpen(false);
+  };
+
+  const handleOpenAddNewCompanyDialog = () => {
+    setAddNewCompanyOpen(true);
+  };
+
   const prevOpen = useRef(open);
   useEffect(() => {
     if (prevOpen.current === true && open === false) {
@@ -85,6 +85,7 @@ export const Topbar = () => {
   const handleCompanySelect = (company: { id: number; fullName: string }) => {
     replaceCompany(company);
     setOpen(false);
+    goToInvoicesModule();
   };
 
   return (
@@ -152,6 +153,22 @@ export const Topbar = () => {
           )}
         </Popper>
       </div>
+      <Divider orientation="vertical" flexItem />
+      <div className="topbar-nav">
+        <Button
+          variant="contained"
+          startIcon={<Building2 />}
+          onClick={handleOpenAddNewCompanyDialog}
+        >
+          Dodaj nową firmę
+        </Button>
+      </div>
+      <Divider orientation="vertical" flexItem />
+      <div className="topbar-nav"></div>
+      <AddNewCompany
+        open={addNewCompanyOpen}
+        handleClose={handleCloseAddNewCompanyDialog}
+      />
     </Paper>
   );
 };

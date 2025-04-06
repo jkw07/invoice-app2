@@ -15,7 +15,7 @@ export class CompanyResolver {
   @Mutation(() => Company)
   async createCompany(
     @Context() context: { req: Request },
-    @Args('data') data: CreateCompanyInput,
+    @Args('input') data: CreateCompanyInput,
   ): Promise<Company> {
     const userId = getUserIdFromContext(context);
     return this.companyService.createCompany(userId, data);

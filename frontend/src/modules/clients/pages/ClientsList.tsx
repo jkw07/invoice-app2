@@ -1,19 +1,21 @@
-import { DefaultButton } from "../../../components/DefaultButton";
 import { ClientsTableGrid } from "../components/ClientsTableGrid";
 import { UserRoundPlus } from "lucide-react";
-import "../../../styles/clientsList.scss";
+import "../../../styles/tables.scss";
 import { NavLink } from "react-router-dom";
+import { Button } from "@mui/material";
 
 export const ClientsList = () => {
   return (
     <>
       <h1>Lista klientów</h1>
-      <div className="clients-actions-container">
+      <div className="actions-container">
         <NavLink to="/clients/new" className="link-button">
-          <DefaultButton text="Dodaj klienta" icon={<UserRoundPlus />} />
+          <Button variant="contained" startIcon={<UserRoundPlus />}>
+            Dodaj klienta
+          </Button>
         </NavLink>
       </div>
-      <div className="clients-table-container">
+      <div className="table-container">
         <ClientsTableGrid />
       </div>
     </>

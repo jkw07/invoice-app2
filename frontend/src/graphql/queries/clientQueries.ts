@@ -12,8 +12,8 @@ export const GET_CLIENTS_BY_COMPANY = gql`
 `;
 
 export const GET_CLIENT_BY_ID = gql`
-  query getClientById($clientId: Int!) {
-    getClientById(clientId: $clientId) {
+  query getClientById($clientId: Int!, $companyId: Int!) {
+    getClientById(clientId: $clientId, companyId: $companyId) {
       ...ClientFullFields
     }
   }

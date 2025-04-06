@@ -59,6 +59,7 @@ model Client {
   apartmentNo   String?   @map("apartment_no")
   zipCode       String?    @map("zip_code")
   city          String?
+  country       String?
   province      String?
   county        String?
   municipality  String?

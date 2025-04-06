@@ -42,6 +42,9 @@ export class ClientOrderByWithAggregationInput {
     city?: SortOrderInput;
 
     @Field(() => SortOrderInput, {nullable:true})
+    country?: SortOrderInput;
+
+    @Field(() => SortOrderInput, {nullable:true})
     province?: SortOrderInput;
 
     @Field(() => SortOrderInput, {nullable:true})

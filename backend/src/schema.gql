@@ -20,6 +20,7 @@ type Client {
   city: String
   company: Company!
   companyId: Int!
+  country: String
   county: String
   createdAt: DateTime!
   email: String
@@ -81,6 +82,7 @@ input CreateClientInput {
   buildingNo: String
   city: String
   companyId: Int!
+  country: String
   county: String
   email: String
   municipality: String
@@ -211,11 +213,11 @@ input LoginInput {
 }
 
 type Mutation {
-  addClient(data: CreateClientInput!): Client!
+  addClient(input: CreateClientInput!): Client!
   addInvoice(data: CreateInvoiceInput!): Invoice!
   addProduct(data: CreateProductInput!): Product!
   addSetting(data: CreateSettingInput!): Setting!
-  createCompany(data: CreateCompanyInput!): Company!
+  createCompany(input: CreateCompanyInput!): Company!
   createPaymentMethod(data: CreatePaymentInput!): Payment!
   deleteClient(clientId: Int!): Client!
   deleteCompany(companyId: Int!): Company!
@@ -270,7 +272,7 @@ type ProductCount {
 }
 
 type Query {
-  getClientById(clientId: Int!): Client!
+  getClientById(clientId: Int!, companyId: Int!): Client!
   getClientsByCompany(companyId: Int!): [Client!]!
   getCompaniesByUser: [Company!]!
   getCompanyById(companyId: Int!): Company!
@@ -329,6 +331,7 @@ input UpdateClientInput {
   bin: String
   buildingNo: String
   city: String
+  country: String
   county: String
   email: String
   municipality: String

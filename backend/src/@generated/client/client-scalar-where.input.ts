@@ -48,6 +48,9 @@ export class ClientScalarWhereInput {
     city?: StringNullableFilter;
 
     @Field(() => StringNullableFilter, {nullable:true})
+    country?: StringNullableFilter;
+
+    @Field(() => StringNullableFilter, {nullable:true})
     province?: StringNullableFilter;
 
     @Field(() => StringNullableFilter, {nullable:true})

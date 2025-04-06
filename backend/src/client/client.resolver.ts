@@ -26,16 +26,17 @@ export class ClientResolver {
   async getClientById(
     @Context() context: { req: Request },
     @Args('clientId', { type: () => Int }) clientId: number,
+    @Args('companyId', { type: () => Int }) companyId: number,
   ) {
     const userId = getUserIdFromContext(context);
-    return this.clientService.getClientById(userId, clientId);
+    return this.clientService.getClientById(userId, clientId, companyId);
   }
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Client)
   async addClient(
     @Context() context: { req: Request },
-    @Args('data') data: CreateClientInput,
+    @Args('input') data: CreateClientInput,
   ): Promise<Client> {
     const userId = getUserIdFromContext(context);
     return this.clientService.addClient(userId, data);

@@ -36,6 +36,9 @@ export class ClientUncheckedCreateWithoutInvoicesInput {
     city?: string;
 
     @Field(() => String, {nullable:true})
+    country?: string;
+
+    @Field(() => String, {nullable:true})
     province?: string;
 
     @Field(() => String, {nullable:true})

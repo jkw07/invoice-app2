@@ -11,6 +11,7 @@ export enum ClientScalarFieldEnum {
     apartmentNo = "apartmentNo",
     zipCode = "zipCode",
     city = "city",
+    country = "country",
     province = "province",
     county = "county",
     municipality = "municipality",

@@ -16,7 +16,7 @@ export const CLIENT_BASIC_FIELDS = gql`
 `;
 
 export const CLIENT_FULL_FIELDS = gql`
-  fragment ClientBasicFields on Client {
+  fragment ClientFullFields on Client {
     id
     name
     tin
@@ -26,6 +26,7 @@ export const CLIENT_FULL_FIELDS = gql`
     apartmentNo
     zipCode
     city
+    country
     province
     county
     municipality

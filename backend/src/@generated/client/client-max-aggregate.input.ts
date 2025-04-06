@@ -35,6 +35,9 @@ export class ClientMaxAggregateInput {
     city?: true;
 
     @Field(() => Boolean, {nullable:true})
+    country?: true;
+
+    @Field(() => Boolean, {nullable:true})
     province?: true;
 
     @Field(() => Boolean, {nullable:true})

@@ -25,11 +25,16 @@ export const ClientsTableGrid = () => {
     console.log("Delete client with ID:", id);
   };
 
+  const handleGoToClientInfo = (id: string) => {
+    navigate(`/clients/info/${id}`);
+  };
+
   //TODO adres polaczyc!!
 
   const columns = tableColsClients({
     handleDeleteClient,
     handleGoToEditClientForm,
+    handleGoToClientInfo,
   });
   const {
     data: clientsList,
@@ -64,7 +69,12 @@ export const ClientsTableGrid = () => {
         <Alert
           severity="error"
           action={
-            <Button color="inherit" size="small" onClick={() => refetch()}>
+            <Button
+              color="inherit"
+              size="small"
+              disabled={loading}
+              onClick={() => refetch()}
+            >
               Spróbuj ponownie
             </Button>
           }

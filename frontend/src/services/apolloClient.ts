@@ -58,6 +58,7 @@ const authLink = setContext(async (_, { headers }) => {
 
 const errorLink = onError(({ graphQLErrors }) => {
   if (graphQLErrors) {
+    console.error("Apollo error:", graphQLErrors);
     for (const err of graphQLErrors) {
       if (
         err.extensions?.code === "UNAUTHENTICATED" ||

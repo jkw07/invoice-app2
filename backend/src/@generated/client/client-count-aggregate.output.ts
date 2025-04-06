@@ -36,6 +36,9 @@ export class ClientCountAggregate {
     city!: number;
 
     @Field(() => Int, {nullable:false})
+    country!: number;
+
+    @Field(() => Int, {nullable:false})
     province!: number;
 
     @Field(() => Int, {nullable:false})
