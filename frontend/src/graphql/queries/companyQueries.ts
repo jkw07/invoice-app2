@@ -14,7 +14,7 @@ export const GET_DEFAULT_COMPANY = gql`
 `;
 
 export const GET_COMPANIES_BY_USER = gql`
-  query getCompaniesByUser {
+  query GetCompaniesByUser {
     getCompaniesByUser {
       ...CompanyBasicFields
     }

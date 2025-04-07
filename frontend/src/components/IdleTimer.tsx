@@ -3,11 +3,9 @@ import { useUserStore } from "../store/currentUserStore";
 import { useSnackbarStore } from "../store/snackbarStore";
 import { logoutUser } from "../services/authService";
 import { Button } from "@mui/material";
+import { IDLE_TIMEOUT, WARNING_TIMEOUT } from "../config/idleTimers";
 
 //TODO spr czy jest remember me
-//TODO w config
-const IDLE_TIMEOUT = 10 * 60 * 1000; // 10 minut
-const WARNING_TIMEOUT = 9 * 60 * 1000; // 9 minut
 
 export const IdleTimer = () => {
   const user = useUserStore((state) => state.user);

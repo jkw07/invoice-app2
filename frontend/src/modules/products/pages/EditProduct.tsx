@@ -20,6 +20,8 @@ export const EditProduct = () => {
   );
   const [alertMessage, setAlertMessage] = useState("");
 
+  //TODO spr czy nie wysyla sie "": [name]: value === "" ? null : value,
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({

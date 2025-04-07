@@ -29,7 +29,7 @@ export const ClientsTableGrid = () => {
     navigate(`/clients/info/${id}`);
   };
 
-  //TODO adres polaczyc!!
+  //TODO wyszukiwanie po adresie np ul....
 
   const columns = tableColsClients({
     handleDeleteClient,

@@ -1,6 +1,7 @@
 import { IconButton, Tooltip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { Edit, Trash2, Info } from "lucide-react";
+import { VatRateType } from "../../../graphql/types/enums";
 
 interface TableColsProductsProps {
   handleOpenDeleteProductDialog: (id: string) => void;
@@ -43,9 +44,9 @@ export const tableColsProducts = ({
         const { taxType, taxRate } = params.row;
 
         let value = "";
-        if (taxType === "NOT_TAXED") value = "np";
-        else if (taxType === "EXEMPT") value = "zw";
-        else if (taxType === "STANDARD")
+        if (taxType === VatRateType.NOT_TAXED) value = "np";
+        else if (taxType === VatRateType.EXEMPT) value = "zw";
+        else if (taxType === VatRateType.STANDARD)
           value = taxRate !== null ? `${taxRate}%` : "";
 
         return <span>{value}</span>;

@@ -3,7 +3,7 @@ import { CLIENT_BASIC_FIELDS } from "../fragments/clientFragments";
 import { CLIENT_FULL_FIELDS } from "../fragments/clientFragments";
 
 export const GET_CLIENTS_BY_COMPANY = gql`
-  query getClientsByCompany($companyId: Int!) {
+  query GetClientsByCompany($companyId: Int!) {
     getClientsByCompany(companyId: $companyId) {
       ...ClientBasicFields
     }
@@ -12,7 +12,7 @@ export const GET_CLIENTS_BY_COMPANY = gql`
 `;
 
 export const GET_CLIENT_BY_ID = gql`
-  query getClientById($clientId: Int!, $companyId: Int!) {
+  query GetClientById($clientId: Int!, $companyId: Int!) {
     getClientById(clientId: $clientId, companyId: $companyId) {
       ...ClientFullFields
     }

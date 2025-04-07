@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 import { PRODUCT_FULL_FIELDS } from "../fragments/productFragments";
 
 export const GET_PRODUCTS_BY_COMPANY = gql`
-  query getProductsByCompany($companyId: Int!) {
+  query GetProductsByCompany($companyId: Int!) {
     getProductsByCompany(companyId: $companyId) {
       ...ProductFullFields
     }
@@ -11,7 +11,7 @@ export const GET_PRODUCTS_BY_COMPANY = gql`
 `;
 
 export const GET_PRODUCT_BY_ID = gql`
-  query getProductById($productId: Int!) {
+  query GetProductById($productId: Int!) {
     getProductById(productId: $productId) {
       ...ProductFullFields
     }

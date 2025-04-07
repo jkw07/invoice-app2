@@ -1,4 +1,4 @@
-import "../styles/buttons.scss";
+/* import "../styles/buttons.scss";
 
 interface DefaultButtonProps {
   text?: string;
@@ -22,3 +22,4 @@ export const DefaultButton = ({
     </button>
   );
 };
+ */

@@ -22,6 +22,8 @@ export const EditClient = () => {
   const [alertMessage, setAlertMessage] = useState("");
   const companyId = useUserStore((state) => state.company?.id);
 
+  //TODO spr czy nie wysyla sie "": [name]: value === "" ? null : value,
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({

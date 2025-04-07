@@ -33,8 +33,8 @@ export const ProductInfo = () => {
   };
 
   const formatTaxRate = (taxType: VatRateType) => {
-    if (taxType === "NOT_TAXED") return "np";
-    if (taxType === "EXEMPT") return "zw";
+    if (taxType === VatRateType.NOT_TAXED) return "np";
+    if (taxType === VatRateType.EXEMPT) return "zw";
     return "";
   };
 
@@ -139,7 +139,7 @@ export const ProductInfo = () => {
             },
           }}
         />
-        {formData.taxType !== "STANDARD" && (
+        {formData.taxType !== VatRateType.STANDARD && (
           <TextField
             type="text"
             name="taxType"
@@ -157,7 +157,7 @@ export const ProductInfo = () => {
             }}
           />
         )}
-        {formData.taxType === "STANDARD" && (
+        {formData.taxType === VatRateType.STANDARD && (
           <TextField
             type="text"
             name="taxRate"

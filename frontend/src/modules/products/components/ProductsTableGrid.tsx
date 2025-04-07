@@ -120,6 +120,8 @@ export const ProductsTableGrid = () => {
     setOpenDialog(false);
   };
 
+  //TODO wyszukiwanie vat np. np/zw
+
   return (
     <>
       <AlertDialog
