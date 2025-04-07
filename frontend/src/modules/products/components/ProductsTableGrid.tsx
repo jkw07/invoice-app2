@@ -1,6 +1,13 @@
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { plPL } from "@mui/x-data-grid/locales";
-import { Alert, Box, Button, InputAdornment, TextField } from "@mui/material";
+import {
+  Alert,
+  AlertColor,
+  Box,
+  Button,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
 import { useEffect, useState } from "react";
 import { filterData } from "../../../utils/filterData";
 import { tableColsProducts } from "./tableCols";
@@ -8,31 +15,77 @@ import { Search } from "lucide-react";
 import { useUserStore } from "../../../store/currentUserStore";
 import { ProductFull } from "../../../graphql/types/product";
 import { useNavigate } from "react-router-dom";
-import { useProductsByCompany } from "../../../graphql/services/productService";
+import {
+  useDeleteProduct,
+  useProductsByCompany,
+} from "../../../graphql/services/productService";
+import { AlertDialog } from "../../../components/AlertDialog";
+import { safeId } from "../../../utils/safeId";
 
 export const ProductsTableGrid = () => {
   const { company } = useUserStore();
   const [productsData, setProductsData] = useState<ProductFull[]>([]);
   const [filteredData, setFilteredData] = useState<ProductFull[]>([]);
   const [searchText, setSearchText] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState<AlertColor | undefined>(
+    undefined
+  );
+  const [alertMessage, setAlertMessage] = useState("");
   const navigate = useNavigate();
+  const [productId, setProductId] = useState<number>(0);
+  const [deleteProduct] = useDeleteProduct();
+  const [hasConfirm, setHasConfirm] = useState(false);
+
+  const handleOpenDeleteProductDialog = (id: string) => {
+    setAlertSeverity("warning");
+    setAlertMessage("Czy na pewno chcesz usunąć ten produkt?");
+    setHasConfirm(true);
+    setProductId(safeId(id));
+    setOpenDialog(true);
+  };
 
   const handleGoToEditProductForm = (id: string) => {
     navigate(`/products/edit/${id}`);
   };
 
-  const handleDeleteProduct = (id: string) => {
-    console.log("Delete product with ID:", id);
+  const handleConfirmDelete = () => {
+    handleDeleteProduct(productId);
+  };
+
+  const handleDeleteProduct = async (productId: number) => {
+    try {
+      await deleteProduct({
+        variables: {
+          productId,
+        },
+        onCompleted: (data) => {
+          setOpenDialog(false);
+          setHasConfirm(false);
+          setAlertSeverity("success");
+          setAlertMessage(
+            `Produkt id ${data.deleteProduct.id} został usunięty.`
+          );
+          setOpenDialog(true);
+        },
+      });
+      console.log("Produkt usunięty!");
+    } catch (error) {
+      console.error("Błąd przy usuwaniu produktu", error);
+      setOpenDialog(false);
+      setHasConfirm(false);
+      setAlertSeverity("error");
+      setAlertMessage(`Błąd przy usuwaniu produktu`);
+      setOpenDialog(true);
+    }
   };
 
   const handleGoToProductInfo = (id: string) => {
     navigate(`/products/info/${id}`);
   };
 
-  //TODO VAT
-
   const columns = tableColsProducts({
-    handleDeleteProduct,
+    handleOpenDeleteProductDialog,
     handleGoToEditProductForm,
     handleGoToProductInfo,
   });
@@ -63,8 +116,19 @@ export const ProductsTableGrid = () => {
     setSearchText(event.target.value);
   }
 
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
+
   return (
     <>
+      <AlertDialog
+        openDialog={openDialog}
+        handleDialogClose={handleDialogClose}
+        alertSeverity={alertSeverity}
+        alertMessage={alertMessage}
+        {...(hasConfirm ? { handleConfirm: handleConfirmDelete } : {})}
+      />
       {error && !loading && (
         <Alert
           severity="error"

@@ -215,7 +215,7 @@ input LoginInput {
 type Mutation {
   addClient(input: CreateClientInput!): Client!
   addInvoice(data: CreateInvoiceInput!): Invoice!
-  addProduct(data: CreateProductInput!): Product!
+  addProduct(input: CreateProductInput!): Product!
   addSetting(data: CreateSettingInput!): Setting!
   createCompany(input: CreateCompanyInput!): Company!
   createPaymentMethod(data: CreatePaymentInput!): Payment!

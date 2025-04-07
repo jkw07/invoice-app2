@@ -31,8 +31,26 @@ export const NewClient = () => {
   );
   const [alertMessage, setAlertMessage] = useState("");
 
+  const emptyClient: AddClientInput = {
+    companyId: 0,
+    name: "",
+    tin: null,
+    bin: null,
+    street: null,
+    buildingNo: null,
+    apartmentNo: null,
+    zipCode: null,
+    city: null,
+    country: null,
+    province: null,
+    county: null,
+    municipality: null,
+    email: null,
+    phone: null,
+  };
+
   const resetNewClientData = () => {
-    setNewClientData({} as AddClientInput);
+    setNewClientData(emptyClient);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -1,15 +1,20 @@
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import {
   GET_PRODUCT_BY_ID,
   GET_PRODUCTS_BY_COMPANY,
 } from "../queries/productQueries";
 import {
+  AddProductMutation,
+  AddProductVariables,
+  DeleteProductMutation,
+  DeleteProductVariables,
   GetProductByIdQuery,
   GetProductByIdVariables,
   GetProductsByCompanyQuery,
   GetProductsByCompanyVariables,
 } from "../types/product";
 import { safeId } from "../../utils/safeId";
+import { ADD_PRODUCT, DELETE_PRODUCT } from "../mutations/productMutations";
 
 export const useProductsByCompany = (companyId?: number) => {
   return useQuery<GetProductsByCompanyQuery, GetProductsByCompanyVariables>(
@@ -30,5 +35,15 @@ export const useProductById = (productId?: number) => {
       skip: !productId,
       fetchPolicy: "no-cache",
     }
+  );
+};
+
+export const useAddProduct = () => {
+  return useMutation<AddProductMutation, AddProductVariables>(ADD_PRODUCT);
+};
+
+export const useDeleteProduct = () => {
+  return useMutation<DeleteProductMutation, DeleteProductVariables>(
+    DELETE_PRODUCT
   );
 };

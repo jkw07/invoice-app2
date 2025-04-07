@@ -272,13 +272,12 @@ export const NewClientForm = ({
             type="submit"
             color="success"
           >
-            {loading ? "Dodawanie klienta..." : "Dodaj Klienta"}
+            {loading ? "Dodawanie klienta..." : "Zapisz"}
           </Button>
           {hasReset && (
             <Button
               variant="outlined"
               startIcon={<RotateCcw />}
-              type="reset"
               onClick={handleReset}
             >
               Wyczyść

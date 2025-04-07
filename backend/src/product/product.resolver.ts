@@ -35,7 +35,7 @@ export class ProductResolver {
   @Mutation(() => Product)
   async addProduct(
     @Context() context: { req: Request },
-    @Args('data') data: CreateProductInput,
+    @Args('input') data: CreateProductInput,
   ): Promise<Product> {
     const userId = getUserIdFromContext(context);
     return this.productService.addProduct(userId, data);
