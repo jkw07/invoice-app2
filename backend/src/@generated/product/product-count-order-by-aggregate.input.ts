@@ -24,10 +24,7 @@ export class ProductCountOrderByAggregateInput {
     unit?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})
-    taxType?: `${SortOrder}`;
-
-    @Field(() => SortOrder, {nullable:true})
-    taxRate?: `${SortOrder}`;
+    vatRateId?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})
     createdAt?: `${SortOrder}`;

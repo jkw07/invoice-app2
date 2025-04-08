@@ -5,10 +5,9 @@ import { IntFilter } from '../prisma/int-filter.input';
 import { StringFilter } from '../prisma/string-filter.input';
 import { StringNullableFilter } from '../prisma/string-nullable-filter.input';
 import { DecimalFilter } from '../prisma/decimal-filter.input';
-import { EnumVatRateTypeFilter } from '../prisma/enum-vat-rate-type-filter.input';
-import { DecimalNullableFilter } from '../prisma/decimal-nullable-filter.input';
 import { DateTimeFilter } from '../prisma/date-time-filter.input';
 import { CompanyScalarRelationFilter } from '../company/company-scalar-relation-filter.input';
+import { VatRateScalarRelationFilter } from '../vat-rate/vat-rate-scalar-relation-filter.input';
 import { InvoiceItemListRelationFilter } from '../invoice-item/invoice-item-list-relation-filter.input';
 
 @InputType()
@@ -45,12 +44,8 @@ export class ProductWhereInput {
     @Field(() => StringNullableFilter, {nullable:true})
     unit?: StringNullableFilter;
 
-    @Field(() => EnumVatRateTypeFilter, {nullable:true})
-    taxType?: EnumVatRateTypeFilter;
-
-    @Field(() => DecimalNullableFilter, {nullable:true})
-    @Type(() => DecimalNullableFilter)
-    taxRate?: DecimalNullableFilter;
+    @Field(() => IntFilter, {nullable:true})
+    vatRateId?: IntFilter;
 
     @Field(() => DateTimeFilter, {nullable:true})
     createdAt?: DateTimeFilter;
@@ -61,6 +56,10 @@ export class ProductWhereInput {
     @Field(() => CompanyScalarRelationFilter, {nullable:true})
     @Type(() => CompanyScalarRelationFilter)
     company?: CompanyScalarRelationFilter;
+
+    @Field(() => VatRateScalarRelationFilter, {nullable:true})
+    @Type(() => VatRateScalarRelationFilter)
+    vatRate?: VatRateScalarRelationFilter;
 
     @Field(() => InvoiceItemListRelationFilter, {nullable:true})
     @Type(() => InvoiceItemListRelationFilter)

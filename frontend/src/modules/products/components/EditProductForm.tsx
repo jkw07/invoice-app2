@@ -1,28 +1,35 @@
-import { Box, Button, TextField } from "@mui/material";
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+} from "@mui/material";
 import { Save, RotateCcw } from "lucide-react";
 import { ProductFull } from "../../../graphql/types/product";
-import { VatRateType } from "../../../graphql/types/enums";
+import { useUserStore } from "../../../store/currentUserStore";
 
-interface ProductFormProps {
+interface EditProductFormProps {
   formData: ProductFull;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleReset?: () => void;
+  handleSelectChange: (name: string, value: string | number | null) => void;
   hasReset?: boolean;
+  loading?: boolean;
 }
-export const ProductForm = ({
+export const EditProductForm = ({
   formData,
   handleSubmit,
   handleChange,
   handleReset,
+  handleSelectChange,
   hasReset = false,
-}: ProductFormProps) => {
-  const formatTaxRate = (taxType: VatRateType) => {
-    if (taxType === VatRateType.NOT_TAXED) return "np";
-    if (taxType === VatRateType.EXEMPT) return "zw";
-    return "";
-  };
-
+  loading = false,
+}: EditProductFormProps) => {
+  const { vatRates } = useUserStore();
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: "60%" }}>
       <TextField
@@ -91,42 +98,29 @@ export const ProductForm = ({
           },
         }}
       />
-      {formData.taxType !== VatRateType.STANDARD && (
-        <TextField
-          type="text"
-          name="taxType"
-          value={formatTaxRate(formData.taxType)}
-          onChange={handleChange}
+      <FormControl fullWidth margin="normal" sx={{ background: "white" }}>
+        <InputLabel id="vat-rate-label">Stawka VAT</InputLabel>
+        <Select
+          labelId="vat-rate-label"
+          id="vatRateSelect"
+          value={formData.vatRateId}
           label="Stawka VAT"
-          margin="normal"
-          variant="outlined"
-          fullWidth
-          sx={{ background: "white" }}
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
+          onChange={(e) => {
+            const selectedId = e.target.value as number;
+            handleSelectChange("vatRateId", selectedId);
           }}
-        />
-      )}
-      {formData.taxType === VatRateType.STANDARD && (
-        <TextField
-          type="number"
-          name="taxRate"
-          value={formData.taxRate}
-          onChange={handleChange}
-          label="Stawka VAT"
-          margin="normal"
-          variant="outlined"
-          fullWidth
-          sx={{ background: "white" }}
-          slotProps={{
-            inputLabel: {
-              shrink: true,
-            },
-          }}
-        />
-      )}
+        >
+          {vatRates?.map((vatRate) => (
+            <MenuItem key={vatRate.id} value={vatRate.id}>
+              {vatRate.type === "STANDARD"
+                ? `${vatRate.rate}%`
+                : vatRate.type === "EXEMPT"
+                ? "zw"
+                : "np"}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
       <div
         className="buttons-container"
         style={{
@@ -142,7 +136,7 @@ export const ProductForm = ({
           type="submit"
           color="success"
         >
-          Zapisz
+          {loading ? "Zapisywanie..." : "Zapisz"}
         </Button>
         {hasReset && (
           <Button

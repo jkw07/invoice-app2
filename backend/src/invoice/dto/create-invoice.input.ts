@@ -25,7 +25,7 @@ export class CreateInvoiceInput {
   @Field(() => String, { nullable: true })
   @IsString()
   @IsOptional()
-  recipient?: string | null;
+  recipient: string | null;
 
   @Field(() => String)
   @IsString()
@@ -40,9 +40,9 @@ export class CreateInvoiceInput {
   issuedDate: string;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsDateString()
-  transactionDate?: string | null;
+  @IsOptional()
+  transactionDate: string | null;
 
   @Field(() => String)
   @IsDateString()
@@ -53,14 +53,14 @@ export class CreateInvoiceInput {
   paymentMethod: string;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsDateString()
-  paymentDate?: string | null;
+  @IsOptional()
+  paymentDate: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  description?: string | null;
+  @IsOptional()
+  description: string | null;
 
   @Field(() => Float)
   @IsNumber()

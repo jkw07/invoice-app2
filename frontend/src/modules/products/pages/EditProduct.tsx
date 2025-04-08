@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 import "../../../styles/buttons.scss";
 import { AlertDialog } from "../../../components/AlertDialog";
 import Button from "@mui/material/Button";
-import { ProductForm } from "../components/ProductForm";
+import { EditProductForm } from "../components/EditProductForm";
 import { useParams } from "react-router-dom";
 import { ProductFull } from "../../../graphql/types/product";
 import { useProductById } from "../../../graphql/services/productService";
@@ -20,13 +20,18 @@ export const EditProduct = () => {
   );
   const [alertMessage, setAlertMessage] = useState("");
 
-  //TODO spr czy nie wysyla sie "": [name]: value === "" ? null : value,
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: value === "" ? null : value,
+    }));
+  };
+
+  const handleSelectChange = (name: string, value: string | number | null) => {
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value === "" ? null : value,
     }));
   };
 
@@ -100,10 +105,12 @@ export const EditProduct = () => {
           Wystąpił błąd: {error.message}
         </Alert>
       )}
-      <ProductForm
+      <EditProductForm
         formData={formData}
         handleSubmit={handleSubmit}
         handleChange={handleChange}
+        handleSelectChange={handleSelectChange}
+        loading={loading}
       />
       <AlertDialog
         openDialog={openDialog}

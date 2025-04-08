@@ -31,12 +31,18 @@ export class ProductRepository {
   async getProductsByCompany(companyId: number) {
     return this.prisma.product.findMany({
       where: { companyId },
+      include: {
+        vatRate: true,
+      },
     });
   }
 
   async getProductById(productId: number) {
     return this.prisma.product.findUnique({
       where: { id: productId },
+      include: {
+        vatRate: true,
+      },
     });
   }
 

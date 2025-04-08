@@ -133,8 +133,8 @@ model Product {
   description   String?
   price         Decimal       @db.Decimal(10, 2)
   unit          String?
-  taxType       VatRateType   @map("tax_type")
-  taxRate       Decimal?      @db.Decimal(10, 2)    @map("tax_rate")
+  vatRateId     Int         @map("vat_rate_id") @default(1)
+  vatRate       VatRate     @relation(fields: [vatRateId], references: [id])
   invoiceItems  InvoiceItem[]
   createdAt     DateTime      @default(now())       @map("created_at")
   updatedAt     DateTime      @updatedAt            @map("updated_at")
@@ -153,6 +153,7 @@ model VatRate {
   user        User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
   type        VatRateType
   rate        Decimal?      @db.Decimal(10, 2) 
+  products    Product[]
   createdAt   DateTime      @default(now())     @map("created_at")
   @@map("vat_rates")
   @@unique([type, rate])

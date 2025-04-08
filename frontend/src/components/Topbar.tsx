@@ -18,9 +18,11 @@ import {
 } from "../graphql/services/companyService";
 import { Building2 } from "lucide-react";
 import { AddNewCompany } from "./AddNewCompany";
+import { useVatRate } from "../graphql/services/vatRateService";
 
 export const Topbar = () => {
-  const { company, setCompany, replaceCompany, user } = useUserStore();
+  const { company, setCompany, replaceCompany, user, setVatRates } =
+    useUserStore();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
   const { goToInvoicesModule } = useNavigation();
@@ -33,6 +35,7 @@ export const Topbar = () => {
   } = useDefaultCompany(company !== null);
 
   const { data: companiesData } = useCompaniesByUser();
+  const { data: vatRatesData } = useVatRate();
 
   useEffect(() => {
     if (defaultCompanyData?.getDefaultCompanyByUser && !company) {
@@ -44,6 +47,12 @@ export const Topbar = () => {
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
   };
+
+  useEffect(() => {
+    if (vatRatesData?.getVatRates) {
+      setVatRates(vatRatesData.getVatRates);
+    }
+  }, [vatRatesData, setVatRates]);
 
   const handleClose = (event: Event | React.SyntheticEvent) => {
     if (

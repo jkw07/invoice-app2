@@ -14,5 +14,5 @@ export class ProductAvgAggregateInput {
     price?: true;
 
     @Field(() => Boolean, {nullable:true})
-    taxRate?: true;
+    vatRateId?: true;
 }

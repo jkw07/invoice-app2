@@ -3,13 +3,13 @@ import { GridColDef } from "@mui/x-data-grid";
 import { Edit, Trash2, Info } from "lucide-react";
 
 interface TableColsClientsProps {
-  handleDeleteClient: (id: string) => void;
+  handleOpenDeleteClientDialog: (id: string) => void;
   handleGoToEditClientForm: (id: string) => void;
   handleGoToClientInfo: (id: string) => void;
 }
 
 export const tableColsClients = ({
-  handleDeleteClient,
+  handleOpenDeleteClientDialog,
   handleGoToEditClientForm,
   handleGoToClientInfo,
 }: TableColsClientsProps) => {
@@ -86,7 +86,7 @@ export const tableColsClients = ({
             </Tooltip>
             <Tooltip title="Usuń">
               <IconButton
-                onClick={() => handleDeleteClient(params.row.id)}
+                onClick={() => handleOpenDeleteClientDialog(params.row.id)}
                 aria-label="Delete"
               >
                 <Trash2 className="delete-button" />

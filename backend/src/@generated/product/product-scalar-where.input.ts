@@ -5,8 +5,6 @@ import { IntFilter } from '../prisma/int-filter.input';
 import { StringFilter } from '../prisma/string-filter.input';
 import { StringNullableFilter } from '../prisma/string-nullable-filter.input';
 import { DecimalFilter } from '../prisma/decimal-filter.input';
-import { EnumVatRateTypeFilter } from '../prisma/enum-vat-rate-type-filter.input';
-import { DecimalNullableFilter } from '../prisma/decimal-nullable-filter.input';
 import { DateTimeFilter } from '../prisma/date-time-filter.input';
 
 @InputType()
@@ -43,12 +41,8 @@ export class ProductScalarWhereInput {
     @Field(() => StringNullableFilter, {nullable:true})
     unit?: StringNullableFilter;
 
-    @Field(() => EnumVatRateTypeFilter, {nullable:true})
-    taxType?: EnumVatRateTypeFilter;
-
-    @Field(() => DecimalNullableFilter, {nullable:true})
-    @Type(() => DecimalNullableFilter)
-    taxRate?: DecimalNullableFilter;
+    @Field(() => IntFilter, {nullable:true})
+    vatRateId?: IntFilter;
 
     @Field(() => DateTimeFilter, {nullable:true})
     createdAt?: DateTimeFilter;

@@ -138,9 +138,8 @@ input CreateProductInput {
   description: String
   name: String!
   price: Float!
-  taxRate: Float
-  taxType: VatRateType!
   unit: String
+  vatRateId: Int!
 }
 
 input CreateSettingInput {
@@ -261,10 +260,10 @@ type Product {
   invoiceItems: [InvoiceItem!]
   name: String!
   price: Decimal!
-  taxRate: Decimal
-  taxType: VatRateType!
   unit: String
   updatedAt: DateTime!
+  vatRate: VatRate!
+  vatRateId: Int!
 }
 
 type ProductCount {
@@ -285,6 +284,7 @@ type Query {
   getProductsByCompany(companyId: Int!): [Product!]!
   getSettingById(settingId: Int!): Setting!
   getSettingsByCompany(companyId: Int!): [Client!]!
+  getVatRates: [VatRate!]!
   me: AppUser!
 }
 
@@ -385,9 +385,8 @@ input UpdateProductInput {
   description: String
   name: String
   price: Float
-  status: VatRateType
-  taxRate: Float
   unit: String
+  vatRateId: Float
 }
 
 input UpdateSettingInput {
@@ -415,12 +414,18 @@ type UserCount {
 }
 
 type VatRate {
+  _count: VatRateCount!
   createdAt: DateTime!
   id: ID!
+  products: [Product!]
   rate: Decimal
   type: VatRateType!
   user: User
   userId: String
+}
+
+type VatRateCount {
+  products: Int!
 }
 
 enum VatRateType {

@@ -5,7 +5,6 @@ import "../../../styles/buttons.scss";
 import { AlertDialog } from "../../../components/AlertDialog";
 import Button from "@mui/material/Button";
 import { AddProductVariables } from "../../../graphql/types/product";
-import { VatRateType } from "../../../graphql/types/enums";
 import { NewProductForm } from "../components/NewProductForm";
 import { useUserStore } from "../../../store/currentUserStore";
 import { useAddProduct } from "../../../graphql/services/productService";
@@ -21,8 +20,7 @@ const emptyProduct: AddProductInput = {
   description: null,
   price: 0,
   unit: "",
-  taxType: VatRateType.STANDARD,
-  taxRate: 23,
+  vatRateId: 0,
 };
 
 export const NewProduct = () => {
@@ -44,19 +42,18 @@ export const NewProduct = () => {
     setNewProductData(emptyProduct);
   };
 
-  //TODO spr czy nie wysyla sie "" [name]: value === "" ? null : value,
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewProductData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value === "" ? null : value,
     }));
   };
 
   const handleSelectChange = (name: string, value: string | number | null) => {
     setNewProductData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: value === "" ? null : value,
     }));
   };
 
@@ -73,7 +70,7 @@ export const NewProduct = () => {
     const fullProductData: AddProductInput = {
       ...newProductData,
       price: Number(newProductData.price),
-      taxRate: newProductData.taxRate ? Number(newProductData.taxRate) : null,
+      vatRateId: Number(newProductData.vatRateId),
       companyId: safeId(companyId),
     };
     handleAddNewProduct(fullProductData);

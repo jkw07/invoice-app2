@@ -41,13 +41,13 @@ export const tableColsProducts = ({
       headerName: "Stawka VAT",
       width: 150,
       renderCell: (params) => {
-        const { taxType, taxRate } = params.row;
+        const { vatRate } = params.row;
 
         let value = "";
-        if (taxType === VatRateType.NOT_TAXED) value = "np";
-        else if (taxType === VatRateType.EXEMPT) value = "zw";
-        else if (taxType === VatRateType.STANDARD)
-          value = taxRate !== null ? `${taxRate}%` : "";
+        if (vatRate.type === VatRateType.NOT_TAXED) value = "np";
+        else if (vatRate.type === VatRateType.EXEMPT) value = "zw";
+        else if (vatRate.type === VatRateType.STANDARD)
+          value = vatRate.rate !== null ? `${vatRate.rate}%` : "";
 
         return <span>{value}</span>;
       },

@@ -9,6 +9,7 @@ import { EnumVatRateTypeFilter } from '../prisma/enum-vat-rate-type-filter.input
 import { DecimalNullableFilter } from '../prisma/decimal-nullable-filter.input';
 import { DateTimeFilter } from '../prisma/date-time-filter.input';
 import { UserNullableScalarRelationFilter } from '../user/user-nullable-scalar-relation-filter.input';
+import { ProductListRelationFilter } from '../product/product-list-relation-filter.input';
 
 @InputType()
 export class VatRateWhereUniqueInput {
@@ -48,4 +49,8 @@ export class VatRateWhereUniqueInput {
     @Field(() => UserNullableScalarRelationFilter, {nullable:true})
     @Type(() => UserNullableScalarRelationFilter)
     user?: UserNullableScalarRelationFilter;
+
+    @Field(() => ProductListRelationFilter, {nullable:true})
+    @Type(() => ProductListRelationFilter)
+    products?: ProductListRelationFilter;
 }

@@ -10,7 +10,7 @@ import {
 import { Save, RotateCcw } from "lucide-react";
 import { AddProductVariables } from "../../../graphql/types/product";
 import { useState } from "react";
-import { VatRateType } from "../../../graphql/types/enums";
+import { useUserStore } from "../../../store/currentUserStore";
 
 type AddProductInput = AddProductVariables["input"];
 
@@ -32,7 +32,8 @@ export const NewProductForm = ({
   handleSelectChange,
   loading,
 }: NewProductFormProps) => {
-  const [vatSelectValue, setVatSelectValue] = useState<string | number>(23);
+  const { vatRates } = useUserStore();
+  const [vatSelectValue, setVatSelectValue] = useState<number | null>(null);
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ width: "60%" }}>
       <TextField
@@ -109,26 +110,20 @@ export const NewProductForm = ({
           value={vatSelectValue}
           label="Stawka VAT"
           onChange={(e) => {
-            const selectedValue = e.target.value;
-            setVatSelectValue(selectedValue);
-            if (selectedValue === "zw") {
-              handleSelectChange("taxType", VatRateType.EXEMPT);
-              handleSelectChange("taxRate", null);
-            } else if (selectedValue === "np") {
-              handleSelectChange("taxType", VatRateType.NOT_TAXED);
-              handleSelectChange("taxRate", null);
-            } else {
-              handleSelectChange("taxType", VatRateType.STANDARD);
-              handleSelectChange("taxRate", Number(selectedValue));
-            }
+            const selectedId = e.target.value as number;
+            setVatSelectValue(selectedId);
+            handleSelectChange("vatRateId", selectedId);
           }}
         >
-          <MenuItem value="zw">zw</MenuItem>
-          <MenuItem value="np">np</MenuItem>
-          <MenuItem value={0}>0%</MenuItem>
-          <MenuItem value={5}>5%</MenuItem>
-          <MenuItem value={8}>8%</MenuItem>
-          <MenuItem value={23}>23%</MenuItem>
+          {vatRates?.map((vatRate) => (
+            <MenuItem key={vatRate.id} value={vatRate.id}>
+              {vatRate.type === "STANDARD"
+                ? `${vatRate.rate}%`
+                : vatRate.type === "EXEMPT"
+                ? "zw"
+                : "np"}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
       <div

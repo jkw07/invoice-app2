@@ -24,10 +24,7 @@ export class ProductCountAggregate {
     unit!: number;
 
     @Field(() => Int, {nullable:false})
-    taxType!: number;
-
-    @Field(() => Int, {nullable:false})
-    taxRate!: number;
+    vatRateId!: number;
 
     @Field(() => Int, {nullable:false})
     createdAt!: number;

@@ -23,10 +23,7 @@ export class ProductCountAggregateInput {
     unit?: true;
 
     @Field(() => Boolean, {nullable:true})
-    taxType?: true;
-
-    @Field(() => Boolean, {nullable:true})
-    taxRate?: true;
+    vatRateId?: true;
 
     @Field(() => Boolean, {nullable:true})
     createdAt?: true;

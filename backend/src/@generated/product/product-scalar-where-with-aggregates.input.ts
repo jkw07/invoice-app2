@@ -5,8 +5,6 @@ import { IntWithAggregatesFilter } from '../prisma/int-with-aggregates-filter.in
 import { StringWithAggregatesFilter } from '../prisma/string-with-aggregates-filter.input';
 import { StringNullableWithAggregatesFilter } from '../prisma/string-nullable-with-aggregates-filter.input';
 import { DecimalWithAggregatesFilter } from '../prisma/decimal-with-aggregates-filter.input';
-import { EnumVatRateTypeWithAggregatesFilter } from '../prisma/enum-vat-rate-type-with-aggregates-filter.input';
-import { DecimalNullableWithAggregatesFilter } from '../prisma/decimal-nullable-with-aggregates-filter.input';
 import { DateTimeWithAggregatesFilter } from '../prisma/date-time-with-aggregates-filter.input';
 
 @InputType()
@@ -43,12 +41,8 @@ export class ProductScalarWhereWithAggregatesInput {
     @Field(() => StringNullableWithAggregatesFilter, {nullable:true})
     unit?: StringNullableWithAggregatesFilter;
 
-    @Field(() => EnumVatRateTypeWithAggregatesFilter, {nullable:true})
-    taxType?: EnumVatRateTypeWithAggregatesFilter;
-
-    @Field(() => DecimalNullableWithAggregatesFilter, {nullable:true})
-    @Type(() => DecimalNullableWithAggregatesFilter)
-    taxRate?: DecimalNullableWithAggregatesFilter;
+    @Field(() => IntWithAggregatesFilter, {nullable:true})
+    vatRateId?: IntWithAggregatesFilter;
 
     @Field(() => DateTimeWithAggregatesFilter, {nullable:true})
     createdAt?: DateTimeWithAggregatesFilter;

@@ -6,6 +6,7 @@ import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { transformToDecimal } from 'prisma-graphql-type-decimal';
 import { Transform } from 'class-transformer';
 import { Type } from 'class-transformer';
+import { ProductCreateNestedManyWithoutVatRateInput } from '../product/product-create-nested-many-without-vat-rate.input';
 
 @InputType()
 export class VatRateCreateWithoutUserInput {
@@ -20,4 +21,8 @@ export class VatRateCreateWithoutUserInput {
 
     @Field(() => Date, {nullable:true})
     createdAt?: Date | string;
+
+    @Field(() => ProductCreateNestedManyWithoutVatRateInput, {nullable:true})
+    @Type(() => ProductCreateNestedManyWithoutVatRateInput)
+    products?: ProductCreateNestedManyWithoutVatRateInput;
 }

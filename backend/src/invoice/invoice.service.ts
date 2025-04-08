@@ -51,7 +51,7 @@ export class InvoiceService {
   }
 
   async getInvoiceById(userId: string, invoiceId: number, companyId: number) {
-    const cacheKey = `${userId}:invoice:${companyId}:${invoiceId}`;
+    const cacheKey = `${userId}:invoice:${companyId}:${invoiceId}`; //TODO bez userID i comp
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
       await this.checkAccessOrThrow(userId, companyId);

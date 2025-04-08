@@ -16,6 +16,6 @@ export class ProductAvgAggregate {
     @Field(() => GraphQLDecimal, {nullable:true})
     price?: Decimal;
 
-    @Field(() => GraphQLDecimal, {nullable:true})
-    taxRate?: Decimal;
+    @Field(() => Float, {nullable:true})
+    vatRateId?: number;
 }

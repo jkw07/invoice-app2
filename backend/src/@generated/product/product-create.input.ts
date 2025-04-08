@@ -5,8 +5,8 @@ import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { transformToDecimal } from 'prisma-graphql-type-decimal';
 import { Transform } from 'class-transformer';
 import { Type } from 'class-transformer';
-import { VatRateType } from '../prisma/vat-rate-type.enum';
 import { CompanyCreateNestedOneWithoutProductsInput } from '../company/company-create-nested-one-without-products.input';
+import { VatRateCreateNestedOneWithoutProductsInput } from '../vat-rate/vat-rate-create-nested-one-without-products.input';
 import { InvoiceItemCreateNestedManyWithoutProductInput } from '../invoice-item/invoice-item-create-nested-many-without-product.input';
 
 @InputType()
@@ -26,14 +26,6 @@ export class ProductCreateInput {
     @Field(() => String, {nullable:true})
     unit?: string;
 
-    @Field(() => VatRateType, {nullable:false})
-    taxType!: `${VatRateType}`;
-
-    @Field(() => GraphQLDecimal, {nullable:true})
-    @Type(() => Object)
-    @Transform(transformToDecimal)
-    taxRate?: Decimal;
-
     @Field(() => Date, {nullable:true})
     createdAt?: Date | string;
 
@@ -43,6 +35,10 @@ export class ProductCreateInput {
     @Field(() => CompanyCreateNestedOneWithoutProductsInput, {nullable:false})
     @Type(() => CompanyCreateNestedOneWithoutProductsInput)
     company!: CompanyCreateNestedOneWithoutProductsInput;
+
+    @Field(() => VatRateCreateNestedOneWithoutProductsInput, {nullable:true})
+    @Type(() => VatRateCreateNestedOneWithoutProductsInput)
+    vatRate?: VatRateCreateNestedOneWithoutProductsInput;
 
     @Field(() => InvoiceItemCreateNestedManyWithoutProductInput, {nullable:true})
     @Type(() => InvoiceItemCreateNestedManyWithoutProductInput)

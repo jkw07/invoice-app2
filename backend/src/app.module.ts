@@ -13,6 +13,7 @@ import { ProductModule } from './product/product.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-ioredis';
 import { UserModule } from './users/user.module';
+import { VatModule } from './vatRate/vat.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { UserModule } from './users/user.module';
     SettingModule,
     ProductModule,
     UserModule,
+    VatModule,
   ],
 })
 export class AppModule {}

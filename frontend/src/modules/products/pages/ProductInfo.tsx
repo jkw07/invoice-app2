@@ -1,10 +1,8 @@
 import { Alert, Box, CircularProgress, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import "../../../styles/buttons.scss";
 import Button from "@mui/material/Button";
 import { useParams } from "react-router-dom";
-import { ProductFull } from "../../../graphql/types/product";
 import { useProductById } from "../../../graphql/services/productService";
 import { safeId } from "../../../utils/safeId";
 import { useNavigate } from "react-router-dom";
@@ -13,28 +11,16 @@ import { VatRateType } from "../../../graphql/types/enums";
 export const ProductInfo = () => {
   const { id: productIdFromUrl } = useParams();
   const productId = safeId(productIdFromUrl);
-  const [formData, setFormData] = useState<ProductFull>({} as ProductFull);
-  const {
-    data: productData,
-    loading,
-    error,
-    refetch,
-  } = useProductById(productId);
+  const { data: formData, loading, error, refetch } = useProductById(productId);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (productData?.getProductById) {
-      setFormData(productData.getProductById);
-    }
-  }, [productData]);
 
   const handleGoToEditProductForm = (id: string) => {
     navigate(`/products/edit/${id}`);
   };
 
-  const formatTaxRate = (taxType: VatRateType) => {
-    if (taxType === VatRateType.NOT_TAXED) return "np";
-    if (taxType === VatRateType.EXEMPT) return "zw";
+  const formatVatType = (vatType: VatRateType) => {
+    if (vatType === VatRateType.NOT_TAXED) return "np";
+    if (vatType === VatRateType.EXEMPT) return "zw";
     return "";
   };
 
@@ -77,7 +63,7 @@ export const ProductInfo = () => {
           required
           type="text"
           name="name"
-          value={formData.name}
+          value={formData?.getProductById.name}
           disabled={true}
           label="Nazwa produktu"
           margin="normal"
@@ -94,7 +80,7 @@ export const ProductInfo = () => {
           required
           type="text"
           name="description"
-          value={formData.description}
+          value={formData?.getProductById.description}
           disabled={true}
           label="Opis"
           margin="normal"
@@ -110,7 +96,7 @@ export const ProductInfo = () => {
         <TextField
           type="text"
           name="price"
-          value={formData.price}
+          value={formData?.getProductById.price}
           disabled={true}
           label="Cena jednostkowa"
           margin="normal"
@@ -126,7 +112,7 @@ export const ProductInfo = () => {
         <TextField
           type="text"
           name="unit"
-          value={formData.unit}
+          value={formData?.getProductById.unit}
           disabled={true}
           label="Jednostka miary"
           margin="normal"
@@ -139,29 +125,30 @@ export const ProductInfo = () => {
             },
           }}
         />
-        {formData.taxType !== VatRateType.STANDARD && (
-          <TextField
-            type="text"
-            name="taxType"
-            value={formatTaxRate(formData.taxType)}
-            disabled={true}
-            label="Stawka VAT"
-            margin="normal"
-            variant="outlined"
-            fullWidth
-            sx={{ background: "white" }}
-            slotProps={{
-              inputLabel: {
-                shrink: true,
-              },
-            }}
-          />
-        )}
-        {formData.taxType === VatRateType.STANDARD && (
+        {formData?.getProductById.vatRate &&
+          formData.getProductById.vatRate.type !== VatRateType.STANDARD && (
+            <TextField
+              type="text"
+              name="taxType"
+              value={formatVatType(formData.getProductById.vatRate.type)}
+              disabled={true}
+              label="Stawka VAT"
+              margin="normal"
+              variant="outlined"
+              fullWidth
+              sx={{ background: "white" }}
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+              }}
+            />
+          )}
+        {formData?.getProductById.vatRate.type === VatRateType.STANDARD && (
           <TextField
             type="text"
             name="taxRate"
-            value={formData.taxRate}
+            value={formData?.getProductById.vatRate.rate}
             disabled={true}
             label="Stawka VAT"
             margin="normal"

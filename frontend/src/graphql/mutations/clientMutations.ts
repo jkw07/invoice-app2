@@ -9,3 +9,11 @@ export const ADD_CLIENT = gql`
   }
   ${CLIENT_BASIC_FIELDS}
 `;
+
+export const DELETE_CLIENT = gql`
+  mutation DeleteClient($clientId: Int!) {
+    deleteClient(clientId: $clientId) {
+      id
+    }
+  }
+`;

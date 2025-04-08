@@ -12,67 +12,67 @@ export class CreateClientInput {
   name: string;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  tin?: string | null;
+  @IsOptional()
+  tin: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  bin?: string | null;
+  @IsOptional()
+  bin: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  street?: string | null;
+  @IsOptional()
+  street: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  buildingNo?: string | null;
+  @IsOptional()
+  buildingNo: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  apartmentNo?: string | null;
+  @IsOptional()
+  apartmentNo: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  zipCode?: string | null;
+  @IsOptional()
+  zipCode: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  city?: string | null;
+  @IsOptional()
+  city: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  country?: string | null;
+  @IsOptional()
+  country: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  province?: string | null;
+  @IsOptional()
+  province: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  county?: string | null;
+  @IsOptional()
+  county: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  municipality?: string | null;
+  @IsOptional()
+  municipality: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsEmail()
-  email?: string | null;
+  @IsOptional()
+  email: string | null;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  phone?: string | null;
+  @IsOptional()
+  phone: string | null;
 }

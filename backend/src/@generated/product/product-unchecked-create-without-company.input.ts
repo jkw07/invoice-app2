@@ -6,7 +6,6 @@ import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
 import { transformToDecimal } from 'prisma-graphql-type-decimal';
 import { Transform } from 'class-transformer';
 import { Type } from 'class-transformer';
-import { VatRateType } from '../prisma/vat-rate-type.enum';
 import { InvoiceItemUncheckedCreateNestedManyWithoutProductInput } from '../invoice-item/invoice-item-unchecked-create-nested-many-without-product.input';
 
 @InputType()
@@ -29,13 +28,8 @@ export class ProductUncheckedCreateWithoutCompanyInput {
     @Field(() => String, {nullable:true})
     unit?: string;
 
-    @Field(() => VatRateType, {nullable:false})
-    taxType!: `${VatRateType}`;
-
-    @Field(() => GraphQLDecimal, {nullable:true})
-    @Type(() => Object)
-    @Transform(transformToDecimal)
-    taxRate?: Decimal;
+    @Field(() => Int, {nullable:true})
+    vatRateId?: number;
 
     @Field(() => Date, {nullable:true})
     createdAt?: Date | string;

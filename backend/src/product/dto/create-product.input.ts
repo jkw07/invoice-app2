@@ -1,6 +1,5 @@
 import { InputType, Field, Int, Float } from '@nestjs/graphql';
-import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
-import { VatRateType } from 'src/@generated/prisma/vat-rate-type.enum';
+import { IsNumber, IsOptional, IsString } from 'class-validator';
 
 @InputType()
 export class CreateProductInput {
@@ -13,25 +12,20 @@ export class CreateProductInput {
   name: string;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  description?: string | null;
+  @IsOptional()
+  description: string | null;
 
   @Field(() => Float)
   @IsNumber()
   price: number;
 
   @Field(() => String, { nullable: true })
-  @IsOptional()
   @IsString()
-  unit?: string | null;
-
-  @Field(() => VatRateType)
-  @IsEnum(VatRateType)
-  taxType: VatRateType;
-
-  @Field(() => Float, { nullable: true })
   @IsOptional()
+  unit: string | null;
+
+  @Field(() => Int)
   @IsNumber()
-  taxRate?: number | null;
+  vatRateId: number;
 }

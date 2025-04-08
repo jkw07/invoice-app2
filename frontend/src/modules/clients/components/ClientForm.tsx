@@ -1,21 +1,39 @@
 import { Box, Button, Divider, TextField } from "@mui/material";
 import { Save, RotateCcw } from "lucide-react";
-import { ClientFull } from "../../../graphql/types/client";
 
-interface ClientFormProps {
-  formData: ClientFull;
+interface ClientBase {
+  name: string;
+  tin: string | null;
+  bin: string | null;
+  street: string | null;
+  buildingNo: string | null;
+  apartmentNo: string | null;
+  zipCode: string | null;
+  city: string | null;
+  country: string | null;
+  province: string | null;
+  county: string | null;
+  municipality: string | null;
+  email: string | null;
+  phone: string | null;
+}
+
+interface ClientFormProps<T extends ClientBase> {
+  formData: T;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleReset?: () => void;
   hasReset?: boolean;
+  loading?: boolean;
 }
-export const ClientForm = ({
+export const ClientForm = <T extends ClientBase>({
   formData,
   handleSubmit,
   handleChange,
   handleReset,
   hasReset = false,
-}: ClientFormProps) => {
+  loading = false,
+}: ClientFormProps<T>) => {
   return (
     <Box
       component="form"
@@ -268,7 +286,7 @@ export const ClientForm = ({
             type="submit"
             color="success"
           >
-            Zapisz
+            {loading ? "Zapisywanie..." : "Zapisz"}
           </Button>
           {hasReset && (
             <Button

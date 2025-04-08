@@ -9,8 +9,12 @@ export interface ProductFull extends ProductBasic {
   description: string | null;
   price: number;
   unit: string | null;
-  taxType: VatRateType;
-  taxRate: number | null;
+  vatRateId: number;
+  vatRate: {
+    id: number;
+    type: VatRateType;
+    rate: string | null;
+  };
 }
 
 export interface GetProductsByCompanyQuery {
@@ -40,8 +44,7 @@ export interface AddProductVariables {
     description: string | null;
     price: number;
     unit: string | null;
-    taxType: VatRateType;
-    taxRate: number | null;
+    vatRateId: number;
   };
 }
 

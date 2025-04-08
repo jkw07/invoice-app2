@@ -1,70 +1,118 @@
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { plPL } from "@mui/x-data-grid/locales";
-import { Alert, Box, Button, InputAdornment, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import {
+  Alert,
+  AlertColor,
+  Box,
+  Button,
+  InputAdornment,
+  TextField,
+} from "@mui/material";
+import { useState } from "react";
 import { filterData } from "../../../utils/filterData";
 import { tableColsClients } from "./tableCols";
 import { Search } from "lucide-react";
 import { useUserStore } from "../../../store/currentUserStore";
-import { ClientBasic } from "../../../graphql/types/client";
 import { useNavigate } from "react-router-dom";
-import { useClientsByCompany } from "../../../graphql/services/clientService";
+import {
+  useClientsByCompany,
+  useDeleteClient,
+} from "../../../graphql/services/clientService";
+import { AlertDialog } from "../../../components/AlertDialog";
+import { safeId } from "../../../utils/safeId";
 
 export const ClientsTableGrid = () => {
   const { company } = useUserStore();
-  const [clientsData, setClientsData] = useState<ClientBasic[]>([]);
-  const [filteredData, setFilteredData] = useState<ClientBasic[]>([]);
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
+  const [deleteClient] = useDeleteClient();
+  const [hasConfirm, setHasConfirm] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState<AlertColor | undefined>(
+    undefined
+  );
+  const [alertMessage, setAlertMessage] = useState("");
+  const [clientId, setClientId] = useState<number>(0);
 
-  const handleGoToEditClientForm = (id: string) => {
-    navigate(`/clients/edit/${id}`);
-  };
-
-  const handleDeleteClient = (id: string) => {
-    console.log("Delete client with ID:", id);
-  };
-
-  const handleGoToClientInfo = (id: string) => {
-    navigate(`/clients/info/${id}`);
-  };
-
-  //TODO wyszukiwanie po adresie np ul....
-
-  const columns = tableColsClients({
-    handleDeleteClient,
-    handleGoToEditClientForm,
-    handleGoToClientInfo,
-  });
   const {
     data: clientsList,
     loading,
     error,
     refetch,
   } = useClientsByCompany(company?.id);
+  const filteredData = searchText.trim()
+    ? filterData(clientsList?.getClientsByCompany || [], searchText)
+    : clientsList?.getClientsByCompany || [];
 
-  useEffect(() => {
-    if (clientsList?.getClientsByCompany) {
-      setClientsData(clientsList.getClientsByCompany);
-      setFilteredData(clientsList.getClientsByCompany);
-    }
-  }, [clientsList]);
+  const handleOpenDeleteClientDialog = (id: string) => {
+    setAlertSeverity("warning");
+    setAlertMessage("Czy na pewno chcesz usunąć tego klienta?");
+    setHasConfirm(true);
+    setClientId(safeId(id));
+    setOpenDialog(true);
+  };
 
-  useEffect(() => {
-    if (searchText.trim() === "") {
-      setFilteredData(clientsData);
-    } else {
-      const filtered = filterData(clientsData, searchText);
-      setFilteredData(filtered);
+  const handleConfirmDelete = () => {
+    handleDeleteClient(clientId);
+  };
+
+  const handleDeleteClient = async (clientId: number) => {
+    try {
+      await deleteClient({
+        variables: {
+          clientId,
+        },
+        onCompleted: (data) => {
+          setOpenDialog(false);
+          setHasConfirm(false);
+          setAlertSeverity("success");
+          setAlertMessage(`Klient id ${data.deleteClient.id} został usunięty.`);
+          setOpenDialog(true);
+        },
+      });
+      await refetch();
+    } catch (error) {
+      console.error("Błąd przy usuwaniu klienta", error);
+      setOpenDialog(false);
+      setHasConfirm(false);
+      setAlertSeverity("error");
+      setAlertMessage(
+        `Błąd: ${error instanceof Error ? error.message : "Nieznany błąd"}`
+      );
+      setOpenDialog(true);
     }
-  }, [searchText, clientsData]);
+  };
+
+  const handleGoToEditClientForm = (id: string) => {
+    navigate(`/clients/edit/${id}`);
+  };
+
+  const handleGoToClientInfo = (id: string) => {
+    navigate(`/clients/info/${id}`);
+  };
+
+  const columns = tableColsClients({
+    handleOpenDeleteClientDialog,
+    handleGoToEditClientForm,
+    handleGoToClientInfo,
+  });
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchText(event.target.value);
   }
+  const handleDialogClose = () => {
+    setOpenDialog(false);
+  };
 
   return (
     <>
+      <AlertDialog
+        openDialog={openDialog}
+        handleDialogClose={handleDialogClose}
+        alertSeverity={alertSeverity}
+        alertMessage={alertMessage}
+        {...(hasConfirm ? { handleConfirm: handleConfirmDelete } : {})}
+      />
       {error && !loading && (
         <Alert
           severity="error"

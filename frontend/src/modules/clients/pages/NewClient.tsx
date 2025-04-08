@@ -6,21 +6,38 @@ import { ImportClient } from "../components/ImportClient";
 import { AddClientVariables } from "../../../graphql/types/client";
 import { safeId } from "../../../utils/safeId";
 import { useUserStore } from "../../../store/currentUserStore";
-import { NewClientForm } from "../components/NewClientForm";
 import { GET_CLIENTS_BY_COMPANY } from "../../../graphql/queries/clientQueries";
 import { useSnackbarStore } from "../../../store/snackbarStore";
 import { useAddClient } from "../../../graphql/services/clientService";
 import { Alert, AlertColor } from "@mui/material";
 import { useNavigation } from "../../../hooks/useNavigation";
 import { AlertDialog } from "../../../components/AlertDialog";
+import { ClientForm } from "../components/ClientForm";
+
+type AddClientInput = AddClientVariables["input"];
+const emptyClient: AddClientInput = {
+  companyId: 0,
+  name: "",
+  tin: null,
+  bin: null,
+  street: null,
+  buildingNo: null,
+  apartmentNo: null,
+  zipCode: null,
+  city: null,
+  country: null,
+  province: null,
+  county: null,
+  municipality: null,
+  email: null,
+  phone: null,
+};
 
 export const NewClient = () => {
   const companyId = useUserStore((state) => state.company?.id);
-  type AddClientInput = AddClientVariables["input"];
   const [openImportClientDialog, setOpenImportClientDialog] = useState(true);
-  const [newClientData, setNewClientData] = useState<AddClientInput>(
-    {} as AddClientInput
-  );
+  const [newClientData, setNewClientData] =
+    useState<AddClientInput>(emptyClient);
   const [addClient, { loading }] = useAddClient();
   const [onError, setOnError] = useState(false);
   const { showSnackbar } = useSnackbarStore();
@@ -31,34 +48,15 @@ export const NewClient = () => {
   );
   const [alertMessage, setAlertMessage] = useState("");
 
-  const emptyClient: AddClientInput = {
-    companyId: 0,
-    name: "",
-    tin: null,
-    bin: null,
-    street: null,
-    buildingNo: null,
-    apartmentNo: null,
-    zipCode: null,
-    city: null,
-    country: null,
-    province: null,
-    county: null,
-    municipality: null,
-    email: null,
-    phone: null,
-  };
-
   const resetNewClientData = () => {
     setNewClientData(emptyClient);
   };
-  //TODO spr czy nie wysyla sie "": [name]: value === "" ? null : value,
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setNewClientData((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: value === "" ? null : value,
     }));
   };
 
@@ -77,6 +75,7 @@ export const NewClient = () => {
       ...newClientData,
       companyId: safeId(companyId),
     };
+    console.log(fullClientData);
     handleAddNewClient(fullClientData);
   };
 
@@ -99,10 +98,12 @@ export const NewClient = () => {
       console.error("Coś poszło nie tak:", error);
       setOnError(true);
     } finally {
-      setNewClientData({} as AddClientInput);
+      setNewClientData(emptyClient);
       setOnError(false);
     }
   };
+
+  //TODO utility types
 
   const handleCloseImportClient = () => {
     setOpenImportClientDialog(false);
@@ -125,7 +126,7 @@ export const NewClient = () => {
         open={openImportClientDialog}
         handleClose={handleCloseImportClient}
       />
-      <NewClientForm
+      <ClientForm
         formData={newClientData}
         handleSubmit={handleSubmit}
         handleChange={handleChange}

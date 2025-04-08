@@ -14,7 +14,11 @@ export const PRODUCT_FULL_FIELDS = gql`
     description
     price
     unit
-    taxType
-    taxRate
+    vatRateId
+    vatRate {
+      id
+      type
+      rate
+    }
   }
 `;

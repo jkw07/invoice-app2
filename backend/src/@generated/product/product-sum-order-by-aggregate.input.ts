@@ -15,5 +15,5 @@ export class ProductSumOrderByAggregateInput {
     price?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})
-    taxRate?: `${SortOrder}`;
+    vatRateId?: `${SortOrder}`;
 }

@@ -3,7 +3,6 @@ import { ObjectType } from '@nestjs/graphql';
 import { Int } from '@nestjs/graphql';
 import { Decimal } from '@prisma/client/runtime/library';
 import { GraphQLDecimal } from 'prisma-graphql-type-decimal';
-import { VatRateType } from '../prisma/vat-rate-type.enum';
 
 @ObjectType()
 export class ProductMaxAggregate {
@@ -26,11 +25,8 @@ export class ProductMaxAggregate {
     @Field(() => String, {nullable:true})
     unit?: string;
 
-    @Field(() => VatRateType, {nullable:true})
-    taxType?: `${VatRateType}`;
-
-    @Field(() => GraphQLDecimal, {nullable:true})
-    taxRate?: Decimal;
+    @Field(() => Int, {nullable:true})
+    vatRateId?: number;
 
     @Field(() => Date, {nullable:true})
     createdAt?: Date | string;

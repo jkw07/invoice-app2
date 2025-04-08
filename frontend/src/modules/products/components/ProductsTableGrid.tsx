@@ -8,12 +8,11 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { filterData } from "../../../utils/filterData";
 import { tableColsProducts } from "./tableCols";
 import { Search } from "lucide-react";
 import { useUserStore } from "../../../store/currentUserStore";
-import { ProductFull } from "../../../graphql/types/product";
 import { useNavigate } from "react-router-dom";
 import {
   useDeleteProduct,
@@ -24,8 +23,6 @@ import { safeId } from "../../../utils/safeId";
 
 export const ProductsTableGrid = () => {
   const { company } = useUserStore();
-  const [productsData, setProductsData] = useState<ProductFull[]>([]);
-  const [filteredData, setFilteredData] = useState<ProductFull[]>([]);
   const [searchText, setSearchText] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState<AlertColor | undefined>(
@@ -36,6 +33,17 @@ export const ProductsTableGrid = () => {
   const [productId, setProductId] = useState<number>(0);
   const [deleteProduct] = useDeleteProduct();
   const [hasConfirm, setHasConfirm] = useState(false);
+
+  const {
+    data: productsList,
+    loading,
+    error,
+    refetch,
+  } = useProductsByCompany(company?.id);
+
+  const filteredData = searchText.trim()
+    ? filterData(productsList?.getProductsByCompany || [], searchText)
+    : productsList?.getProductsByCompany || [];
 
   const handleOpenDeleteProductDialog = (id: string) => {
     setAlertSeverity("warning");
@@ -69,7 +77,7 @@ export const ProductsTableGrid = () => {
           setOpenDialog(true);
         },
       });
-      console.log("Produkt usunięty!");
+      await refetch();
     } catch (error) {
       console.error("Błąd przy usuwaniu produktu", error);
       setOpenDialog(false);
@@ -89,28 +97,6 @@ export const ProductsTableGrid = () => {
     handleGoToEditProductForm,
     handleGoToProductInfo,
   });
-  const {
-    data: productsList,
-    loading,
-    error,
-    refetch,
-  } = useProductsByCompany(company?.id);
-
-  useEffect(() => {
-    if (productsList?.getProductsByCompany) {
-      setProductsData(productsList.getProductsByCompany);
-      setFilteredData(productsList.getProductsByCompany);
-    }
-  }, [productsList]);
-
-  useEffect(() => {
-    if (searchText.trim() === "") {
-      setFilteredData(productsData);
-    } else {
-      const filtered = filterData(productsData, searchText);
-      setFilteredData(filtered);
-    }
-  }, [searchText, productsData]);
 
   function handleSearchChange(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchText(event.target.value);
@@ -119,8 +105,6 @@ export const ProductsTableGrid = () => {
   const handleDialogClose = () => {
     setOpenDialog(false);
   };
-
-  //TODO wyszukiwanie vat np. np/zw
 
   return (
     <>

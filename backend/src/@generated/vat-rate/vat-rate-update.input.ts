@@ -5,6 +5,7 @@ import { NullableDecimalFieldUpdateOperationsInput } from '../prisma/nullable-de
 import { Type } from 'class-transformer';
 import { DateTimeFieldUpdateOperationsInput } from '../prisma/date-time-field-update-operations.input';
 import { UserUpdateOneWithoutVatRatesNestedInput } from '../user/user-update-one-without-vat-rates-nested.input';
+import { ProductUpdateManyWithoutVatRateNestedInput } from '../product/product-update-many-without-vat-rate-nested.input';
 
 @InputType()
 export class VatRateUpdateInput {
@@ -22,4 +23,8 @@ export class VatRateUpdateInput {
     @Field(() => UserUpdateOneWithoutVatRatesNestedInput, {nullable:true})
     @Type(() => UserUpdateOneWithoutVatRatesNestedInput)
     user?: UserUpdateOneWithoutVatRatesNestedInput;
+
+    @Field(() => ProductUpdateManyWithoutVatRateNestedInput, {nullable:true})
+    @Type(() => ProductUpdateManyWithoutVatRateNestedInput)
+    products?: ProductUpdateManyWithoutVatRateNestedInput;
 }
