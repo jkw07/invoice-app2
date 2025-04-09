@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductInput } from 'src/product/dto/create-product.input';
 import { UpdateProductInput } from 'src/product/dto/update-product.input';
@@ -47,12 +47,28 @@ export class ProductRepository {
   }
 
   async deleteProduct(productId: number) {
+    const invoiceItemCount = await this.prisma.invoiceItem.count({
+      where: { productId: productId },
+    });
+    if (invoiceItemCount > 0) {
+      throw new BadRequestException(
+        'Nie można usunąć produktu, ponieważ istnieje na wystawionych fakturach.',
+      );
+    }
     return this.prisma.product.delete({
       where: { id: productId },
     });
   }
 
   async updateProduct(productId: number, data: UpdateProductInput) {
+    const invoiceItemCount = await this.prisma.invoiceItem.count({
+      where: { productId: productId },
+    });
+    if (invoiceItemCount > 0) {
+      throw new BadRequestException(
+        'Nie można edytować danych, ponieważ produkt istnieje na wystawionych fakturach.',
+      );
+    }
     return this.prisma.product.update({
       where: { id: productId },
       data,

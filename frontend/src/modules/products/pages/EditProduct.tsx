@@ -1,7 +1,6 @@
 import { Alert, AlertColor, Box, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import "../../../styles/buttons.scss";
 import { AlertDialog } from "../../../components/AlertDialog";
 import Button from "@mui/material/Button";
 import { EditProductForm } from "../components/EditProductForm";

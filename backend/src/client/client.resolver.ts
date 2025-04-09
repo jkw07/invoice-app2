@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { ClientService } from './client.service';
 import { Client } from '../@generated/client/client.model';
-import { ForbiddenException, UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Request } from 'express';
 import { UpdateClientInput } from './dto/update-client.input';
@@ -26,10 +26,9 @@ export class ClientResolver {
   async getClientById(
     @Context() context: { req: Request },
     @Args('clientId', { type: () => Int }) clientId: number,
-    @Args('companyId', { type: () => Int }) companyId: number,
   ) {
     const userId = getUserIdFromContext(context);
-    return this.clientService.getClientById(userId, clientId, companyId);
+    return this.clientService.getClientById(userId, clientId);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -57,7 +56,7 @@ export class ClientResolver {
   async updateClient(
     @Context() context: { req: Request },
     @Args('clientId', { type: () => Int }) clientId: number,
-    @Args('data') data: UpdateClientInput,
+    @Args('input') data: UpdateClientInput,
   ) {
     const userId = getUserIdFromContext(context);
     return this.clientService.updateClient(userId, clientId, data);
@@ -67,7 +66,9 @@ export class ClientResolver {
 function getUserIdFromContext(context: { req: Request }): string {
   const userId = context.req.user?.sub;
   if (!userId) {
-    throw new ForbiddenException('User not authenticated');
+    throw new UnauthorizedException('User not authenticated');
   }
   return userId;
 }
+
+//TODO UnauthorizedException?

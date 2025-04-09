@@ -1,7 +1,6 @@
 import { Alert, AlertColor, Box, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import "../../../styles/buttons.scss";
 import { AlertDialog } from "../../../components/AlertDialog";
 import Button from "@mui/material/Button";
 import { ClientForm } from "../components/ClientForm";
@@ -9,7 +8,6 @@ import { useParams } from "react-router-dom";
 import { ClientFull } from "../../../graphql/types/client";
 import { useClientById } from "../../../graphql/services/clientService";
 import { safeId } from "../../../utils/safeId";
-import { useUserStore } from "../../../store/currentUserStore";
 
 export const EditClient = () => {
   const { id: clientIdFromUrl } = useParams();
@@ -20,7 +18,6 @@ export const EditClient = () => {
     undefined
   );
   const [alertMessage, setAlertMessage] = useState("");
-  const companyId = useUserStore((state) => state.company?.id);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -30,12 +27,7 @@ export const EditClient = () => {
     }));
   };
 
-  const {
-    data: clientData,
-    loading,
-    error,
-    refetch,
-  } = useClientById(clientId, companyId);
+  const { data: clientData, loading, error, refetch } = useClientById(clientId);
 
   useEffect(() => {
     if (clientData?.getClientById) {

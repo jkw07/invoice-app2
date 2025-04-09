@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { InvoiceService } from './invoice.service';
 import { Invoice } from '../@generated/invoice/invoice.model';
-import { ForbiddenException, UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Request } from 'express';
 import { UpdateInvoiceInput } from './dto/update-invoice.input';
@@ -26,17 +26,18 @@ export class InvoiceResolver {
   async getInvoiceById(
     @Context() context: { req: Request },
     @Args('invoiceId', { type: () => Int }) invoiceId: number,
-    @Args('companyId', { type: () => Int }) companyId: number,
   ) {
     const userId = getUserIdFromContext(context);
-    return this.invoiceService.getInvoiceById(userId, invoiceId, companyId);
+    return this.invoiceService.getInvoiceById(userId, invoiceId);
   }
+
+  //TODO poprawic na front bez companyId w argumentach
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Invoice)
   async addInvoice(
     @Context() context: { req: Request },
-    @Args('data') data: CreateInvoiceInput,
+    @Args('input') data: CreateInvoiceInput,
   ) {
     const userId = getUserIdFromContext(context);
     return this.invoiceService.addInvoice(userId, data);
@@ -57,7 +58,7 @@ export class InvoiceResolver {
   async updateInvoice(
     @Context() context: { req: Request },
     @Args('invoiceId', { type: () => Int }) invoiceId: number,
-    @Args('data') data: UpdateInvoiceInput,
+    @Args('input') data: UpdateInvoiceInput,
   ) {
     const userId = getUserIdFromContext(context);
     return this.invoiceService.updateInvoice(userId, invoiceId, data);
@@ -67,7 +68,7 @@ export class InvoiceResolver {
 function getUserIdFromContext(context: { req: Request }): string {
   const userId = context.req.user?.sub;
   if (!userId) {
-    throw new ForbiddenException('User not authenticated');
+    throw new UnauthorizedException('User not authenticated');
   }
   return userId;
 }

@@ -1,6 +1,6 @@
 import { Resolver, Mutation, Query, Args, Int, Context } from '@nestjs/graphql';
 import { CompanyService } from './company.service';
-import { ForbiddenException, UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Company } from 'src/@generated/company/company.model';
 import { Request } from 'express';
@@ -54,7 +54,7 @@ export class CompanyResolver {
   async updateCompany(
     @Context() context: { req: Request },
     @Args('companyId', { type: () => Int }) companyId: number,
-    @Args('data') data: UpdateCompanyInput,
+    @Args('input') data: UpdateCompanyInput,
   ): Promise<Company> {
     const userId = getUserIdFromContext(context);
     return this.companyService.updateCompany(userId, companyId, data);
@@ -74,7 +74,7 @@ export class CompanyResolver {
 function getUserIdFromContext(context: { req: Request }): string {
   const userId = context.req.user?.sub;
   if (!userId) {
-    throw new ForbiddenException('User not authenticated');
+    throw new UnauthorizedException('User not authenticated');
   }
   return userId;
 }

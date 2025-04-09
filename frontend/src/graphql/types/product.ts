@@ -17,24 +17,37 @@ export interface ProductFull extends ProductBasic {
   };
 }
 
+//Query
 export interface GetProductsByCompanyQuery {
   getProductsByCompany: ProductFull[];
-}
-
-export interface GetProductsByCompanyVariables {
-  companyId: number;
-}
-
-export interface GetProductByIdVariables {
-  productId: number;
 }
 
 export interface GetProductByIdQuery {
   getProductById: ProductFull;
 }
 
+//Mutation
+export interface DeleteProductMutation {
+  deleteProduct: {
+    id: number;
+  };
+}
+
 export interface AddProductMutation {
   addProduct: ProductBasic;
+}
+
+//VARIABLES
+export interface GetProductsByCompanyVariables {
+  companyId: number;
+}
+
+export interface DeleteProductVariables {
+  productId: number;
+}
+
+export interface GetProductByIdVariables {
+  productId: number;
 }
 
 export interface AddProductVariables {
@@ -46,14 +59,4 @@ export interface AddProductVariables {
     unit: string | null;
     vatRateId: number;
   };
-}
-
-export interface DeleteProductMutation {
-  deleteProduct: {
-    id: number;
-  };
-}
-
-export interface DeleteProductVariables {
-  productId: number;
 }

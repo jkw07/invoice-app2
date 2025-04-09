@@ -1,7 +1,6 @@
 import { Alert, AlertColor } from "@mui/material";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import "../../../styles/buttons.scss";
 import { AlertDialog } from "../../../components/AlertDialog";
 import Button from "@mui/material/Button";
 import { AddProductVariables } from "../../../graphql/types/product";

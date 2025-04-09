@@ -7,26 +7,18 @@ import {
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import "../../../styles/buttons.scss";
 import Button from "@mui/material/Button";
 import { useParams } from "react-router-dom";
 import { ClientFull } from "../../../graphql/types/client";
 import { useClientById } from "../../../graphql/services/clientService";
 import { safeId } from "../../../utils/safeId";
 import { useNavigate } from "react-router-dom";
-import { useUserStore } from "../../../store/currentUserStore";
 
 export const ClientInfo = () => {
   const { id: clientIdFromUrl } = useParams();
-  const companyId = useUserStore((state) => state.company?.id);
   const clientId = safeId(clientIdFromUrl);
   const [formData, setFormData] = useState<ClientFull>({} as ClientFull);
-  const {
-    data: clientData,
-    loading,
-    error,
-    refetch,
-  } = useClientById(clientId, companyId);
+  const { data: clientData, loading, error, refetch } = useClientById(clientId);
   const navigate = useNavigate();
 
   useEffect(() => {

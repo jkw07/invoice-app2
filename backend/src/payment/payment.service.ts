@@ -1,25 +1,51 @@
-import { Injectable, ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException, Inject } from '@nestjs/common';
 import { CreatePaymentInput } from './dto/create-payment.input';
 import { UpdatePaymentInput } from './dto/update-payment.input';
 import { PaymentRepository } from '../repositories/payment.repository';
-import { Payment } from 'src/@generated/payment/payment.model';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Payment } from '@prisma/client';
 
 @Injectable()
 export class PaymentService {
-  constructor(private readonly paymentRepository: PaymentRepository) {}
+  constructor(
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly paymentRepository: PaymentRepository,
+  ) {}
 
-  async createPaymentMethod(userId: string, data: CreatePaymentInput) {
+  async createPaymentMethod(
+    userId: string,
+    data: CreatePaymentInput,
+  ): Promise<Payment> {
+    await this.cacheManager.del(`paymentsList:${userId}`);
     return this.paymentRepository.createPaymentMethod(userId, data);
   }
 
   async getPaymentMethodsByUser(userId: string): Promise<Payment[]> {
-    return this.paymentRepository.getPaymentMethodsByUser(userId);
+    const cacheKey = `paymentsList:${userId}`;
+    const cached = await this.cacheManager.get<Payment[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+    const payments =
+      await this.paymentRepository.getPaymentMethodsByUser(userId);
+    for (const payment of payments) {
+      const itemKey = `payment:${payment.id}`;
+      await this.cacheManager.set(itemKey, payment, 300);
+    }
+    await this.cacheManager.set(cacheKey, payments, 300);
+    return payments;
   }
 
   async getPaymentMethodById(
     userId: string,
     paymentId: number,
   ): Promise<Payment> {
+    const cacheKey = `payment:${paymentId}`;
+    const cached = await this.cacheManager.get<Payment>(cacheKey);
+    if (cached?.userId === userId || cached?.userId === null) {
+      return cached;
+    }
     const payment =
       await this.paymentRepository.getPaymentMethodById(paymentId);
     if (!payment) {
@@ -28,6 +54,7 @@ export class PaymentService {
     if (payment.userId !== null && payment.userId !== userId) {
       throw new ForbiddenException('Access denied');
     }
+    await this.cacheManager.set(cacheKey, payment, 300);
     return payment;
   }
 
@@ -44,7 +71,13 @@ export class PaymentService {
     if (payment.userId !== userId) {
       throw new ForbiddenException('Access denied');
     }
-    return this.paymentRepository.updatePaymentMethod(paymentId, data);
+    const updated = await this.paymentRepository.updatePaymentMethod(
+      paymentId,
+      data,
+    );
+    await this.cacheManager.del(`payment:${paymentId}`);
+    await this.cacheManager.del(`paymentsList:${userId}`);
+    return updated;
   }
 
   async deletePaymentMethod(
@@ -59,6 +92,9 @@ export class PaymentService {
     if (payment.userId !== userId) {
       throw new ForbiddenException('Access denied');
     }
-    return this.paymentRepository.deletePaymentMethod(paymentId);
+    const result = await this.paymentRepository.deletePaymentMethod(paymentId);
+    await this.cacheManager.del(`payment:${paymentId}`);
+    await this.cacheManager.del(`paymentsList:${userId}`);
+    return result;
   }
 }

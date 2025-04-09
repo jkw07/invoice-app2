@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { ProductService } from './product.service';
-import { ForbiddenException, UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Request } from 'express';
 import { UpdateProductInput } from './dto/update-product.input';
@@ -56,7 +56,7 @@ export class ProductResolver {
   async updateProduct(
     @Context() context: { req: Request },
     @Args('productId', { type: () => Int }) productId: number,
-    @Args('data') data: UpdateProductInput,
+    @Args('input') data: UpdateProductInput,
   ) {
     const userId = getUserIdFromContext(context);
     return this.productService.updateProduct(userId, productId, data);
@@ -66,7 +66,7 @@ export class ProductResolver {
 function getUserIdFromContext(context: { req: Request }): string {
   const userId = context.req.user?.sub;
   if (!userId) {
-    throw new ForbiddenException('User not authenticated');
+    throw new UnauthorizedException('User not authenticated');
   }
   return userId;
 }

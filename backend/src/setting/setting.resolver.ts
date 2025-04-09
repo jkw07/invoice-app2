@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { SettingService } from './setting.service';
 import { Client } from '../@generated/client/client.model';
-import { ForbiddenException, UseGuards } from '@nestjs/common';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Request } from 'express';
 import { UpdateSettingInput } from './dto/update-setting.input';
@@ -36,7 +36,7 @@ export class SettingResolver {
   @Mutation(() => Setting)
   async addSetting(
     @Context() context: { req: Request },
-    @Args('data') data: CreateSettingInput,
+    @Args('input') data: CreateSettingInput,
   ): Promise<Setting> {
     const userId = getUserIdFromContext(context);
     return this.settingService.addSetting(userId, data);
@@ -57,7 +57,7 @@ export class SettingResolver {
   async updateSetting(
     @Context() context: { req: Request },
     @Args('settingId', { type: () => Int }) settingId: number,
-    @Args('data') data: UpdateSettingInput,
+    @Args('input') data: UpdateSettingInput,
   ) {
     const userId = getUserIdFromContext(context);
     return this.settingService.updateSetting(userId, settingId, data);
@@ -67,7 +67,7 @@ export class SettingResolver {
 function getUserIdFromContext(context: { req: Request }): string {
   const userId = context.req.user?.sub;
   if (!userId) {
-    throw new ForbiddenException('User not authenticated');
+    throw new UnauthorizedException('User not authenticated');
   }
   return userId;
 }

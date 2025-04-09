@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePaymentInput } from 'src/payment/dto/create-payment.input';
 import { UpdatePaymentInput } from 'src/payment/dto/update-payment.input';
@@ -31,6 +31,14 @@ export class PaymentRepository {
   }
 
   async updatePaymentMethod(paymentId: number, data: UpdatePaymentInput) {
+    const invoiceCount = await this.prisma.invoice.count({
+      where: { paymentId: paymentId },
+    });
+    if (invoiceCount > 0) {
+      throw new BadRequestException(
+        'Nie można edytować danych, ponieważ istnieją faktury powiązane z tą metodą płatności.',
+      );
+    }
     return this.prisma.payment.update({
       where: { id: paymentId },
       data,
@@ -38,6 +46,14 @@ export class PaymentRepository {
   }
 
   async deletePaymentMethod(paymentId: number) {
+    const invoiceCount = await this.prisma.invoice.count({
+      where: { paymentId: paymentId },
+    });
+    if (invoiceCount > 0) {
+      throw new BadRequestException(
+        'Nie można usunąć danych, ponieważ istnieją faktury powiązane z tą metodą płatności.',
+      );
+    }
     return this.prisma.payment.delete({
       where: { id: paymentId },
     });

@@ -1,6 +1,5 @@
 import { Alert, Box, CircularProgress, TextField } from "@mui/material";
 import { NavLink } from "react-router-dom";
-import "../../../styles/buttons.scss";
 import Button from "@mui/material/Button";
 import { useParams } from "react-router-dom";
 import { useProductById } from "../../../graphql/services/productService";

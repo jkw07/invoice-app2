@@ -1,6 +1,6 @@
 import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { PaymentService } from './payment.service';
-import { UseGuards, ForbiddenException } from '@nestjs/common';
+import { UseGuards, UnauthorizedException } from '@nestjs/common';
 import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Payment } from 'src/@generated/payment/payment.model';
 import { Request } from 'express';
@@ -15,7 +15,7 @@ export class PaymentResolver {
   @Mutation(() => Payment)
   async createPaymentMethod(
     @Context() context: { req: Request },
-    @Args('data') data: CreatePaymentInput,
+    @Args('input') data: CreatePaymentInput,
   ): Promise<Payment> {
     const userId = getUserIdFromContext(context);
     return this.paymentService.createPaymentMethod(userId, data);
@@ -45,7 +45,7 @@ export class PaymentResolver {
   async updatePaymentMethod(
     @Context() context: { req: Request },
     @Args('paymentId', { type: () => Int }) paymentId: number,
-    @Args('data') data: UpdatePaymentInput,
+    @Args('input') data: UpdatePaymentInput,
   ): Promise<Payment> {
     const userId = getUserIdFromContext(context);
     return this.paymentService.updatePaymentMethod(userId, paymentId, data);
@@ -65,7 +65,7 @@ export class PaymentResolver {
 function getUserIdFromContext(context: { req: Request }): string {
   const userId = context.req.user?.sub;
   if (!userId) {
-    throw new ForbiddenException('User not authenticated');
+    throw new UnauthorizedException('User not authenticated');
   }
   return userId;
 }

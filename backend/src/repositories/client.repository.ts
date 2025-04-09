@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateClientInput } from 'src/client/dto/create-client.input';
 import { UpdateClientInput } from 'src/client/dto/update-client.input';
@@ -47,16 +47,14 @@ export class ClientRepository {
   }
 
   async deleteClient(clientId: number) {
-    const invoiceCount = await this.prisma.invoice.count({
-      where: { buyerId: clientId },
-    });
-    if (invoiceCount > 0) {
-      throw new BadRequestException(
-        'Nie można usunąć klienta, ponieważ ma wystawione faktury.',
-      );
-    }
     return this.prisma.client.delete({
       where: { id: clientId },
+    });
+  }
+
+  async countInvoicesForClient(clientId: number): Promise<number> {
+    return this.prisma.invoice.count({
+      where: { buyerId: clientId },
     });
   }
 
@@ -67,3 +65,7 @@ export class ClientRepository {
     });
   }
 }
+
+//TODO dane nie edytowalne na FV - pobierac invoices, jesli sa - addNewCLient, jesli nie ma to update, dodac tez invoiceItem i reminders
+//TODO dodac Promise<> do repo
+//TODO w repository bez exeptions, przeniesc do service

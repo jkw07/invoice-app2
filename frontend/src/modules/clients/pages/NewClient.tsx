@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import "../../../styles/buttons.scss";
 import Button from "@mui/material/Button";
 import { ImportClient } from "../components/ImportClient";
 import { AddClientVariables } from "../../../graphql/types/client";

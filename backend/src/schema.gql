@@ -213,11 +213,11 @@ input LoginInput {
 
 type Mutation {
   addClient(input: CreateClientInput!): Client!
-  addInvoice(data: CreateInvoiceInput!): Invoice!
+  addInvoice(input: CreateInvoiceInput!): Invoice!
   addProduct(input: CreateProductInput!): Product!
-  addSetting(data: CreateSettingInput!): Setting!
+  addSetting(input: CreateSettingInput!): Setting!
   createCompany(input: CreateCompanyInput!): Company!
-  createPaymentMethod(data: CreatePaymentInput!): Payment!
+  createPaymentMethod(input: CreatePaymentInput!): Payment!
   deleteClient(clientId: Int!): Client!
   deleteCompany(companyId: Int!): Company!
   deleteInvoice(invoiceId: Int!): Invoice!
@@ -228,12 +228,12 @@ type Mutation {
   logout: Boolean!
   refreshToken(refreshToken: String!): AuthPayload!
   register(data: RegisterInput!): AuthPayload!
-  updateClient(clientId: Int!, data: UpdateClientInput!): Client!
-  updateCompany(companyId: Int!, data: UpdateCompanyInput!): Company!
-  updateInvoice(data: UpdateInvoiceInput!, invoiceId: Int!): Invoice!
-  updatePaymentMethod(data: UpdatePaymentInput!, paymentId: Int!): Payment!
-  updateProduct(data: UpdateProductInput!, productId: Int!): Product!
-  updateSetting(data: UpdateSettingInput!, settingId: Int!): Setting!
+  updateClient(clientId: Int!, input: UpdateClientInput!): Client!
+  updateCompany(companyId: Int!, input: UpdateCompanyInput!): Company!
+  updateInvoice(input: UpdateInvoiceInput!, invoiceId: Int!): Invoice!
+  updatePaymentMethod(input: UpdatePaymentInput!, paymentId: Int!): Payment!
+  updateProduct(input: UpdateProductInput!, productId: Int!): Product!
+  updateSetting(input: UpdateSettingInput!, settingId: Int!): Setting!
 }
 
 type Payment {
@@ -271,12 +271,12 @@ type ProductCount {
 }
 
 type Query {
-  getClientById(clientId: Int!, companyId: Int!): Client!
+  getClientById(clientId: Int!): Client!
   getClientsByCompany(companyId: Int!): [Client!]!
   getCompaniesByUser: [Company!]!
   getCompanyById(companyId: Int!): Company!
   getDefaultCompanyByUser: Company!
-  getInvoiceById(companyId: Int!, invoiceId: Int!): Invoice!
+  getInvoiceById(invoiceId: Int!): Invoice!
   getInvoices(companyId: Int!): [Invoice!]!
   getPaymentMethodById(paymentId: Int!): Payment!
   getPaymentMethodsByUser: [Payment!]!

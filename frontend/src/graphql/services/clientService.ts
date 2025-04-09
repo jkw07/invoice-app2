@@ -27,11 +27,11 @@ export const useClientsByCompany = (companyId?: number) => {
   );
 };
 
-export const useClientById = (clientId?: number, companyId?: number) => {
+export const useClientById = (clientId?: number) => {
   return useQuery<GetClientByIdQuery, GetClientByIdVariables>(
     GET_CLIENT_BY_ID,
     {
-      variables: { clientId: safeId(clientId), companyId: safeId(companyId) },
+      variables: { clientId: safeId(clientId) },
       skip: !clientId,
       fetchPolicy: "no-cache",
     }
