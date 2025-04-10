@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInvoiceInput } from 'src/dto/create-invoice.input';
 import { UpdateInvoiceInput } from 'src/dto/update-invoice.input';
+import { Invoice } from '@prisma/client';
 
 @Injectable()
 export class InvoiceRepository {
@@ -20,7 +21,7 @@ export class InvoiceRepository {
     return !!company;
   }
 
-  async addInvoice(data: CreateInvoiceInput) {
+  async addInvoice(data: CreateInvoiceInput): Promise<Invoice> {
     return this.prisma.invoice.create({
       data: {
         ...data,
@@ -30,7 +31,7 @@ export class InvoiceRepository {
     });
   }
 
-  async getInvoicesByCompany(companyId: number) {
+  async getInvoicesByCompany(companyId: number): Promise<Invoice[]> {
     return this.prisma.invoice.findMany({
       where: { companyId },
       include: {
@@ -41,7 +42,7 @@ export class InvoiceRepository {
     });
   }
 
-  async getInvoiceById(invoiceId: number) {
+  async getInvoiceById(invoiceId: number): Promise<Invoice | null> {
     return this.prisma.invoice.findUnique({
       where: { id: invoiceId },
       include: {
@@ -52,19 +53,25 @@ export class InvoiceRepository {
     });
   }
 
-  async getInvoiceByNumber(invoiceNo: string, companyId: number) {
+  async getInvoiceByNumber(
+    invoiceNo: string,
+    companyId: number,
+  ): Promise<Invoice | null> {
     return this.prisma.invoice.findFirst({
       where: { invoiceNo, companyId },
     });
   }
 
-  async deleteInvoice(invoiceId: number) {
+  async deleteInvoice(invoiceId: number): Promise<Invoice> {
     return this.prisma.invoice.delete({
       where: { id: invoiceId },
     });
   }
 
-  async updateInvoice(invoiceId: number, data: UpdateInvoiceInput) {
+  async updateInvoice(
+    invoiceId: number,
+    data: UpdateInvoiceInput,
+  ): Promise<Invoice> {
     return this.prisma.invoice.update({
       where: { id: invoiceId },
       data,

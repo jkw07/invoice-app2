@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateSettingInput } from 'src/dto/create-setting.input';
 import { UpdateSettingInput } from 'src/dto/update-setting.input';
+import { Setting } from '@prisma/client';
 
 @Injectable()
 export class SettingRepository {
@@ -20,7 +21,7 @@ export class SettingRepository {
     return !!company;
   }
 
-  async addSetting(data: CreateSettingInput) {
+  async addSetting(data: CreateSettingInput): Promise<Setting> {
     return this.prisma.setting.create({
       data: {
         ...data,
@@ -28,25 +29,28 @@ export class SettingRepository {
     });
   }
 
-  async getSettingsByCompany(companyId: number) {
+  async getSettingsByCompany(companyId: number): Promise<Setting[]> {
     return this.prisma.setting.findMany({
       where: { companyId },
     });
   }
 
-  async getSettingById(settingId: number) {
+  async getSettingById(settingId: number): Promise<Setting | null> {
     return this.prisma.setting.findUnique({
       where: { id: settingId },
     });
   }
 
-  async deleteSetting(settingId: number) {
+  async deleteSetting(settingId: number): Promise<Setting> {
     return this.prisma.setting.delete({
       where: { id: settingId },
     });
   }
 
-  async updateSetting(settingId: number, data: UpdateSettingInput) {
+  async updateSetting(
+    settingId: number,
+    data: UpdateSettingInput,
+  ): Promise<Setting> {
     return this.prisma.setting.update({
       where: { id: settingId },
       data,

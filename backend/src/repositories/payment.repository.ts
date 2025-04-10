@@ -2,12 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreatePaymentInput } from 'src/dto/create-payment.input';
 import { UpdatePaymentInput } from 'src/dto/update-payment.input';
+import { Payment } from '@prisma/client';
 
 @Injectable()
 export class PaymentRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createPaymentMethod(userId: string, data: CreatePaymentInput) {
+  async createPaymentMethod(
+    userId: string,
+    data: CreatePaymentInput,
+  ): Promise<Payment> {
     return this.prisma.payment.create({
       data: {
         userId,
@@ -16,7 +20,7 @@ export class PaymentRepository {
     });
   }
 
-  async getPaymentMethodsByUser(userId: string) {
+  async getPaymentMethodsByUser(userId: string): Promise<Payment[]> {
     return this.prisma.payment.findMany({
       where: {
         OR: [{ userId: null }, { userId }],
@@ -24,26 +28,31 @@ export class PaymentRepository {
     });
   }
 
-  async getPaymentMethodByUniqueMethod(method: string) {
+  async getPaymentMethodByUniqueMethod(
+    method: string,
+  ): Promise<Payment | null> {
     return this.prisma.payment.findUnique({
       where: { method: method },
     });
   }
 
-  async getPaymentMethodById(paymentId: number) {
+  async getPaymentMethodById(paymentId: number): Promise<Payment | null> {
     return this.prisma.payment.findUnique({
       where: { id: paymentId },
     });
   }
 
-  async updatePaymentMethod(paymentId: number, data: UpdatePaymentInput) {
+  async updatePaymentMethod(
+    paymentId: number,
+    data: UpdatePaymentInput,
+  ): Promise<Payment> {
     return this.prisma.payment.update({
       where: { id: paymentId },
       data,
     });
   }
 
-  async deletePaymentMethod(paymentId: number) {
+  async deletePaymentMethod(paymentId: number): Promise<Payment> {
     return this.prisma.payment.delete({
       where: { id: paymentId },
     });

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateClientInput } from 'src/dto/create-client.input';
 import { UpdateClientInput } from 'src/dto/update-client.input';
+import { Client, Invoice } from '@prisma/client';
 
 @Injectable()
 export class ClientRepository {
@@ -20,7 +21,7 @@ export class ClientRepository {
     return !!company;
   }
 
-  async addClient(data: CreateClientInput) {
+  async addClient(data: CreateClientInput): Promise<Client> {
     return this.prisma.client.create({
       data: {
         ...data,
@@ -28,7 +29,7 @@ export class ClientRepository {
     });
   }
 
-  async getClientsByCompany(companyId: number) {
+  async getClientsByCompany(companyId: number): Promise<Client[]> {
     return this.prisma.client.findMany({
       where: { companyId },
       include: {
@@ -37,7 +38,9 @@ export class ClientRepository {
     });
   }
 
-  async getClientById(clientId: number) {
+  async getClientById(
+    clientId: number,
+  ): Promise<(Client & { invoices: Invoice[] }) | null> {
     return this.prisma.client.findUnique({
       where: { id: clientId },
       include: {
@@ -46,7 +49,7 @@ export class ClientRepository {
     });
   }
 
-  async deleteClient(clientId: number) {
+  async deleteClient(clientId: number): Promise<Client> {
     return this.prisma.client.delete({
       where: { id: clientId },
     });
@@ -58,7 +61,10 @@ export class ClientRepository {
     });
   }
 
-  async updateClient(clientId: number, data: UpdateClientInput) {
+  async updateClient(
+    clientId: number,
+    data: UpdateClientInput,
+  ): Promise<Client> {
     return this.prisma.client.update({
       where: { id: clientId },
       data,

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductInput } from 'src/dto/create-product.input';
 import { UpdateProductInput } from 'src/dto/update-product.input';
+import { Product } from '@prisma/client';
 
 @Injectable()
 export class ProductRepository {
@@ -20,7 +21,7 @@ export class ProductRepository {
     return !!company;
   }
 
-  async addProduct(data: CreateProductInput) {
+  async addProduct(data: CreateProductInput): Promise<Product> {
     return this.prisma.product.create({
       data: {
         ...data,
@@ -28,7 +29,7 @@ export class ProductRepository {
     });
   }
 
-  async getProductsByCompany(companyId: number) {
+  async getProductsByCompany(companyId: number): Promise<Product[]> {
     return this.prisma.product.findMany({
       where: { companyId },
       include: {
@@ -37,7 +38,7 @@ export class ProductRepository {
     });
   }
 
-  async getProductById(productId: number) {
+  async getProductById(productId: number): Promise<Product | null> {
     return this.prisma.product.findUnique({
       where: { id: productId },
       include: {
@@ -46,13 +47,16 @@ export class ProductRepository {
     });
   }
 
-  async deleteProduct(productId: number) {
+  async deleteProduct(productId: number): Promise<Product> {
     return this.prisma.product.delete({
       where: { id: productId },
     });
   }
 
-  async updateProduct(productId: number, data: UpdateProductInput) {
+  async updateProduct(
+    productId: number,
+    data: UpdateProductInput,
+  ): Promise<Product> {
     return this.prisma.product.update({
       where: { id: productId },
       data,
