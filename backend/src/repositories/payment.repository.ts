@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreatePaymentInput } from 'src/payment/dto/create-payment.input';
-import { UpdatePaymentInput } from 'src/payment/dto/update-payment.input';
+import { CreatePaymentInput } from 'src/dto/create-payment.input';
+import { UpdatePaymentInput } from 'src/dto/update-payment.input';
 
 @Injectable()
 export class PaymentRepository {
@@ -24,6 +24,12 @@ export class PaymentRepository {
     });
   }
 
+  async getPaymentMethodByUniqueMethod(method: string) {
+    return this.prisma.payment.findUnique({
+      where: { method: method },
+    });
+  }
+
   async getPaymentMethodById(paymentId: number) {
     return this.prisma.payment.findUnique({
       where: { id: paymentId },
@@ -31,14 +37,6 @@ export class PaymentRepository {
   }
 
   async updatePaymentMethod(paymentId: number, data: UpdatePaymentInput) {
-    const invoiceCount = await this.prisma.invoice.count({
-      where: { paymentId: paymentId },
-    });
-    if (invoiceCount > 0) {
-      throw new BadRequestException(
-        'Nie można edytować danych, ponieważ istnieją faktury powiązane z tą metodą płatności.',
-      );
-    }
     return this.prisma.payment.update({
       where: { id: paymentId },
       data,
@@ -46,16 +44,14 @@ export class PaymentRepository {
   }
 
   async deletePaymentMethod(paymentId: number) {
-    const invoiceCount = await this.prisma.invoice.count({
-      where: { paymentId: paymentId },
-    });
-    if (invoiceCount > 0) {
-      throw new BadRequestException(
-        'Nie można usunąć danych, ponieważ istnieją faktury powiązane z tą metodą płatności.',
-      );
-    }
     return this.prisma.payment.delete({
       where: { id: paymentId },
+    });
+  }
+
+  async countInvoicesForPaymentMethod(paymentId: number): Promise<number> {
+    return this.prisma.invoice.count({
+      where: { paymentId: paymentId },
     });
   }
 }

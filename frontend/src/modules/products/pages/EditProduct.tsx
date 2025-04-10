@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { ProductFull } from "../../../graphql/types/product";
 import { useProductById } from "../../../graphql/services/productService";
 import { safeId } from "../../../utils/safeId";
+import { translateError } from "../../../utils/translateError";
 
 export const EditProduct = () => {
   const { id: productIdFromUrl } = useParams();
@@ -65,8 +66,9 @@ export const EditProduct = () => {
       setAlertMessage("Dane klienta zostały zaktualizowane pomyślnie.");
     } catch (error) {
       setAlertSeverity("error");
-      setAlertMessage("Wystąpił błąd podczas aktualizacji danych.");
-      console.log(error);
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translated = translateError(errorKey);
+      setAlertMessage(`Błąd: ${translated}`);
     } finally {
       setOpenDialog(true);
     }
@@ -101,7 +103,7 @@ export const EditProduct = () => {
           }
           sx={{ mb: 2 }}
         >
-          Wystąpił błąd: {error.message}
+          {alertMessage}
         </Alert>
       )}
       <EditProductForm

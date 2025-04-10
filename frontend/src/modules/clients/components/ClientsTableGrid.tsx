@@ -20,6 +20,7 @@ import {
 } from "../../../graphql/services/clientService";
 import { AlertDialog } from "../../../components/AlertDialog";
 import { safeId } from "../../../utils/safeId";
+import { translateError } from "../../../utils/translateError";
 
 export const ClientsTableGrid = () => {
   const { company } = useUserStore();
@@ -76,9 +77,9 @@ export const ClientsTableGrid = () => {
       setOpenDialog(false);
       setHasConfirm(false);
       setAlertSeverity("error");
-      setAlertMessage(
-        `Błąd: ${error instanceof Error ? error.message : "Nieznany błąd"}`
-      );
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translated = translateError(errorKey);
+      setAlertMessage(`Błąd: ${translated}`);
       setOpenDialog(true);
     }
   };

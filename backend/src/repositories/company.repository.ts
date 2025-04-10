@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateCompanyInput } from 'src/company/dto/create-company.input';
-import { UpdateCompanyInput } from 'src/company/dto/update-company.input';
+import { CreateCompanyInput } from 'src/dto/create-company.input';
+import { UpdateCompanyInput } from 'src/dto/update-company.input';
 
 @Injectable()
 export class CompanyRepository {
@@ -31,6 +31,15 @@ export class CompanyRepository {
   async getCompanyById(companyId: number) {
     return this.prisma.company.findUnique({
       where: { id: companyId },
+    });
+  }
+
+  async getCompanyByTIN(tin: string, userId: string) {
+    return this.prisma.company.findFirst({
+      where: {
+        tin,
+        userId,
+      },
     });
   }
 

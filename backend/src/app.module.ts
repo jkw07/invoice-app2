@@ -1,19 +1,19 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
-import { InvoiceModule } from './invoice/invoice.module';
-import { CompanyModule } from './company/company.module';
-import { ClientModule } from './client/client.module';
+import { InvoiceModule } from './modules/invoice.module';
+import { CompanyModule } from './modules/company.module';
+import { ClientModule } from './modules/client.module';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
-import { PaymentModule } from './payment/payment.module';
-import { SettingModule } from './setting/setting.module';
-import { ProductModule } from './product/product.module';
+import { PaymentModule } from './modules/payment.module';
+import { SettingModule } from './modules/setting.module';
+import { ProductModule } from './modules/product.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import * as redisStore from 'cache-manager-ioredis';
-import { UserModule } from './users/user.module';
-import { VatModule } from './vatRate/vat.module';
+import { UserModule } from './modules/user.module';
+import { VatModule } from './modules/vat.module';
 
 @Module({
   imports: [

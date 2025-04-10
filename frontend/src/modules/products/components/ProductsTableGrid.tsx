@@ -20,6 +20,7 @@ import {
 } from "../../../graphql/services/productService";
 import { AlertDialog } from "../../../components/AlertDialog";
 import { safeId } from "../../../utils/safeId";
+import { translateError } from "../../../utils/translateError";
 
 export const ProductsTableGrid = () => {
   const { company } = useUserStore();
@@ -83,7 +84,9 @@ export const ProductsTableGrid = () => {
       setOpenDialog(false);
       setHasConfirm(false);
       setAlertSeverity("error");
-      setAlertMessage(`Błąd przy usuwaniu produktu`);
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translated = translateError(errorKey);
+      setAlertMessage(`Błąd: ${translated}`);
       setOpenDialog(true);
     }
   };

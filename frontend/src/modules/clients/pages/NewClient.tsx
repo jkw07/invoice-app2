@@ -12,6 +12,7 @@ import { Alert, AlertColor } from "@mui/material";
 import { useNavigation } from "../../../hooks/useNavigation";
 import { AlertDialog } from "../../../components/AlertDialog";
 import { ClientForm } from "../components/ClientForm";
+import { translateError } from "../../../utils/translateError";
 
 type AddClientInput = AddClientVariables["input"];
 const emptyClient: AddClientInput = {
@@ -95,6 +96,9 @@ export const NewClient = () => {
       });
     } catch (error) {
       console.error("Coś poszło nie tak:", error);
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translated = translateError(errorKey);
+      setAlertMessage(`Błąd: ${translated}`);
       setOnError(true);
     } finally {
       setNewClientData(emptyClient);
@@ -117,7 +121,7 @@ export const NewClient = () => {
         alertMessage={alertMessage}
       />
       <h2>Nowy Klient</h2>
-      {onError && <Alert severity="error">Operacja nie powiodła się.</Alert>}
+      {onError && <Alert severity="error">{alertMessage}</Alert>}
       <NavLink to="/clients" className="link-button">
         <Button>Powrót</Button>
       </NavLink>

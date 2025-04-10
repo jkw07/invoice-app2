@@ -20,6 +20,7 @@ import { SignUp } from "./SignUp";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/mutations/authMutations";
 import { handleGraphqlLogin } from "../services/authService";
+import { translateError } from "../utils/translateError";
 
 export const SignIn = () => {
   const [state, setState] = useState({
@@ -73,7 +74,9 @@ export const SignIn = () => {
       goToInvoicesModule();
     } catch (error) {
       console.error("Login failed: ", error);
-      setLoginAlert("Błąd logowania. Spróbuj ponownie.");
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translated = translateError(errorKey);
+      setLoginAlert(translated);
       setState({
         email: "",
         password: "",

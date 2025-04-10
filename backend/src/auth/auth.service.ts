@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -34,12 +38,11 @@ export class AuthService {
   ): Promise<PrismaUser | null> {
     const user = await this.prisma.user.findUnique({ where: { email } });
     if (!user) {
-      throw new UnauthorizedException('User not found');
+      throw new UnauthorizedException('USER_NOT_FOUND');
     }
-
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException('INVALID_CREDENTIALS');
     }
     return user;
   }
@@ -58,7 +61,7 @@ export class AuthService {
       where: { email },
     });
     if (userIsRegistered) {
-      throw new UnauthorizedException('User already exist');
+      throw new ConflictException('USER_ALREADY_EXISTS');
     }
     const hashed = await bcrypt.hash(data.password, 10);
     const user = await this.prisma.user.create({
@@ -84,11 +87,11 @@ export class AuthService {
         where: { id: decoded.sub },
       });
 
-      if (!user) throw new UnauthorizedException('Invalid token');
+      if (!user) throw new UnauthorizedException('INVALID_TOKEN');
 
       return this.login(user);
     } catch {
-      throw new UnauthorizedException('Token expired or invalid');
+      throw new UnauthorizedException('TOKEN_EXPIRED_OR_INVALID');
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateInvoiceInput } from 'src/invoice/dto/create-invoice.input';
-import { UpdateInvoiceInput } from 'src/invoice/dto/update-invoice.input';
+import { CreateInvoiceInput } from 'src/dto/create-invoice.input';
+import { UpdateInvoiceInput } from 'src/dto/update-invoice.input';
 
 @Injectable()
 export class InvoiceRepository {
@@ -49,6 +49,12 @@ export class InvoiceRepository {
         invoiceItems: true,
         reminders: true,
       },
+    });
+  }
+
+  async getInvoiceByNumber(invoiceNo: string, companyId: number) {
+    return this.prisma.invoice.findFirst({
+      where: { invoiceNo, companyId },
     });
   }
 

@@ -11,6 +11,7 @@ import { useNavigation } from "../../../hooks/useNavigation";
 import { useSnackbarStore } from "../../../store/snackbarStore";
 import { safeId } from "../../../utils/safeId";
 import { GET_PRODUCTS_BY_COMPANY } from "../../../graphql/queries/productQueries";
+import { translateError } from "../../../utils/translateError";
 
 type AddProductInput = AddProductVariables["input"];
 const emptyProduct: AddProductInput = {
@@ -92,6 +93,9 @@ export const NewProduct = () => {
       });
     } catch (error) {
       console.error("Coś poszło nie tak:", error);
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translated = translateError(errorKey);
+      setAlertMessage(`Błąd: ${translated}`);
       setOnError(true);
     } finally {
       setNewProductData(emptyProduct);
@@ -108,7 +112,7 @@ export const NewProduct = () => {
         alertMessage={alertMessage}
       />
       <h2>Nowy produkt</h2>
-      {onError && <Alert severity="error">Operacja nie powiodła się.</Alert>}
+      {onError && <Alert severity="error">{alertMessage}</Alert>}
       <NavLink to="/products" className="link-button">
         <Button>Powrót</Button>
       </NavLink>

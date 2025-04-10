@@ -3,6 +3,7 @@ import {
   InMemoryCache,
   createHttpLink,
   from,
+  fromPromise,
 } from "@apollo/client";
 import { onError } from "@apollo/client/link/error";
 import { setContext } from "@apollo/client/link/context";
@@ -33,7 +34,7 @@ const authLink = setContext(async (_, { headers }) => {
       token = await refreshAccessToken();
       resolvePendingRequests();
     } catch (err) {
-      console.error(err);
+      console.error("Refresh token error (authLink):", err);
       pendingRequests = [];
       clearTokens();
     } finally {
@@ -56,23 +57,62 @@ const authLink = setContext(async (_, { headers }) => {
   };
 });
 
-const errorLink = onError(({ graphQLErrors }) => {
+const errorLink = onError(({ graphQLErrors, operation, forward }) => {
   if (graphQLErrors) {
     console.error("Apollo error:", graphQLErrors);
     for (const err of graphQLErrors) {
-      if (
-        err.extensions?.code === "UNAUTHENTICATED" ||
-        err.message.includes("Unauthorized")
-      ) {
-        clearTokens();
-        localStorage.removeItem("user");
-        localStorage.removeItem("companyId");
-        useUserStore.getState().setUser(null);
-        useUserStore.getState().setCompany(null);
-        useSnackbarStore
-          .getState()
-          .showSnackbar("Użytkownik został wylogowany.", "warning");
-        window.location.href = paths.HOME;
+      if (err.extensions?.code === "UNAUTHENTICATED") {
+        const operationName = operation.operationName;
+
+        if (operationName === "Login" || operationName === "Register") {
+          console.warn("Login/Register unauthorized - invalid credentials.");
+          return;
+        }
+        if (!isRefreshing) {
+          isRefreshing = true;
+
+          return fromPromise(
+            refreshAccessToken()
+              .then((newAccessToken) => {
+                resolvePendingRequests();
+                const oldHeaders = operation.getContext().headers || {};
+                operation.setContext({
+                  headers: {
+                    ...oldHeaders,
+                    Authorization: `Bearer ${newAccessToken}`,
+                  },
+                });
+                return;
+              })
+              .catch((refreshError) => {
+                console.error("Refresh token error (errorLink):", refreshError);
+                pendingRequests = [];
+                clearTokens();
+                localStorage.removeItem("user");
+                localStorage.removeItem("companyId");
+                useUserStore.getState().setUser(null);
+                useUserStore.getState().setCompany(null);
+                useSnackbarStore
+                  .getState()
+                  .showSnackbar("Użytkownik został wylogowany.", "warning");
+                window.location.href = paths.HOME;
+                return;
+              })
+              .finally(() => {
+                isRefreshing = false;
+              })
+          )
+            .filter(Boolean)
+            .flatMap(() => forward(operation));
+        } else {
+          return fromPromise(
+            new Promise<void>((resolve) => {
+              pendingRequests.push(resolve);
+            })
+          )
+            .filter(Boolean)
+            .flatMap(() => forward(operation));
+        }
       }
     }
   }

@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { ClientFull } from "../../../graphql/types/client";
 import { useClientById } from "../../../graphql/services/clientService";
 import { safeId } from "../../../utils/safeId";
+import { translateError } from "../../../utils/translateError";
 
 export const EditClient = () => {
   const { id: clientIdFromUrl } = useParams();
@@ -53,8 +54,9 @@ export const EditClient = () => {
       setAlertMessage("Dane klienta zostały zaktualizowane pomyślnie.");
     } catch (error) {
       setAlertSeverity("error");
-      setAlertMessage("Wystąpił błąd podczas aktualizacji danych.");
-      console.log(error);
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translated = translateError(errorKey);
+      setAlertMessage(`Błąd: ${translated}`);
     } finally {
       setOpenDialog(true);
     }
@@ -89,7 +91,7 @@ export const EditClient = () => {
           }
           sx={{ mb: 2 }}
         >
-          Wystąpił błąd: {error.message}
+          {alertMessage}
         </Alert>
       )}
       <ClientForm
