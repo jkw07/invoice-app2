@@ -29,7 +29,9 @@ export class ClientRepository {
     });
   }
 
-  async getClientsByCompany(companyId: number): Promise<Client[]> {
+  async getClientsByCompany(
+    companyId: number,
+  ): Promise<(Client & { invoices: Invoice[] })[]> {
     return this.prisma.client.findMany({
       where: { companyId },
       include: {

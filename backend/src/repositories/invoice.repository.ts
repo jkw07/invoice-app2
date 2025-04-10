@@ -2,7 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateInvoiceInput } from 'src/dto/create-invoice.input';
 import { UpdateInvoiceInput } from 'src/dto/update-invoice.input';
-import { Invoice } from '@prisma/client';
+import {
+  Client,
+  Company,
+  Invoice,
+  InvoiceItem,
+  Payment,
+  Reminder,
+} from '@prisma/client';
 
 @Injectable()
 export class InvoiceRepository {
@@ -31,22 +38,34 @@ export class InvoiceRepository {
     });
   }
 
-  async getInvoicesByCompany(companyId: number): Promise<Invoice[]> {
+  async getInvoicesByCompany(
+    companyId: number,
+  ): Promise<(Invoice & { buyer: Client })[]> {
     return this.prisma.invoice.findMany({
       where: { companyId },
       include: {
         buyer: true,
-        invoiceItems: true,
-        reminders: true,
       },
     });
   }
+  //TODO czy bd potrzebne cos jeszcze???
 
-  async getInvoiceById(invoiceId: number): Promise<Invoice | null> {
+  async getInvoiceById(invoiceId: number): Promise<
+    | (Invoice & {
+        company: Company;
+        buyer: Client;
+        payment: Payment;
+        invoiceItems: InvoiceItem[];
+        reminders: Reminder[];
+      })
+    | null
+  > {
     return this.prisma.invoice.findUnique({
       where: { id: invoiceId },
       include: {
+        company: true,
         buyer: true,
+        payment: true,
         invoiceItems: true,
         reminders: true,
       },

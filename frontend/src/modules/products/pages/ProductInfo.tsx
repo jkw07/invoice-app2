@@ -57,7 +57,7 @@ export const ProductInfo = () => {
           Wystąpił błąd: {error.message}
         </Alert>
       )}
-      <Box sx={{ width: "60%" }}>
+      <Box sx={{ width: "60%", marginTop: "20px" }}>
         <TextField
           required
           type="text"

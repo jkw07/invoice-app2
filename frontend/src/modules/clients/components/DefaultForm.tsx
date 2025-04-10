@@ -20,25 +20,29 @@ interface ClientBase {
 
 interface ClientFormProps<T extends ClientBase> {
   formData: T;
-  handleSubmit: (e: React.FormEvent) => Promise<void>;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit?: (e: React.FormEvent) => Promise<void>;
+  handleChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleReset?: () => void;
   hasReset?: boolean;
   loading?: boolean;
+  hasSubmit?: boolean;
+  isDisabled?: boolean;
 }
-export const ClientForm = <T extends ClientBase>({
+export const DefaultForm = <T extends ClientBase>({
   formData,
   handleSubmit,
   handleChange,
   handleReset,
   hasReset = false,
   loading = false,
+  hasSubmit = true,
+  isDisabled = false,
 }: ClientFormProps<T>) => {
   return (
     <Box
       component="form"
       onSubmit={handleSubmit}
-      sx={{ width: "100%", display: "flex", gap: 4 }}
+      sx={{ width: "100%", display: "flex", gap: 4, marginTop: "20px" }}
     >
       <Box sx={{ width: "40%" }}>
         <Divider>Dane podstawowe</Divider>
@@ -46,6 +50,7 @@ export const ClientForm = <T extends ClientBase>({
           required
           type="text"
           name="name"
+          disabled={isDisabled}
           value={formData.name}
           onChange={handleChange}
           label="Nazwa firmy lub imię i nazwisko klienta"
@@ -62,6 +67,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="tin"
+          disabled={isDisabled}
           value={formData.tin}
           onChange={handleChange}
           label="NIP"
@@ -78,6 +84,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="bin"
+          disabled={isDisabled}
           value={formData.bin}
           onChange={handleChange}
           label="REGON"
@@ -95,6 +102,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="email"
           name="email"
+          disabled={isDisabled}
           value={formData.email}
           onChange={handleChange}
           label="Email"
@@ -111,6 +119,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="phone"
+          disabled={isDisabled}
           value={formData.phone}
           onChange={handleChange}
           label="Telefon"
@@ -130,6 +139,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="street"
+          disabled={isDisabled}
           value={formData.street}
           onChange={handleChange}
           label="Ulica"
@@ -146,6 +156,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="buildingNo"
+          disabled={isDisabled}
           value={formData.buildingNo}
           onChange={handleChange}
           label="Numer domu"
@@ -162,6 +173,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="apartmentNo"
+          disabled={isDisabled}
           value={formData.apartmentNo}
           onChange={handleChange}
           label="Numer lokalu"
@@ -178,6 +190,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="zipCode"
+          disabled={isDisabled}
           value={formData.zipCode}
           onChange={handleChange}
           label="Kod pocztowy"
@@ -194,6 +207,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="city"
+          disabled={isDisabled}
           value={formData.city}
           onChange={handleChange}
           label="Miasto"
@@ -210,6 +224,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="municipality"
+          disabled={isDisabled}
           value={formData.municipality}
           onChange={handleChange}
           label="Gmina"
@@ -226,6 +241,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="county"
+          disabled={isDisabled}
           value={formData.county}
           onChange={handleChange}
           label="Powiat"
@@ -242,6 +258,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="province"
+          disabled={isDisabled}
           value={formData.province}
           onChange={handleChange}
           label="Województwo"
@@ -258,6 +275,7 @@ export const ClientForm = <T extends ClientBase>({
         <TextField
           type="text"
           name="country"
+          disabled={isDisabled}
           value={formData.country}
           onChange={handleChange}
           label="Państwo"
@@ -280,14 +298,16 @@ export const ClientForm = <T extends ClientBase>({
             justifyContent: "end",
           }}
         >
-          <Button
-            variant="contained"
-            startIcon={<Save />}
-            type="submit"
-            color="success"
-          >
-            {loading ? "Zapisywanie..." : "Zapisz"}
-          </Button>
+          {hasSubmit && (
+            <Button
+              variant="contained"
+              startIcon={<Save />}
+              type="submit"
+              color="success"
+            >
+              {loading ? "Zapisywanie..." : "Zapisz"}
+            </Button>
+          )}
           {hasReset && (
             <Button
               variant="outlined"

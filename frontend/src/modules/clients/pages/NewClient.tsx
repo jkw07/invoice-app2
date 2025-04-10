@@ -11,8 +11,8 @@ import { useAddClient } from "../../../graphql/services/clientService";
 import { Alert, AlertColor } from "@mui/material";
 import { useNavigation } from "../../../hooks/useNavigation";
 import { AlertDialog } from "../../../components/AlertDialog";
-import { ClientForm } from "../components/ClientForm";
 import { translateError } from "../../../utils/translateError";
+import { DefaultForm } from "../components/DefaultForm";
 
 type AddClientInput = AddClientVariables["input"];
 const emptyClient: AddClientInput = {
@@ -129,7 +129,7 @@ export const NewClient = () => {
         open={openImportClientDialog}
         handleClose={handleCloseImportClient}
       />
-      <ClientForm
+      <DefaultForm
         formData={newClientData}
         handleSubmit={handleSubmit}
         handleChange={handleChange}

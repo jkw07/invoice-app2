@@ -15,6 +15,14 @@ export const GET_CLIENT_BY_ID = gql`
   query GetClientById($clientId: Int!) {
     getClientById(clientId: $clientId) {
       ...ClientFullFields
+      invoices {
+        id
+        invoiceNo
+        issuedDate
+        totalAmount
+        dueDate
+        status
+      }
     }
   }
   ${CLIENT_FULL_FIELDS}

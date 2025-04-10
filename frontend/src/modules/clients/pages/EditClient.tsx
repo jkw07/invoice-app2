@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { AlertDialog } from "../../../components/AlertDialog";
 import Button from "@mui/material/Button";
-import { ClientForm } from "../components/ClientForm";
 import { useParams } from "react-router-dom";
 import { ClientFull } from "../../../graphql/types/client";
 import { useClientById } from "../../../graphql/services/clientService";
 import { safeId } from "../../../utils/safeId";
 import { translateError } from "../../../utils/translateError";
+import { DefaultForm } from "../components/DefaultForm";
 
 export const EditClient = () => {
   const { id: clientIdFromUrl } = useParams();
@@ -94,7 +94,7 @@ export const EditClient = () => {
           {alertMessage}
         </Alert>
       )}
-      <ClientForm
+      <DefaultForm
         formData={formData}
         handleSubmit={handleSubmit}
         handleChange={handleChange}

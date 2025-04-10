@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateProductInput } from 'src/dto/create-product.input';
 import { UpdateProductInput } from 'src/dto/update-product.input';
-import { Product } from '@prisma/client';
+import { Product, VatRate } from '@prisma/client';
 
 @Injectable()
 export class ProductRepository {
@@ -29,7 +29,9 @@ export class ProductRepository {
     });
   }
 
-  async getProductsByCompany(companyId: number): Promise<Product[]> {
+  async getProductsByCompany(
+    companyId: number,
+  ): Promise<(Product & { vatRate: VatRate })[]> {
     return this.prisma.product.findMany({
       where: { companyId },
       include: {
@@ -38,7 +40,9 @@ export class ProductRepository {
     });
   }
 
-  async getProductById(productId: number): Promise<Product | null> {
+  async getProductById(
+    productId: number,
+  ): Promise<(Product & { vatRate: VatRate }) | null> {
     return this.prisma.product.findUnique({
       where: { id: productId },
       include: {

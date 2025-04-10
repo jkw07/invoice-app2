@@ -31,7 +31,11 @@ export const EditProductForm = ({
 }: EditProductFormProps) => {
   const { vatRates } = useUserStore();
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: "60%" }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      sx={{ width: "60%", marginTop: "20px" }}
+    >
       <TextField
         required
         type="text"
