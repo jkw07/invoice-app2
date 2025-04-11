@@ -11,6 +11,7 @@ import { InvoiceRepository } from '../repositories/invoice.repository';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Invoice } from '@prisma/client';
+import { CreateInvoiceItemInput } from 'src/dto/create-invoice-item.input';
 
 @Injectable()
 export class InvoiceService {
@@ -29,17 +30,21 @@ export class InvoiceService {
     }
   }
 
-  async addInvoice(userId: string, data: CreateInvoiceInput): Promise<Invoice> {
-    await this.checkAccessOrThrow(userId, data.companyId);
+  async addInvoiceWithItems(
+    userId: string,
+    inputInvoice: CreateInvoiceInput,
+    inputItem: CreateInvoiceItemInput[],
+  ): Promise<Invoice> {
+    await this.checkAccessOrThrow(userId, inputInvoice.companyId);
     const duplicatedInvoice = await this.invoiceRepository.getInvoiceByNumber(
-      data.invoiceNo,
-      data.companyId,
+      inputInvoice.invoiceNo,
+      inputInvoice.companyId,
     );
     if (duplicatedInvoice) {
       throw new ConflictException('INVOICE_ALREADY_EXISTS');
     }
-    await this.cacheManager.del(`invoicesList:${data.companyId}`);
-    return this.invoiceRepository.addInvoice(data);
+    await this.cacheManager.del(`invoicesList:${inputInvoice.companyId}`);
+    return this.invoiceRepository.addInvoiceWithItems(inputInvoice, inputItem);
   }
 
   async getInvoicesByCompany(
@@ -90,17 +95,22 @@ export class InvoiceService {
     return result;
   }
 
-  async updateInvoice(
+  async updateInvoiceWithItems(
     userId: string,
     invoiceId: number,
-    data: UpdateInvoiceInput,
+    inputInvoice: UpdateInvoiceInput,
+    inputItem: CreateInvoiceItemInput[],
   ): Promise<Invoice> {
     const invoice = await this.invoiceRepository.getInvoiceById(invoiceId);
     if (!invoice) {
       throw new NotFoundException('INVOICE_NOT_FOUND');
     }
     await this.checkAccessOrThrow(userId, invoice.companyId);
-    const updated = await this.invoiceRepository.updateInvoice(invoiceId, data);
+    const updated = await this.invoiceRepository.updateInvoiceWithItems(
+      invoiceId,
+      inputInvoice,
+      inputItem,
+    );
     await this.cacheManager.del(`invoice:${invoice.id}`);
     await this.cacheManager.del(`invoicesList:${invoice.companyId}`);
     return updated;

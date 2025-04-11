@@ -6,6 +6,7 @@ import { GqlAuthGuard } from '../auth/gql-auth.guard';
 import { Request } from 'express';
 import { UpdateInvoiceInput } from '../dto/update-invoice.input';
 import { CreateInvoiceInput } from '../dto/create-invoice.input';
+import { CreateInvoiceItemInput } from 'src/dto/create-invoice-item.input';
 
 @Resolver(() => Invoice)
 export class InvoiceResolver {
@@ -33,12 +34,18 @@ export class InvoiceResolver {
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Invoice)
-  async addInvoice(
+  async addInvoiceWithItems(
     @Context() context: { req: Request },
-    @Args('input') data: CreateInvoiceInput,
+    @Args('inputInvoice') inputInvoice: CreateInvoiceInput,
+    @Args('inputItem', { type: () => [CreateInvoiceItemInput] })
+    inputItem: CreateInvoiceItemInput[],
   ) {
     const userId = getUserIdFromContext(context);
-    return this.invoiceService.addInvoice(userId, data);
+    return this.invoiceService.addInvoiceWithItems(
+      userId,
+      inputInvoice,
+      inputItem,
+    );
   }
 
   @UseGuards(GqlAuthGuard)
@@ -53,13 +60,20 @@ export class InvoiceResolver {
 
   @UseGuards(GqlAuthGuard)
   @Mutation(() => Invoice)
-  async updateInvoice(
+  async updateInvoiceWithItems(
     @Context() context: { req: Request },
     @Args('invoiceId', { type: () => Int }) invoiceId: number,
-    @Args('input') data: UpdateInvoiceInput,
+    @Args('inputInvoice') inputInvoice: UpdateInvoiceInput,
+    @Args('inputItem', { type: () => [CreateInvoiceItemInput] })
+    inputItem: CreateInvoiceItemInput[],
   ) {
     const userId = getUserIdFromContext(context);
-    return this.invoiceService.updateInvoice(userId, invoiceId, data);
+    return this.invoiceService.updateInvoiceWithItems(
+      userId,
+      invoiceId,
+      inputInvoice,
+      inputItem,
+    );
   }
 }
 

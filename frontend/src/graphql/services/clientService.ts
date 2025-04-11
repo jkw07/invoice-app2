@@ -12,9 +12,15 @@ import {
   GetClientByIdVariables,
   GetClientsByCompanyQuery,
   GetClientsByCompanyVariables,
+  UpdateClientMutation,
+  UpdateClientVariables,
 } from "../types/client";
 import { safeId } from "../../utils/safeId";
-import { ADD_CLIENT, DELETE_CLIENT } from "../mutations/clientMutations";
+import {
+  ADD_CLIENT,
+  DELETE_CLIENT,
+  UPDATE_CLIENT,
+} from "../mutations/clientMutations";
 
 export const useClientsByCompany = (companyId?: number) => {
   return useQuery<GetClientsByCompanyQuery, GetClientsByCompanyVariables>(
@@ -45,5 +51,11 @@ export const useAddClient = () => {
 export const useDeleteClient = () => {
   return useMutation<DeleteClientMutation, DeleteClientVariables>(
     DELETE_CLIENT
+  );
+};
+
+export const useUpdateClient = () => {
+  return useMutation<UpdateClientMutation, UpdateClientVariables>(
+    UPDATE_CLIENT
   );
 };

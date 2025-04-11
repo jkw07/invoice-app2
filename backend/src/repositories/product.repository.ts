@@ -21,10 +21,10 @@ export class ProductRepository {
     return !!company;
   }
 
-  async addProduct(data: CreateProductInput): Promise<Product> {
+  async addProduct(input: CreateProductInput): Promise<Product> {
     return this.prisma.product.create({
       data: {
-        ...data,
+        ...input,
       },
     });
   }
@@ -59,11 +59,11 @@ export class ProductRepository {
 
   async updateProduct(
     productId: number,
-    data: UpdateProductInput,
+    input: UpdateProductInput,
   ): Promise<Product> {
     return this.prisma.product.update({
       where: { id: productId },
-      data,
+      data: { ...input },
     });
   }
 

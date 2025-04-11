@@ -1,5 +1,5 @@
-import { useUserStore } from "../store/currentUserStore";
-import { clearTokens, saveTokens } from "../utils/tokenStorage";
+import { useUserStore } from "../../store/currentUserStore";
+import { clearTokens, saveTokens } from "../../utils/tokenStorage";
 
 type LoginData = {
   accessToken: string;
@@ -23,7 +23,7 @@ export const handleGraphqlLogin = (tokens: LoginData, rememberMe: boolean) => {
 };
 
 export const logoutUser = () => {
-  clearTokens();
   useUserStore.getState().setUser(null);
   useUserStore.getState().setCompany(null);
+  clearTokens();
 };

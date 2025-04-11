@@ -10,12 +10,12 @@ export class PaymentRepository {
 
   async createPaymentMethod(
     userId: string,
-    data: CreatePaymentInput,
+    input: CreatePaymentInput,
   ): Promise<Payment> {
     return this.prisma.payment.create({
       data: {
         userId,
-        ...data,
+        ...input,
       },
     });
   }
@@ -44,11 +44,11 @@ export class PaymentRepository {
 
   async updatePaymentMethod(
     paymentId: number,
-    data: UpdatePaymentInput,
+    input: UpdatePaymentInput,
   ): Promise<Payment> {
     return this.prisma.payment.update({
       where: { id: paymentId },
-      data,
+      data: { ...input },
     });
   }
 

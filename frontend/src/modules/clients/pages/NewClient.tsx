@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Button from "@mui/material/Button";
 import { ImportClient } from "../components/ImportClient";
-import { AddClientVariables } from "../../../graphql/types/client";
+import { AddClientInput } from "../../../graphql/types/client";
 import { safeId } from "../../../utils/safeId";
 import { useUserStore } from "../../../store/currentUserStore";
 import { GET_CLIENTS_BY_COMPANY } from "../../../graphql/queries/clientQueries";
@@ -13,25 +13,7 @@ import { useNavigation } from "../../../hooks/useNavigation";
 import { AlertDialog } from "../../../components/AlertDialog";
 import { translateError } from "../../../utils/translateError";
 import { DefaultForm } from "../components/DefaultForm";
-
-type AddClientInput = AddClientVariables["input"];
-const emptyClient: AddClientInput = {
-  companyId: 0,
-  name: "",
-  tin: null,
-  bin: null,
-  street: null,
-  buildingNo: null,
-  apartmentNo: null,
-  zipCode: null,
-  city: null,
-  country: null,
-  province: null,
-  county: null,
-  municipality: null,
-  email: null,
-  phone: null,
-};
+import { emptyClient } from "../utils/defaultFormData";
 
 export const NewClient = () => {
   const companyId = useUserStore((state) => state.company?.id);

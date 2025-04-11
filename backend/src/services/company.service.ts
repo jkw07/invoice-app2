@@ -21,17 +21,17 @@ export class CompanyService {
 
   async createCompany(
     userId: string,
-    data: CreateCompanyInput,
+    input: CreateCompanyInput,
   ): Promise<Company> {
     const duplicatedCompany = await this.companyRepository.getCompanyByTIN(
-      data.tin,
+      input.tin,
       userId,
     );
     if (duplicatedCompany) {
       throw new ConflictException('COMPANY_ALREADY_EXISTS');
     }
     await this.cacheManager.del(`companiesList:${userId}`);
-    return this.companyRepository.createCompany(userId, data);
+    return this.companyRepository.createCompany(userId, input);
   }
 
   async getCompaniesByUser(userId: string): Promise<Company[]> {
@@ -80,7 +80,7 @@ export class CompanyService {
   async updateCompany(
     userId: string,
     companyId: number,
-    data: UpdateCompanyInput,
+    input: UpdateCompanyInput,
   ): Promise<Company> {
     const company = await this.companyRepository.getCompanyById(companyId);
     if (!company) {
@@ -89,7 +89,10 @@ export class CompanyService {
     if (company.userId !== userId) {
       throw new ForbiddenException('ACCESS_DENIED');
     }
-    const updated = await this.companyRepository.updateCompany(companyId, data);
+    const updated = await this.companyRepository.updateCompany(
+      companyId,
+      input,
+    );
     await this.cacheManager.del(`companiesList:${userId}`);
     await this.cacheManager.del(`company:${companyId}`);
     return updated;

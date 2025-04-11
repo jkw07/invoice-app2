@@ -22,15 +22,15 @@ export class PaymentService {
 
   async createPaymentMethod(
     userId: string,
-    data: CreatePaymentInput,
+    input: CreatePaymentInput,
   ): Promise<Payment> {
     const duplicatedPaymentMethod =
-      await this.paymentRepository.getPaymentMethodByUniqueMethod(data.method);
+      await this.paymentRepository.getPaymentMethodByUniqueMethod(input.method);
     if (duplicatedPaymentMethod) {
       throw new ConflictException('PAYMENT_METHOD_ALREADY_EXISTS');
     }
     await this.cacheManager.del(`paymentsList:${userId}`);
-    return this.paymentRepository.createPaymentMethod(userId, data);
+    return this.paymentRepository.createPaymentMethod(userId, input);
   }
 
   async getPaymentMethodsByUser(userId: string): Promise<Payment[]> {
@@ -73,7 +73,7 @@ export class PaymentService {
   async updatePaymentMethod(
     userId: string,
     paymentId: number,
-    data: UpdatePaymentInput,
+    input: UpdatePaymentInput,
   ): Promise<Payment> {
     const payment =
       await this.paymentRepository.getPaymentMethodById(paymentId);
@@ -90,7 +90,7 @@ export class PaymentService {
     }
     const updated = await this.paymentRepository.updatePaymentMethod(
       paymentId,
-      data,
+      input,
     );
     await this.cacheManager.del(`payment:${paymentId}`);
     await this.cacheManager.del(`paymentsList:${userId}`);

@@ -29,10 +29,13 @@ export class ProductService {
     }
   }
 
-  async addProduct(userId: string, data: CreateProductInput): Promise<Product> {
-    await this.checkAccessOrThrow(userId, data.companyId);
-    await this.cacheManager.del(`productsList:${data.companyId}`);
-    return this.productRepository.addProduct(data);
+  async addProduct(
+    userId: string,
+    input: CreateProductInput,
+  ): Promise<Product> {
+    await this.checkAccessOrThrow(userId, input.companyId);
+    await this.cacheManager.del(`productsList:${input.companyId}`);
+    return this.productRepository.addProduct(input);
   }
 
   async getProductsByCompany(
@@ -93,7 +96,7 @@ export class ProductService {
   async updateProduct(
     userId: string,
     productId: number,
-    data: UpdateProductInput,
+    input: UpdateProductInput,
   ): Promise<Product> {
     const product = await this.productRepository.getProductById(productId);
     if (!product) {
@@ -105,7 +108,10 @@ export class ProductService {
     if (count > 0) {
       throw new BadRequestException('PRODUCT_HAS_INVOICES');
     }
-    const updated = await this.productRepository.updateProduct(productId, data);
+    const updated = await this.productRepository.updateProduct(
+      productId,
+      input,
+    );
     await this.cacheManager.del(`product:${productId}`);
     await this.cacheManager.del(`productsList:${product.companyId}`);
     return updated;

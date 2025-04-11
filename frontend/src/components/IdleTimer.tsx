@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useUserStore } from "../store/currentUserStore";
 import { useSnackbarStore } from "../store/snackbarStore";
-import { logoutUser } from "../services/authService";
+import { logoutUser } from "../graphql/services/authService";
 import { Button } from "@mui/material";
 import { IDLE_TIMEOUT, WARNING_TIMEOUT } from "../config/idleTimers";
 

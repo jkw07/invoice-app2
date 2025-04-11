@@ -129,6 +129,20 @@ input CreateInvoiceInput {
   transactionDate: String
 }
 
+input CreateInvoiceItemInput {
+  discount: Int
+  invoiceId: Int!
+  name: String!
+  productId: Int
+  quantity: Int!
+  taxRate: Int
+  taxType: VatRateType!
+  totalGross: Int!
+  totalNet: Int!
+  totalTax: Int
+  unitPrice: Int!
+}
+
 input CreatePaymentInput {
   method: String!
 }
@@ -213,7 +227,7 @@ input LoginInput {
 
 type Mutation {
   addClient(input: CreateClientInput!): Client!
-  addInvoice(input: CreateInvoiceInput!): Invoice!
+  addInvoiceWithItems(inputInvoice: CreateInvoiceInput!, inputItem: [CreateInvoiceItemInput!]!): Invoice!
   addProduct(input: CreateProductInput!): Product!
   addSetting(input: CreateSettingInput!): Setting!
   createCompany(input: CreateCompanyInput!): Company!
@@ -230,7 +244,7 @@ type Mutation {
   register(data: RegisterInput!): AuthPayload!
   updateClient(clientId: Int!, input: UpdateClientInput!): Client!
   updateCompany(companyId: Int!, input: UpdateCompanyInput!): Company!
-  updateInvoice(input: UpdateInvoiceInput!, invoiceId: Int!): Invoice!
+  updateInvoiceWithItems(inputInvoice: UpdateInvoiceInput!, inputItem: [CreateInvoiceItemInput!]!, invoiceId: Int!): Invoice!
   updatePaymentMethod(input: UpdatePaymentInput!, paymentId: Int!): Payment!
   updateProduct(input: UpdateProductInput!, productId: Int!): Product!
   updateSetting(input: UpdateSettingInput!, settingId: Int!): Setting!

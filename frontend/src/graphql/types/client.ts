@@ -84,3 +84,31 @@ export interface DeleteClientMutation {
 export interface DeleteClientVariables {
   clientId: number;
 }
+
+export type UpdateClientMutation = {
+  updateClient: {
+    id: number;
+  };
+};
+
+export type UpdateClientVariables = {
+  clientId: number;
+  input: UpdateClientInput;
+};
+
+export type UpdateClientInput = {
+  name?: string | null;
+  tin?: string | null;
+  bin?: string | null;
+  street?: string | null;
+  buildingNo?: string | null;
+  apartmentNo?: string | null;
+  zipCode?: string | null;
+  city?: string | null;
+  country?: string | null;
+  province?: string | null;
+  county?: string | null;
+  municipality?: string | null;
+  email?: string | null;
+  phone?: string | null;
+};

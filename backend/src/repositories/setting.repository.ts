@@ -21,10 +21,10 @@ export class SettingRepository {
     return !!company;
   }
 
-  async addSetting(data: CreateSettingInput): Promise<Setting> {
+  async addSetting(input: CreateSettingInput): Promise<Setting> {
     return this.prisma.setting.create({
       data: {
-        ...data,
+        ...input,
       },
     });
   }
@@ -49,11 +49,11 @@ export class SettingRepository {
 
   async updateSetting(
     settingId: number,
-    data: UpdateSettingInput,
+    input: UpdateSettingInput,
   ): Promise<Setting> {
     return this.prisma.setting.update({
       where: { id: settingId },
-      data,
+      data: { ...input },
     });
   }
 }

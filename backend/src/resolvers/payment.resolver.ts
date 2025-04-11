@@ -15,10 +15,10 @@ export class PaymentResolver {
   @Mutation(() => Payment)
   async createPaymentMethod(
     @Context() context: { req: Request },
-    @Args('input') data: CreatePaymentInput,
+    @Args('input') input: CreatePaymentInput,
   ): Promise<Payment> {
     const userId = getUserIdFromContext(context);
-    return this.paymentService.createPaymentMethod(userId, data);
+    return this.paymentService.createPaymentMethod(userId, input);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -45,10 +45,10 @@ export class PaymentResolver {
   async updatePaymentMethod(
     @Context() context: { req: Request },
     @Args('paymentId', { type: () => Int }) paymentId: number,
-    @Args('input') data: UpdatePaymentInput,
+    @Args('input') input: UpdatePaymentInput,
   ): Promise<Payment> {
     const userId = getUserIdFromContext(context);
-    return this.paymentService.updatePaymentMethod(userId, paymentId, data);
+    return this.paymentService.updatePaymentMethod(userId, paymentId, input);
   }
 
   @UseGuards(GqlAuthGuard)

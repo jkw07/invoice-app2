@@ -8,6 +8,7 @@ import Paper from "@mui/material/Paper";
 import { InvoiceBasic } from "../../../graphql/types/client";
 import Chip from "@mui/material/Chip";
 import { Status } from "../../../graphql/types/enums";
+import { Alert } from "@mui/material";
 
 interface InvoicesTableProps {
   invoices?: InvoiceBasic[];
@@ -48,35 +49,41 @@ const renderStatus = (status: Status) => {
 };
 
 export default function InvoicesTable({ invoices = [] }: InvoicesTableProps) {
+  const notEmpty = invoices.length > 0;
   return (
-    <TableContainer component={Paper} sx={{ marginTop: "20px" }}>
-      <Table sx={{ minWidth: 650 }} aria-label="invoices table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Numer faktury</TableCell>
-            <TableCell>Data wystawienia</TableCell>
-            <TableCell>Kwota</TableCell>
-            <TableCell>Termin płatności</TableCell>
-            <TableCell>Status</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {invoices.map((invoice) => (
-            <TableRow
-              key={invoice.id}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {invoice.invoiceNo}
-              </TableCell>
-              <TableCell>{formatDate(invoice.issuedDate)}</TableCell>
-              <TableCell>{formatAmount(invoice.totalAmount)}</TableCell>
-              <TableCell>{formatDate(invoice.dueDate)}</TableCell>
-              <TableCell>{renderStatus(invoice.status)}</TableCell>
+    <>
+      <TableContainer component={Paper} sx={{ marginTop: "20px" }}>
+        {!notEmpty && (
+          <Alert severity="info">Nie wystawiono faktur dla klienta.</Alert>
+        )}
+        <Table sx={{ minWidth: 650 }} aria-label="invoices table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Numer faktury</TableCell>
+              <TableCell>Data wystawienia</TableCell>
+              <TableCell>Kwota</TableCell>
+              <TableCell>Termin płatności</TableCell>
+              <TableCell>Status</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {invoices.map((invoice) => (
+              <TableRow
+                key={invoice.id}
+                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {invoice.invoiceNo}
+                </TableCell>
+                <TableCell>{formatDate(invoice.issuedDate)}</TableCell>
+                <TableCell>{formatAmount(invoice.totalAmount)}</TableCell>
+                <TableCell>{formatDate(invoice.dueDate)}</TableCell>
+                <TableCell>{renderStatus(invoice.status)}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   );
 }

@@ -10,12 +10,12 @@ export class CompanyRepository {
 
   async createCompany(
     userId: string,
-    data: CreateCompanyInput,
+    input: CreateCompanyInput,
   ): Promise<Company> {
     return this.prisma.company.create({
       data: {
         userId,
-        ...data,
+        ...input,
       },
     });
   }
@@ -55,11 +55,11 @@ export class CompanyRepository {
 
   async updateCompany(
     companyId: number,
-    data: UpdateCompanyInput,
+    input: UpdateCompanyInput,
   ): Promise<Company> {
     return this.prisma.company.update({
       where: { id: companyId },
-      data,
+      data: { ...input },
     });
   }
 }

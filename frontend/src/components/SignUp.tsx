@@ -15,6 +15,7 @@ import { ClipboardPen } from "lucide-react";
 import { useState } from "react";
 import { REGISTER_MUTATION } from "../graphql/mutations/authMutations";
 import { useMutation } from "@apollo/client";
+import { translateError } from "../utils/translateError";
 
 interface SignUpProps {
   open: boolean;
@@ -25,14 +26,12 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
   const [state, setState] = useState({
     email: "",
     password: "",
-    showPassword: false,
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [register] = useMutation(REGISTER_MUTATION);
-  const [registerError, setRegisterError] = useState({
-    error: false,
-    message: "",
-  });
+  const [registerAlert, setRegisterAlert] = useState<string | null>(null);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState((prev) => ({
@@ -42,24 +41,25 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
   };
 
   const togglePasswordVisibility = () => {
-    setState((prev) => ({ ...prev, showPassword: !prev.showPassword }));
+    setShowPassword((prev) => !prev);
   };
 
   const handleRegister = async () => {
     setLoading(true);
-    setRegisterError({
-      error: false,
-      message: "",
-    });
+    setRegisterAlert(null);
     try {
       await register({ variables: { data: state } });
-      handleClose();
+      setRegisterSuccess(true);
     } catch (error) {
       console.error("Registration failed: ", error);
-      setRegisterError({
-        error: true,
-        message: (error as Error).message || "An unknown error occurred",
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translated = translateError(errorKey);
+      setRegisterAlert(translated);
+      setState({
+        email: "",
+        password: "",
       });
+      setShowPassword(false);
     } finally {
       setLoading(false);
     }
@@ -90,9 +90,12 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
       >
         <DialogContentText>
           Wpisz swój adres email oraz zdefiniuj hasło.
-          {registerError.error && (
-            <Alert severity="error">
-              Rejestracja nie powiodła się: {registerError.message}
+          {registerAlert !== null && (
+            <Alert severity="error">{registerAlert}</Alert>
+          )}
+          {registerSuccess !== null && (
+            <Alert severity="success">
+              Rejestracja powiodła się. Możesz się zalogować.
             </Alert>
           )}
         </DialogContentText>
@@ -113,7 +116,7 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
           label="Hasło"
           margin="normal"
           name="password"
-          type={state.showPassword ? "text" : "password"}
+          type={showPassword ? "text" : "password"}
           variant="outlined"
           autoComplete="new-password"
           required
@@ -125,7 +128,7 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
               endAdornment: (
                 <InputAdornment position="end">
                   <IconButton onClick={togglePasswordVisibility} edge="end">
-                    {state.showPassword ? <VisibilityOff /> : <Visibility />}
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
                   </IconButton>
                 </InputAdornment>
               ),

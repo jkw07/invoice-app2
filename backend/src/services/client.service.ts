@@ -29,10 +29,10 @@ export class ClientService {
     }
   }
 
-  async addClient(userId: string, data: CreateClientInput): Promise<Client> {
-    await this.checkAccessOrThrow(userId, data.companyId);
-    await this.cacheManager.del(`clientsList:${data.companyId}`);
-    return this.clientRepository.addClient(data);
+  async addClient(userId: string, input: CreateClientInput): Promise<Client> {
+    await this.checkAccessOrThrow(userId, input.companyId);
+    await this.cacheManager.del(`clientsList:${input.companyId}`);
+    return this.clientRepository.addClient(input);
   }
 
   async getClientsByCompany(
@@ -89,14 +89,18 @@ export class ClientService {
   async updateClient(
     userId: string,
     clientId: number,
-    data: UpdateClientInput,
+    input: UpdateClientInput,
   ): Promise<Client> {
     const client = await this.clientRepository.getClientById(clientId);
     if (!client) {
       throw new NotFoundException('CLIENT_NOT_FOUND');
     }
     await this.checkAccessOrThrow(userId, client.companyId);
-    const updated = await this.clientRepository.updateClient(clientId, data);
+    const count = await this.clientRepository.countInvoicesForClient(clientId);
+    if (count > 0) {
+      throw new BadRequestException('CLIENT_HAS_INVOICES');
+    }
+    const updated = await this.clientRepository.updateClient(clientId, input);
     await this.cacheManager.del(`clientsList:${client.companyId}`);
     await this.cacheManager.del(`client:${clientId}`);
     return updated;

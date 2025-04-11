@@ -15,10 +15,10 @@ export class CompanyResolver {
   @Mutation(() => Company)
   async createCompany(
     @Context() context: { req: Request },
-    @Args('input') data: CreateCompanyInput,
+    @Args('input') input: CreateCompanyInput,
   ): Promise<Company> {
     const userId = getUserIdFromContext(context);
-    return this.companyService.createCompany(userId, data);
+    return this.companyService.createCompany(userId, input);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -54,10 +54,10 @@ export class CompanyResolver {
   async updateCompany(
     @Context() context: { req: Request },
     @Args('companyId', { type: () => Int }) companyId: number,
-    @Args('input') data: UpdateCompanyInput,
+    @Args('input') input: UpdateCompanyInput,
   ): Promise<Company> {
     const userId = getUserIdFromContext(context);
-    return this.companyService.updateCompany(userId, companyId, data);
+    return this.companyService.updateCompany(userId, companyId, input);
   }
 
   @UseGuards(GqlAuthGuard)

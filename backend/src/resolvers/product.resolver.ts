@@ -35,10 +35,10 @@ export class ProductResolver {
   @Mutation(() => Product)
   async addProduct(
     @Context() context: { req: Request },
-    @Args('input') data: CreateProductInput,
+    @Args('input') input: CreateProductInput,
   ): Promise<Product> {
     const userId = getUserIdFromContext(context);
-    return this.productService.addProduct(userId, data);
+    return this.productService.addProduct(userId, input);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -56,10 +56,10 @@ export class ProductResolver {
   async updateProduct(
     @Context() context: { req: Request },
     @Args('productId', { type: () => Int }) productId: number,
-    @Args('input') data: UpdateProductInput,
+    @Args('input') input: UpdateProductInput,
   ) {
     const userId = getUserIdFromContext(context);
-    return this.productService.updateProduct(userId, productId, data);
+    return this.productService.updateProduct(userId, productId, input);
   }
 }
 

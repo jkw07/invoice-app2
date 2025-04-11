@@ -9,7 +9,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { ROUTES } from "../config/routes";
-import { logoutUser } from "../services/authService";
+import { logoutUser } from "../graphql/services/authService";
 import logo from "../../public/assets/logo/logo1sidebar.png";
 import { LOGOUT_MUTATION } from "../graphql/mutations/authMutations";
 import { useMutation } from "@apollo/client";
@@ -55,12 +55,10 @@ export const Sidebar = () => {
           <Settings size={28} />
           <span className="sidebar-tooltip">Ustawienia</span>
         </NavLink>
-        <NavLink to={ROUTES.HOME} className="sidebar-button">
+        <div className="sidebar-button" onClick={handleLogout}>
           <LogOut size={28} />
-          <span className="sidebar-tooltip" onClick={handleLogout}>
-            Wyloguj
-          </span>
-        </NavLink>
+          <span className="sidebar-tooltip">Wyloguj</span>
+        </div>
       </div>
     </nav>
   );

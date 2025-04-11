@@ -50,13 +50,15 @@ export interface GetProductByIdVariables {
   productId: number;
 }
 
+export interface AddProductInput {
+  companyId: number;
+  name: string;
+  description: string | null;
+  price: number;
+  unit: string | null;
+  vatRateId: number;
+}
+
 export interface AddProductVariables {
-  input: {
-    companyId: number;
-    name: string;
-    description: string | null;
-    price: number;
-    unit: string | null;
-    vatRateId: number;
-  };
+  input: AddProductInput;
 }

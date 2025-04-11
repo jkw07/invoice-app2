@@ -21,10 +21,10 @@ export class ClientRepository {
     return !!company;
   }
 
-  async addClient(data: CreateClientInput): Promise<Client> {
+  async addClient(input: CreateClientInput): Promise<Client> {
     return this.prisma.client.create({
       data: {
-        ...data,
+        ...input,
       },
     });
   }
@@ -65,11 +65,11 @@ export class ClientRepository {
 
   async updateClient(
     clientId: number,
-    data: UpdateClientInput,
+    input: UpdateClientInput,
   ): Promise<Client> {
     return this.prisma.client.update({
       where: { id: clientId },
-      data,
+      data: { ...input },
     });
   }
 }

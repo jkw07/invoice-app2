@@ -36,10 +36,10 @@ export class SettingResolver {
   @Mutation(() => Setting)
   async addSetting(
     @Context() context: { req: Request },
-    @Args('input') data: CreateSettingInput,
+    @Args('input') input: CreateSettingInput,
   ): Promise<Setting> {
     const userId = getUserIdFromContext(context);
-    return this.settingService.addSetting(userId, data);
+    return this.settingService.addSetting(userId, input);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -57,10 +57,10 @@ export class SettingResolver {
   async updateSetting(
     @Context() context: { req: Request },
     @Args('settingId', { type: () => Int }) settingId: number,
-    @Args('input') data: UpdateSettingInput,
+    @Args('input') input: UpdateSettingInput,
   ) {
     const userId = getUserIdFromContext(context);
-    return this.settingService.updateSetting(userId, settingId, data);
+    return this.settingService.updateSetting(userId, settingId, input);
   }
 }
 

@@ -5,10 +5,14 @@ import { AlertDialog } from "../../../components/AlertDialog";
 import Button from "@mui/material/Button";
 import { useParams } from "react-router-dom";
 import { ClientFull } from "../../../graphql/types/client";
-import { useClientById } from "../../../graphql/services/clientService";
+import {
+  useClientById,
+  useUpdateClient,
+} from "../../../graphql/services/clientService";
 import { safeId } from "../../../utils/safeId";
 import { translateError } from "../../../utils/translateError";
 import { DefaultForm } from "../components/DefaultForm";
+import { useNavigation } from "../../../hooks/useNavigation";
 
 export const EditClient = () => {
   const { id: clientIdFromUrl } = useParams();
@@ -19,12 +23,19 @@ export const EditClient = () => {
     undefined
   );
   const [alertMessage, setAlertMessage] = useState("");
+  const [updatedFields, setUpdatedFields] = useState<Partial<ClientFull>>({});
+  const { goToClientsModule } = useNavigation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    const newValue = value === "" ? null : value;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value === "" ? null : value,
+      [name]: newValue,
+    }));
+    setUpdatedFields((prevFields) => ({
+      ...prevFields,
+      [name]: newValue,
     }));
   };
 
@@ -36,22 +47,26 @@ export const EditClient = () => {
     }
   }, [clientData]);
 
-  const updateClient = async (clientId: number, formData: ClientFull) => {
-    console.log("Updating client with ID:", clientId, formData);
-  };
+  const [updateClient] = useUpdateClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (clientId) {
-        await updateClient(clientId, formData);
+        await updateClient({
+          variables: {
+            clientId: clientId,
+            input: updatedFields,
+          },
+        });
+        setAlertSeverity("success");
+        setAlertMessage("Dane klienta zostały zaktualizowane pomyślnie.");
       } else {
         setAlertSeverity("error");
         setAlertMessage("Nieprawidłowy identyfikator klienta.");
         setOpenDialog(true);
+        return;
       }
-      setAlertSeverity("success");
-      setAlertMessage("Dane klienta zostały zaktualizowane pomyślnie.");
     } catch (error) {
       setAlertSeverity("error");
       const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
@@ -64,7 +79,9 @@ export const EditClient = () => {
 
   const handleDialogClose = () => {
     setOpenDialog(false);
+    goToClientsModule();
   };
+
   return (
     <>
       <h2>Edytuj dane klienta</h2>

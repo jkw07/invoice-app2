@@ -28,10 +28,13 @@ export class SettingService {
     }
   }
 
-  async addSetting(userId: string, data: CreateSettingInput): Promise<Setting> {
-    await this.checkAccessOrThrow(userId, data.companyId);
-    await this.cacheManager.del(`settingsList:${data.companyId}`);
-    return this.settingRepository.addSetting(data);
+  async addSetting(
+    userId: string,
+    input: CreateSettingInput,
+  ): Promise<Setting> {
+    await this.checkAccessOrThrow(userId, input.companyId);
+    await this.cacheManager.del(`settingsList:${input.companyId}`);
+    return this.settingRepository.addSetting(input);
   }
 
   async getSettingsByCompany(
@@ -88,14 +91,17 @@ export class SettingService {
   async updateSetting(
     userId: string,
     settingId: number,
-    data: UpdateSettingInput,
+    input: UpdateSettingInput,
   ): Promise<Setting> {
     const setting = await this.settingRepository.getSettingById(settingId);
     if (!setting) {
       throw new NotFoundException('SETTING_NOT_FOUND');
     }
     await this.checkAccessOrThrow(userId, setting.companyId);
-    const updated = await this.settingRepository.updateSetting(settingId, data);
+    const updated = await this.settingRepository.updateSetting(
+      settingId,
+      input,
+    );
     await this.cacheManager.del(`settingt:${settingId}`);
     await this.cacheManager.del(`settingsList:${setting.companyId}`);
     return updated;

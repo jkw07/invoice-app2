@@ -35,10 +35,10 @@ export class ClientResolver {
   @Mutation(() => Client)
   async addClient(
     @Context() context: { req: Request },
-    @Args('input') data: CreateClientInput,
+    @Args('input') input: CreateClientInput,
   ): Promise<Client> {
     const userId = getUserIdFromContext(context);
-    return this.clientService.addClient(userId, data);
+    return this.clientService.addClient(userId, input);
   }
 
   @UseGuards(GqlAuthGuard)
@@ -56,10 +56,10 @@ export class ClientResolver {
   async updateClient(
     @Context() context: { req: Request },
     @Args('clientId', { type: () => Int }) clientId: number,
-    @Args('input') data: UpdateClientInput,
+    @Args('input') input: UpdateClientInput,
   ) {
     const userId = getUserIdFromContext(context);
-    return this.clientService.updateClient(userId, clientId, data);
+    return this.clientService.updateClient(userId, clientId, input);
   }
 }
 
@@ -70,5 +70,3 @@ function getUserIdFromContext(context: { req: Request }): string {
   }
   return userId;
 }
-
-//TODO UnauthorizedException?

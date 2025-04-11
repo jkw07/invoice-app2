@@ -19,7 +19,7 @@ import { ForgotPassword } from "./ForgotPassword";
 import { SignUp } from "./SignUp";
 import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/mutations/authMutations";
-import { handleGraphqlLogin } from "../services/authService";
+import { handleGraphqlLogin } from "../graphql/services/authService";
 import { translateError } from "../utils/translateError";
 
 export const SignIn = () => {

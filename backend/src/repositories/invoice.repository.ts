@@ -10,6 +10,7 @@ import {
   Payment,
   Reminder,
 } from '@prisma/client';
+import { CreateInvoiceItemInput } from 'src/dto/create-invoice-item.input';
 
 @Injectable()
 export class InvoiceRepository {
@@ -28,13 +29,25 @@ export class InvoiceRepository {
     return !!company;
   }
 
-  async addInvoice(data: CreateInvoiceInput): Promise<Invoice> {
-    return this.prisma.invoice.create({
-      data: {
-        ...data,
-        issuedDate: new Date(data.issuedDate),
-        dueDate: new Date(data.dueDate),
-      },
+  async addInvoiceWithItems(
+    inputInvoice: CreateInvoiceInput,
+    inputItem: CreateInvoiceItemInput[],
+  ): Promise<Invoice> {
+    return this.prisma.$transaction(async (prisma) => {
+      const invoice = await prisma.invoice.create({
+        data: {
+          ...inputInvoice,
+          issuedDate: new Date(inputInvoice.issuedDate),
+          dueDate: new Date(inputInvoice.dueDate),
+        },
+      });
+      await prisma.invoiceItem.createMany({
+        data: inputItem.map((item) => ({
+          ...item,
+          invoiceId: invoice.id,
+        })),
+      });
+      return invoice;
     });
   }
 
@@ -87,13 +100,30 @@ export class InvoiceRepository {
     });
   }
 
-  async updateInvoice(
+  async updateInvoiceWithItems(
     invoiceId: number,
-    data: UpdateInvoiceInput,
+    inputInvoice: UpdateInvoiceInput,
+    inputItem: CreateInvoiceItemInput[],
   ): Promise<Invoice> {
-    return this.prisma.invoice.update({
-      where: { id: invoiceId },
-      data,
+    return this.prisma.$transaction(async (prisma) => {
+      await prisma.invoice.update({
+        where: { id: invoiceId },
+        data: { ...inputInvoice },
+      });
+      await prisma.invoiceItem.deleteMany({
+        where: { invoiceId },
+      });
+      if (inputItem.length > 0) {
+        await prisma.invoiceItem.createMany({
+          data: inputItem.map((item) => ({
+            ...item,
+            invoiceId,
+          })),
+        });
+      }
+      return prisma.invoice.findUniqueOrThrow({
+        where: { id: invoiceId },
+      });
     });
   }
 }
