@@ -22,6 +22,11 @@ interface SignUpProps {
   handleClose: () => void;
 }
 
+type AlertData = {
+  severity: "success" | "error" | "info" | "warning";
+  message: string;
+};
+
 export const SignUp = ({ open, handleClose }: SignUpProps) => {
   const [state, setState] = useState({
     email: "",
@@ -30,8 +35,7 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [register] = useMutation(REGISTER_MUTATION);
-  const [registerAlert, setRegisterAlert] = useState<string | null>(null);
-  const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [registerAlert, setRegisterAlert] = useState<AlertData | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState((prev) => ({
@@ -49,19 +53,25 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
     setRegisterAlert(null);
     try {
       await register({ variables: { data: state } });
-      setRegisterSuccess(true);
+      setRegisterAlert({
+        severity: "success",
+        message: "Rejestracja powiodła się. Możesz się zalogować.",
+      });
     } catch (error) {
       console.error("Registration failed: ", error);
       const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
       const translated = translateError(errorKey);
-      setRegisterAlert(translated);
+      setRegisterAlert({
+        severity: "error",
+        message: `${translated}`,
+      });
+    } finally {
+      setLoading(false);
       setState({
         email: "",
         password: "",
       });
       setShowPassword(false);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -91,11 +101,8 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
         <DialogContentText>
           Wpisz swój adres email oraz zdefiniuj hasło.
           {registerAlert !== null && (
-            <Alert severity="error">{registerAlert}</Alert>
-          )}
-          {registerSuccess !== null && (
-            <Alert severity="success">
-              Rejestracja powiodła się. Możesz się zalogować.
+            <Alert severity={registerAlert.severity}>
+              {registerAlert.message}
             </Alert>
           )}
         </DialogContentText>
@@ -137,10 +144,14 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
         />
       </DialogContent>
       <DialogActions sx={{ pb: 3, px: 3 }}>
-        <Button onClick={handleClose}>Anuluj</Button>
-        <Button variant="contained" type="submit">
-          {loading ? "Zakładanie konta..." : "Załóż konto"}
+        <Button onClick={handleClose}>
+          {registerAlert ? "Wyjdź" : "Anuluj"}
         </Button>
+        {!registerAlert && (
+          <Button variant="contained" type="submit">
+            {loading ? "Zakładanie konta..." : "Załóż konto"}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

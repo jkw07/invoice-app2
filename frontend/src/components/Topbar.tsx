@@ -19,6 +19,7 @@ import {
 import { Building2 } from "lucide-react";
 import { AddNewCompany } from "./AddNewCompany";
 import { useVatRate } from "../graphql/services/vatRateService";
+import { translateError } from "../utils/translateError";
 
 export const Topbar = () => {
   const { company, setCompany, replaceCompany, user, setVatRates } =
@@ -27,6 +28,7 @@ export const Topbar = () => {
   const anchorRef = useRef<HTMLButtonElement>(null);
   const { goToInvoicesModule } = useNavigation();
   const [addNewCompanyOpen, setAddNewCompanyOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     data: defaultCompanyData,
@@ -97,17 +99,20 @@ export const Topbar = () => {
     goToInvoicesModule();
   };
 
+  useEffect(() => {
+    if (error) {
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translatedError = translateError(errorKey);
+      setErrorMessage(translatedError);
+    }
+  }, [error]);
+
   return (
     <Paper elevation={1} className="topbar">
       <div className="topbar-nav">
         <span>{user?.email}</span>
       </div>
       <Divider orientation="vertical" flexItem />
-      {error && (
-        <div className="topbar-nav">
-          <span>{error.message}</span>
-        </div>
-      )}
       <div className="topbar-nav">
         <Button
           ref={anchorRef}
@@ -121,7 +126,8 @@ export const Topbar = () => {
         >
           {" "}
           {loading ? "Ładowanie..." : ""}
-          {company ? `Firma: ${company.fullName}` : "Brak firmy"}
+          {error ? `${errorMessage}` : ""}
+          {company ? `Firma: ${company.fullName}` : ""}
         </Button>
         <Popper
           open={open}

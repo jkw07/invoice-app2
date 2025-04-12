@@ -10,24 +10,34 @@ import {
 } from "@mui/material";
 import { ClipboardPen } from "lucide-react";
 import { useState } from "react";
-import { CreateCompanyVariables } from "../graphql/types/company";
+import { AddCompanyInput } from "../graphql/types/company";
 import { useCreateCompany } from "../graphql/services/companyService";
 import { GET_COMPANIES_BY_USER } from "../graphql/queries/companyQueries";
 import { useSnackbarStore } from "../store/snackbarStore";
+import { translateError } from "../utils/translateError";
+import { useUserStore } from "../store/currentUserStore";
 
 interface AddNewCompanyProps {
   open: boolean;
   handleClose: () => void;
 }
 
+type onErrorType = {
+  isError: boolean;
+  errorMessage: string;
+};
+
 export const AddNewCompany = ({ open, handleClose }: AddNewCompanyProps) => {
-  type CreateCompanyInput = CreateCompanyVariables["input"];
-  const [formData, setFormData] = useState<CreateCompanyInput>(
-    {} as CreateCompanyInput
+  const [formData, setFormData] = useState<AddCompanyInput>(
+    {} as AddCompanyInput
   );
   const [createCompany, { loading }] = useCreateCompany();
-  const [onError, setOnError] = useState(false);
+  const [onError, setOnError] = useState<onErrorType>({
+    isError: false,
+    errorMessage: "",
+  });
   const { showSnackbar } = useSnackbarStore();
+  const { replaceCompany } = useUserStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData((prev) => ({
@@ -40,7 +50,8 @@ export const AddNewCompany = ({ open, handleClose }: AddNewCompanyProps) => {
     handleAddNewCompany(formData);
   };
 
-  const handleAddNewCompany = async (formValues: CreateCompanyInput) => {
+  const handleAddNewCompany = async (formValues: AddCompanyInput) => {
+    setOnError({ isError: false, errorMessage: "" });
     try {
       await createCompany({
         variables: { input: formValues },
@@ -50,19 +61,16 @@ export const AddNewCompany = ({ open, handleClose }: AddNewCompanyProps) => {
             `Firma ${data.createCompany.fullName} została utworzona!`,
             "success"
           );
+          replaceCompany(data.createCompany);
           handleClose();
-        },
-        onError: (error) => {
-          console.error("Błąd:", error.message);
-          setOnError(true);
         },
       });
     } catch (error) {
-      console.error("Coś poszło nie tak:", error);
-      setOnError(true);
+      const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
+      const translated = translateError(errorKey);
+      setOnError({ isError: true, errorMessage: translated });
     } finally {
-      setFormData({} as CreateCompanyInput);
-      setOnError(false);
+      setFormData({} as AddCompanyInput);
     }
   };
 
@@ -86,8 +94,10 @@ export const AddNewCompany = ({ open, handleClose }: AddNewCompanyProps) => {
       >
         <DialogContentText>
           Uzupełnij dane nowej firmy:
-          {onError && (
-            <Alert severity="error">Operacja nie powiodła się.</Alert>
+          {onError.isError && (
+            <Alert severity="error">
+              `Operacja nie powiodła się: ${onError.errorMessage}`
+            </Alert>
           )}
         </DialogContentText>
         <TextField
@@ -103,7 +113,7 @@ export const AddNewCompany = ({ open, handleClose }: AddNewCompanyProps) => {
         <TextField
           label="Skrócona nazwa"
           name="shortName"
-          value={formData.shortName ?? null}
+          value={formData.shortName}
           onChange={handleChange}
           margin="normal"
           variant="outlined"
@@ -152,7 +162,7 @@ export const AddNewCompany = ({ open, handleClose }: AddNewCompanyProps) => {
         <TextField
           label="Numer lokalu"
           name="apartmentNo"
-          value={formData.apartmentNo ?? null}
+          value={formData.apartmentNo ?? ""}
           onChange={handleChange}
           margin="normal"
           variant="outlined"
@@ -212,7 +222,7 @@ export const AddNewCompany = ({ open, handleClose }: AddNewCompanyProps) => {
           label="Email"
           name="email"
           type="email"
-          value={formData.email ?? null}
+          value={formData.email ?? ""}
           onChange={handleChange}
           margin="normal"
           variant="outlined"
@@ -221,7 +231,7 @@ export const AddNewCompany = ({ open, handleClose }: AddNewCompanyProps) => {
         <TextField
           label="Telefon"
           name="phone"
-          value={formData.phone ?? null}
+          value={formData.phone ?? ""}
           onChange={handleChange}
           margin="normal"
           variant="outlined"
