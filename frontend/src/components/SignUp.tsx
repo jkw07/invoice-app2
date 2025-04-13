@@ -11,7 +11,7 @@ import {
   TextField,
   Alert,
 } from "@mui/material";
-import { ClipboardPen } from "lucide-react";
+import { Check, ClipboardPen, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { REGISTER_MUTATION } from "../graphql/mutations/authMutations";
 import { useMutation } from "@apollo/client";
@@ -36,12 +36,34 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
   const [showPassword, setShowPassword] = useState(false);
   const [register, { loading }] = useMutation(REGISTER_MUTATION);
   const [registerAlert, setRegisterAlert] = useState<AlertData | null>(null);
+  const [passwordValidation, setPasswordValidation] = useState({
+    minLength: false,
+    hasNumber: false,
+    hasUppercase: false,
+  });
+
+  const isPasswordValid =
+    passwordValidation.minLength &&
+    passwordValidation.hasNumber &&
+    passwordValidation.hasUppercase;
+
+  const validatePassword = (password: string) => {
+    setPasswordValidation({
+      minLength: password.length >= 6,
+      hasNumber: /\d/.test(password),
+      hasUppercase: /[A-Z]/.test(password),
+    });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setState((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+    if (name === "password") {
+      validatePassword(value);
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -76,6 +98,11 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
       setRegisterAlert(null);
       setState({ email: "", password: "" });
       setShowPassword(false);
+      setPasswordValidation({
+        minLength: false,
+        hasNumber: false,
+        hasUppercase: false,
+      });
     }
   }, [open]);
 
@@ -164,13 +191,47 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
             )}
           </>
         )}
+        <DialogContentText
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
+          {passwordValidation.minLength ? (
+            <Check color="green" />
+          ) : (
+            <X color="red" />
+          )}
+          Co najmniej 6 znaków
+        </DialogContentText>
+        <DialogContentText
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
+          {passwordValidation.hasNumber ? (
+            <Check color="green" />
+          ) : (
+            <X color="red" />
+          )}
+          Co najmniej jedna cyfra
+        </DialogContentText>
+        <DialogContentText
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
+        >
+          {passwordValidation.hasUppercase ? (
+            <Check color="green" />
+          ) : (
+            <X color="red" />
+          )}
+          Co najmniej jedna wielka litera
+        </DialogContentText>
       </DialogContent>
       <DialogActions sx={{ pb: 3, px: 3 }}>
         <Button onClick={handleClose}>
           {registerAlert ? "Wyjdź" : "Anuluj"}
         </Button>
         {!registerAlert && (
-          <Button variant="contained" type="submit">
+          <Button
+            variant="contained"
+            type="submit"
+            disabled={!isPasswordValid || loading}
+          >
             {loading ? "Zakładanie konta..." : "Załóż konto"}
           </Button>
         )}
