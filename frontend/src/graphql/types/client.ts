@@ -77,7 +77,7 @@ export interface AddClientVariables {
 
 export interface DeleteClientMutation {
   deleteClient: {
-    id: number;
+    name: string;
   };
 }
 

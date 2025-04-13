@@ -13,7 +13,7 @@ export const ADD_CLIENT = gql`
 export const DELETE_CLIENT = gql`
   mutation DeleteClient($clientId: Int!) {
     deleteClient(clientId: $clientId) {
-      id
+      name
     }
   }
 `;

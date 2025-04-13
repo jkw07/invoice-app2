@@ -98,7 +98,7 @@ export class ClientService {
     await this.checkAccessOrThrow(userId, client.companyId);
     const count = await this.clientRepository.countInvoicesForClient(clientId);
     if (count > 0) {
-      throw new BadRequestException('CLIENT_HAS_INVOICES');
+      throw new BadRequestException('CLIENT_HAS_INVOICES_U');
     }
     const updated = await this.clientRepository.updateClient(clientId, input);
     await this.cacheManager.del(`clientsList:${client.companyId}`);

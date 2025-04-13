@@ -22,6 +22,11 @@ import { AlertDialog } from "../../../components/AlertDialog";
 import { safeId } from "../../../utils/safeId";
 import { translateError } from "../../../utils/translateError";
 
+interface AlertType {
+  severity: AlertColor | undefined;
+  message: string;
+}
+
 export const ClientsTableGrid = () => {
   const { company } = useUserStore();
   const [searchText, setSearchText] = useState("");
@@ -29,10 +34,10 @@ export const ClientsTableGrid = () => {
   const [deleteClient] = useDeleteClient();
   const [hasConfirm, setHasConfirm] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor | undefined>(
-    undefined
-  );
-  const [alertMessage, setAlertMessage] = useState("");
+  const [alert, setAlert] = useState<AlertType>({
+    severity: undefined,
+    message: "",
+  });
   const [clientId, setClientId] = useState<number>(0);
 
   const {
@@ -46,8 +51,10 @@ export const ClientsTableGrid = () => {
     : clientsList?.getClientsByCompany || [];
 
   const handleOpenDeleteClientDialog = (id: string) => {
-    setAlertSeverity("warning");
-    setAlertMessage("Czy na pewno chcesz usunąć tego klienta?");
+    setAlert({
+      severity: "warning",
+      message: "Czy na pewno chcesz usunąć tego klienta?",
+    });
     setHasConfirm(true);
     setClientId(safeId(id));
     setOpenDialog(true);
@@ -66,8 +73,10 @@ export const ClientsTableGrid = () => {
         onCompleted: (data) => {
           setOpenDialog(false);
           setHasConfirm(false);
-          setAlertSeverity("success");
-          setAlertMessage(`Klient id ${data.deleteClient.id} został usunięty.`);
+          setAlert({
+            severity: "success",
+            message: `Klient ${data.deleteClient.name} został usunięty.`,
+          });
           setOpenDialog(true);
         },
       });
@@ -76,10 +85,9 @@ export const ClientsTableGrid = () => {
       console.error("Błąd przy usuwaniu klienta", error);
       setOpenDialog(false);
       setHasConfirm(false);
-      setAlertSeverity("error");
       const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
       const translated = translateError(errorKey);
-      setAlertMessage(`Błąd: ${translated}`);
+      setAlert({ severity: "error", message: `Błąd: ${translated}` });
       setOpenDialog(true);
     }
   };
@@ -110,8 +118,8 @@ export const ClientsTableGrid = () => {
       <AlertDialog
         openDialog={openDialog}
         handleDialogClose={handleDialogClose}
-        alertSeverity={alertSeverity}
-        alertMessage={alertMessage}
+        alertSeverity={alert.severity}
+        alertMessage={alert.message}
         {...(hasConfirm ? { handleConfirm: handleConfirmDelete } : {})}
       />
       {error && !loading && (

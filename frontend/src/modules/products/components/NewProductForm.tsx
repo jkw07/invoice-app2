@@ -8,11 +8,9 @@ import {
   TextField,
 } from "@mui/material";
 import { Save, RotateCcw } from "lucide-react";
-import { AddProductVariables } from "../../../graphql/types/product";
 import { useState } from "react";
 import { useUserStore } from "../../../store/currentUserStore";
-
-type AddProductInput = AddProductVariables["input"];
+import { AddProductInput } from "../../../graphql/types/product";
 
 interface NewProductFormProps {
   formData: AddProductInput;

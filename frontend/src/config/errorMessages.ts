@@ -9,6 +9,8 @@ export const errorMessages = {
   SETTING_NOT_FOUND: "Nie znaleziono ustawień.",
   CLIENT_HAS_INVOICES:
     "Nie można usunąć klienta, dla którego wystawiono faktury.",
+  CLIENT_HAS_INVOICES_U:
+    "Dane klienta widnieją na wystawionych fakturach. Jeśli chcesz je zmienić, dodaj nowego klienta.",
   PAYMENT_METHOD_HAS_INVOICES:
     "Nie można zmienić metody płatności, która widnieje na wystawionych fakturach.",
   PRODUCT_HAS_INVOICES:

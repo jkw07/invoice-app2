@@ -1,14 +1,16 @@
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
 import { InvoiceBasic } from "../../../graphql/types/client";
-import Chip from "@mui/material/Chip";
 import { Status } from "../../../graphql/types/enums";
-import { Alert } from "@mui/material";
+import {
+  Alert,
+  Chip,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+} from "@mui/material";
 
 interface InvoicesTableProps {
   invoices?: InvoiceBasic[];
@@ -27,25 +29,47 @@ const formatAmount = (amount: number | string) => {
 };
 
 const renderStatus = (status: Status) => {
-  let color: "default" | "primary" | "success" | "error" | "warning" =
-    "default";
+  let text: string = "szkic";
+  let color:
+    | "default"
+    | "primary"
+    | "success"
+    | "error"
+    | "secondary"
+    | "warning" = "default";
 
   switch (status) {
-    case "PAID":
+    case Status.PAID:
+      text = "opłacona";
       color = "success";
       break;
-    case "PENDING":
-      color = "warning";
+    case Status.PENDING:
+      text = "oczekująca";
+      color = "primary";
       break;
-    case "OVERDUE":
+    case Status.OVERDUE:
+      text = "po terminie";
       color = "error";
       break;
+    case Status.CANCELLED:
+      text = "anulowana";
+      color = "secondary";
+      break;
+    case Status.PARTIALLY_PAID:
+      text = "opłacona częściowo";
+      color = "warning";
+      break;
+    case Status.DRAFT:
+      text = "szkic";
+      color = "default";
+      break;
     default:
+      text = "szkic";
       color = "default";
       break;
   }
 
-  return <Chip label={status} color={color} size="small" />;
+  return <Chip label={text} color={color} size="small" />;
 };
 
 export default function InvoicesTable({ invoices = [] }: InvoicesTableProps) {

@@ -12,9 +12,15 @@ import {
   GetProductByIdVariables,
   GetProductsByCompanyQuery,
   GetProductsByCompanyVariables,
+  UpdateProductMutation,
+  UpdateProductVariables,
 } from "../types/product";
 import { safeId } from "../../utils/safeId";
-import { ADD_PRODUCT, DELETE_PRODUCT } from "../mutations/productMutations";
+import {
+  ADD_PRODUCT,
+  DELETE_PRODUCT,
+  UPDATE_PRODUCT,
+} from "../mutations/productMutations";
 
 export const useProductsByCompany = (companyId?: number) => {
   return useQuery<GetProductsByCompanyQuery, GetProductsByCompanyVariables>(
@@ -45,5 +51,11 @@ export const useAddProduct = () => {
 export const useDeleteProduct = () => {
   return useMutation<DeleteProductMutation, DeleteProductVariables>(
     DELETE_PRODUCT
+  );
+};
+
+export const useUpdateProduct = () => {
+  return useMutation<UpdateProductMutation, UpdateProductVariables>(
+    UPDATE_PRODUCT
   );
 };

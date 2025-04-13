@@ -1,37 +1,62 @@
-import { Alert, AlertColor, Box, CircularProgress } from "@mui/material";
+import {
+  Alert,
+  AlertColor,
+  Box,
+  CircularProgress,
+  Button,
+} from "@mui/material";
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { AlertDialog } from "../../../components/AlertDialog";
-import Button from "@mui/material/Button";
 import { EditProductForm } from "../components/EditProductForm";
-import { useParams } from "react-router-dom";
 import { ProductFull } from "../../../graphql/types/product";
-import { useProductById } from "../../../graphql/services/productService";
+import {
+  useProductById,
+  useUpdateProduct,
+} from "../../../graphql/services/productService";
 import { safeId } from "../../../utils/safeId";
 import { translateError } from "../../../utils/translateError";
+import { useNavigation } from "../../../hooks/useNavigation";
+
+interface AlertType {
+  severity: AlertColor | undefined;
+  message: string;
+}
 
 export const EditProduct = () => {
   const { id: productIdFromUrl } = useParams();
   const productId = safeId(productIdFromUrl);
   const [formData, setFormData] = useState<ProductFull>({} as ProductFull);
   const [openDialog, setOpenDialog] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor | undefined>(
-    undefined
-  );
-  const [alertMessage, setAlertMessage] = useState("");
+  const [alert, setAlert] = useState<AlertType>({
+    severity: undefined,
+    message: "",
+  });
+  const [updatedFields, setUpdatedFields] = useState<Partial<ProductFull>>({});
+  const { goToProductsModule } = useNavigation();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    const newValue = value === "" ? null : value;
     setFormData((prevState) => ({
       ...prevState,
-      [name]: value === "" ? null : value,
+      [name]: newValue,
+    }));
+    setUpdatedFields((prevFields) => ({
+      ...prevFields,
+      [name]: newValue,
     }));
   };
 
   const handleSelectChange = (name: string, value: string | number | null) => {
+    const newValue = value === "" ? null : value;
     setFormData((prev) => ({
       ...prev,
-      [name]: value === "" ? null : value,
+      [name]: newValue,
+    }));
+    setUpdatedFields((prevFields) => ({
+      ...prevFields,
+      [name]: newValue,
     }));
   };
 
@@ -48,27 +73,34 @@ export const EditProduct = () => {
     }
   }, [productData]);
 
-  const updateProduct = async (productId: number, formData: ProductFull) => {
-    console.log("Updating client with ID:", productId, formData);
-  };
+  const [updateProduct] = useUpdateProduct();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (productId) {
-        await updateProduct(productId, formData);
+        await updateProduct({
+          variables: {
+            productId: productId,
+            input: updatedFields,
+          },
+        });
+        setAlert({
+          severity: "success",
+          message: "Dane produktu zostały zaktualizowane pomyślnie.",
+        });
       } else {
-        setAlertSeverity("error");
-        setAlertMessage("Nieprawidłowy identyfikator klienta.");
+        setAlert({
+          severity: "error",
+          message: "Błąd: nie znaleziono produktu.",
+        });
         setOpenDialog(true);
+        return;
       }
-      setAlertSeverity("success");
-      setAlertMessage("Dane klienta zostały zaktualizowane pomyślnie.");
     } catch (error) {
-      setAlertSeverity("error");
       const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
       const translated = translateError(errorKey);
-      setAlertMessage(`Błąd: ${translated}`);
+      setAlert({ severity: "error", message: `Błąd: ${translated}` });
     } finally {
       setOpenDialog(true);
     }
@@ -76,7 +108,9 @@ export const EditProduct = () => {
 
   const handleDialogClose = () => {
     setOpenDialog(false);
+    goToProductsModule();
   };
+
   return (
     <>
       <h2>Edytuj dane produktu</h2>
@@ -103,7 +137,7 @@ export const EditProduct = () => {
           }
           sx={{ mb: 2 }}
         >
-          {alertMessage}
+          Nie udało się załadować danych produktu.
         </Alert>
       )}
       <EditProductForm
@@ -116,8 +150,8 @@ export const EditProduct = () => {
       <AlertDialog
         openDialog={openDialog}
         handleDialogClose={handleDialogClose}
-        alertSeverity={alertSeverity}
-        alertMessage={alertMessage}
+        alertSeverity={alert.severity}
+        alertMessage={alert.message}
       />
     </>
   );

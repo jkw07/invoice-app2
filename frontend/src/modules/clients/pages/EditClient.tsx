@@ -1,9 +1,13 @@
-import { Alert, AlertColor, Box, CircularProgress } from "@mui/material";
+import {
+  Alert,
+  AlertColor,
+  Box,
+  CircularProgress,
+  Button,
+} from "@mui/material";
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import { AlertDialog } from "../../../components/AlertDialog";
-import Button from "@mui/material/Button";
-import { useParams } from "react-router-dom";
 import { ClientFull } from "../../../graphql/types/client";
 import {
   useClientById,
@@ -14,15 +18,20 @@ import { translateError } from "../../../utils/translateError";
 import { DefaultForm } from "../components/DefaultForm";
 import { useNavigation } from "../../../hooks/useNavigation";
 
+interface AlertType {
+  severity: AlertColor | undefined;
+  message: string;
+}
+
 export const EditClient = () => {
   const { id: clientIdFromUrl } = useParams();
   const clientId = safeId(clientIdFromUrl);
   const [formData, setFormData] = useState<ClientFull>({} as ClientFull);
   const [openDialog, setOpenDialog] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor | undefined>(
-    undefined
-  );
-  const [alertMessage, setAlertMessage] = useState("");
+  const [alert, setAlert] = useState<AlertType>({
+    severity: undefined,
+    message: "",
+  });
   const [updatedFields, setUpdatedFields] = useState<Partial<ClientFull>>({});
   const { goToClientsModule } = useNavigation();
 
@@ -59,19 +68,22 @@ export const EditClient = () => {
             input: updatedFields,
           },
         });
-        setAlertSeverity("success");
-        setAlertMessage("Dane klienta zostały zaktualizowane pomyślnie.");
+        setAlert({
+          severity: "success",
+          message: "Dane klienta zostały zaktualizowane pomyślnie.",
+        });
       } else {
-        setAlertSeverity("error");
-        setAlertMessage("Nieprawidłowy identyfikator klienta.");
+        setAlert({
+          severity: "error",
+          message: "Błąd: nie znaleziono klienta.",
+        });
         setOpenDialog(true);
         return;
       }
     } catch (error) {
-      setAlertSeverity("error");
       const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
       const translated = translateError(errorKey);
-      setAlertMessage(`Błąd: ${translated}`);
+      setAlert({ severity: "error", message: `Błąd: ${translated}` });
     } finally {
       setOpenDialog(true);
     }
@@ -84,7 +96,7 @@ export const EditClient = () => {
 
   return (
     <>
-      <h2>Edytuj dane klienta</h2>
+      <h2>Edytuj dane klienta: {clientData?.getClientById.name}</h2>
       <NavLink to="/clients" className="link-button">
         <Button>Powrót</Button>
       </NavLink>
@@ -108,7 +120,24 @@ export const EditClient = () => {
           }
           sx={{ mb: 2 }}
         >
-          {alertMessage}
+          {error && !loading && (
+            <Alert
+              severity="error"
+              action={
+                <Button
+                  color="inherit"
+                  size="small"
+                  disabled={loading}
+                  onClick={() => refetch()}
+                >
+                  Spróbuj ponownie
+                </Button>
+              }
+              sx={{ mb: 2 }}
+            >
+              Nie udało się załadować danych klienta.
+            </Alert>
+          )}
         </Alert>
       )}
       <DefaultForm
@@ -119,8 +148,8 @@ export const EditClient = () => {
       <AlertDialog
         openDialog={openDialog}
         handleDialogClose={handleDialogClose}
-        alertSeverity={alertSeverity}
-        alertMessage={alertMessage}
+        alertSeverity={alert.severity}
+        alertMessage={alert.message}
       />
     </>
   );

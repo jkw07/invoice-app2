@@ -29,7 +29,7 @@ export interface GetProductByIdQuery {
 //Mutation
 export interface DeleteProductMutation {
   deleteProduct: {
-    id: number;
+    name: string;
   };
 }
 
@@ -62,3 +62,22 @@ export interface AddProductInput {
 export interface AddProductVariables {
   input: AddProductInput;
 }
+
+export type UpdateProductMutation = {
+  updateProduct: {
+    id: number;
+  };
+};
+
+export type UpdateProductVariables = {
+  productId: number;
+  input: UpdateProductInput;
+};
+
+export type UpdateProductInput = {
+  name?: string | null;
+  description?: string | null;
+  price?: number | null;
+  unit?: string | null;
+  vatRateId?: number | null;
+};

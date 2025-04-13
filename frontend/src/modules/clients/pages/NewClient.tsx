@@ -1,19 +1,22 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import Button from "@mui/material/Button";
 import { ImportClient } from "../components/ImportClient";
 import { AddClientInput } from "../../../graphql/types/client";
 import { safeId } from "../../../utils/safeId";
 import { useUserStore } from "../../../store/currentUserStore";
 import { GET_CLIENTS_BY_COMPANY } from "../../../graphql/queries/clientQueries";
-import { useSnackbarStore } from "../../../store/snackbarStore";
 import { useAddClient } from "../../../graphql/services/clientService";
-import { Alert, AlertColor } from "@mui/material";
+import { AlertColor, Button } from "@mui/material";
 import { useNavigation } from "../../../hooks/useNavigation";
 import { AlertDialog } from "../../../components/AlertDialog";
 import { translateError } from "../../../utils/translateError";
 import { DefaultForm } from "../components/DefaultForm";
 import { emptyClient } from "../utils/defaultFormData";
+
+interface AlertType {
+  severity: AlertColor | undefined;
+  message: string;
+}
 
 export const NewClient = () => {
   const companyId = useUserStore((state) => state.company?.id);
@@ -21,14 +24,12 @@ export const NewClient = () => {
   const [newClientData, setNewClientData] =
     useState<AddClientInput>(emptyClient);
   const [addClient, { loading }] = useAddClient();
-  const [onError, setOnError] = useState(false);
-  const { showSnackbar } = useSnackbarStore();
   const { goToClientsModule } = useNavigation();
   const [openDialog, setOpenDialog] = useState(false);
-  const [alertSeverity, setAlertSeverity] = useState<AlertColor | undefined>(
-    undefined
-  );
-  const [alertMessage, setAlertMessage] = useState("");
+  const [alert, setAlert] = useState<AlertType>({
+    severity: undefined,
+    message: "",
+  });
 
   const resetNewClientData = () => {
     setNewClientData(emptyClient);
@@ -50,14 +51,17 @@ export const NewClient = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!companyId) {
-      showSnackbar("Brak przypisanej firmy. Spróbuj ponownie.", "error");
+      setAlert({
+        severity: "error",
+        message: "Brak przypisanej firmy. Spróbuj ponownie.",
+      });
+      setOpenDialog(true);
       return;
     }
     const fullClientData: AddClientInput = {
       ...newClientData,
       companyId: safeId(companyId),
     };
-    console.log(fullClientData);
     handleAddNewClient(fullClientData);
   };
 
@@ -67,28 +71,22 @@ export const NewClient = () => {
         variables: { input: formValues },
         refetchQueries: [GET_CLIENTS_BY_COMPANY],
         onCompleted: (data) => {
-          setAlertSeverity("success");
-          setAlertMessage(`Klient ${data.addClient.name} został dodany!`);
+          setAlert({
+            severity: "success",
+            message: `Klient ${data.addClient.name} został dodany!`,
+          });
           setOpenDialog(true);
-        },
-        onError: (error) => {
-          console.error("Błąd:", error.message);
-          setOnError(true);
         },
       });
     } catch (error) {
-      console.error("Coś poszło nie tak:", error);
       const errorKey = error instanceof Error ? error.message : "UNKNOWN_ERROR";
       const translated = translateError(errorKey);
-      setAlertMessage(`Błąd: ${translated}`);
-      setOnError(true);
+      setAlert({ severity: "error", message: `Błąd: ${translated}` });
+      setOpenDialog(true);
     } finally {
       setNewClientData(emptyClient);
-      setOnError(false);
     }
   };
-
-  //TODO utility types
 
   const handleCloseImportClient = () => {
     setOpenImportClientDialog(false);
@@ -99,11 +97,10 @@ export const NewClient = () => {
       <AlertDialog
         openDialog={openDialog}
         handleDialogClose={handleDialogClose}
-        alertSeverity={alertSeverity}
-        alertMessage={alertMessage}
+        alertSeverity={alert.severity}
+        alertMessage={alert.message}
       />
       <h2>Nowy Klient</h2>
-      {onError && <Alert severity="error">{alertMessage}</Alert>}
       <NavLink to="/clients" className="link-button">
         <Button>Powrót</Button>
       </NavLink>
