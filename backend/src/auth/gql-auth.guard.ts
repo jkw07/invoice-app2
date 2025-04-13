@@ -10,5 +10,3 @@ export class GqlAuthGuard extends AuthGuard('jwt') {
     return gqlContext.req;
   }
 }
-
-//TODO w guard spr czy jego rola pozwala na dane zmiany

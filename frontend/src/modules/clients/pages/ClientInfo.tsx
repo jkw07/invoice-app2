@@ -46,7 +46,7 @@ export const ClientInfo = () => {
           </>
         )}
         <Button onClick={toggleShowInvoices}>
-          {showInvoices ? "Powrót" : "Pokaż widok faktur"}
+          {showInvoices ? "Powrót" : "Wystawione faktury"}
         </Button>
       </Box>
       {loading && (

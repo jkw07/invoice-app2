@@ -30,7 +30,6 @@ export const getRefreshToken = (): string | null => {
 };
 
 export const clearTokens = () => {
-  console.log("Clearing tokens");
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   sessionStorage.removeItem(ACCESS_TOKEN_KEY);

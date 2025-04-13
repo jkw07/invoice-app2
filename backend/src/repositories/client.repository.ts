@@ -73,7 +73,3 @@ export class ClientRepository {
     });
   }
 }
-
-//TODO dane nie edytowalne na FV - pobierac invoices, jesli sa - addNewCLient, jesli nie ma to update, dodac tez invoiceItem i reminders
-//TODO dodac Promise<> do repo
-//TODO w repository bez exeptions, przeniesc do service

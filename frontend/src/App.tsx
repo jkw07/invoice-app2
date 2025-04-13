@@ -17,8 +17,6 @@ import { apolloClient } from "./services/apolloClient";
 import { AppSnackbar } from "./components/AppSnackbar";
 import { IdleTimer } from "./components/IdleTimer";
 
-//TODO zapamietaj
-
 export const App = () => {
   const theme = createTheme({}, plPL);
   return (

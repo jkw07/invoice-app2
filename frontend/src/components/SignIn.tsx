@@ -12,7 +12,7 @@ import {
   Alert,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "../hooks/useNavigation";
 import logo from "../assets/logo1mini.png";
 import { ForgotPassword } from "./ForgotPassword";
@@ -21,6 +21,13 @@ import { useMutation } from "@apollo/client";
 import { LOGIN_MUTATION } from "../graphql/mutations/authMutations";
 import { handleGraphqlLogin } from "../graphql/services/authService";
 import { translateError } from "../utils/translateError";
+import {
+  clearTokens,
+  getAccessToken,
+  getRefreshToken,
+} from "../utils/tokenStorage";
+import { refreshAccessToken } from "../api/refreshAccessToken";
+import { useUserStore } from "../store/currentUserStore";
 
 export const SignIn = () => {
   const [state, setState] = useState({
@@ -55,6 +62,32 @@ export const SignIn = () => {
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
+
+  useEffect(() => {
+    const autoLogin = async () => {
+      const accessToken = getAccessToken();
+      const refreshToken = getRefreshToken();
+      const userFromStorage = localStorage.getItem("user");
+
+      if (accessToken && refreshToken && userFromStorage) {
+        try {
+          await refreshAccessToken();
+
+          const user = JSON.parse(userFromStorage);
+          useUserStore.getState().setUser(user);
+
+          goToInvoicesModule();
+        } catch (error) {
+          console.error("Auto-login failed, clearing tokens:", error);
+          clearTokens();
+          localStorage.removeItem("user");
+          localStorage.removeItem("company");
+          useUserStore.getState().setUser(null);
+        }
+      }
+    };
+    autoLogin();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState((prev) => ({

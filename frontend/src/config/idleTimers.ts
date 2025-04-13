@@ -1,2 +1,2 @@
-export const IDLE_TIMEOUT = 10 * 60 * 1000; // 10 minut
-export const WARNING_TIMEOUT = 9 * 60 * 1000; // 9 minut
+export const IDLE_TIMEOUT = 20 * 60 * 1000; // 20 minut
+export const WARNING_TIMEOUT = 19 * 60 * 1000; // 19 minut

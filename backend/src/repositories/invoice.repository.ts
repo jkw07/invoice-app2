@@ -61,7 +61,6 @@ export class InvoiceRepository {
       },
     });
   }
-  //TODO czy bd potrzebne cos jeszcze???
 
   async getInvoiceById(invoiceId: number): Promise<
     | (Invoice & {
