@@ -32,10 +32,9 @@ export const SignIn = () => {
   const [forgotPasswordDialogOpen, setForgotPasswordDialogOpen] =
     useState(false);
   const [signUpOpen, setSignUpOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [loginAlert, setLoginAlert] = useState<string | null>(null);
   const { goToInvoicesModule } = useNavigation();
-  const [login] = useMutation(LOGIN_MUTATION);
+  const [login, { loading }] = useMutation(LOGIN_MUTATION);
 
   const handleOpenPasswordReminder = () => {
     setForgotPasswordDialogOpen(true);
@@ -65,7 +64,6 @@ export const SignIn = () => {
   };
 
   const handleLogin = async () => {
-    setLoading(true);
     setLoginAlert(null);
     try {
       const res = await login({ variables: { data: state } });
@@ -82,8 +80,6 @@ export const SignIn = () => {
         password: "",
       });
       setShowPassword(false);
-    } finally {
-      setLoading(false);
     }
   };
 

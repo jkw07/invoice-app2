@@ -12,10 +12,11 @@ import {
   Alert,
 } from "@mui/material";
 import { ClipboardPen } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { REGISTER_MUTATION } from "../graphql/mutations/authMutations";
 import { useMutation } from "@apollo/client";
 import { translateError } from "../utils/translateError";
+import { CircularProgress } from "@mui/material";
 
 interface SignUpProps {
   open: boolean;
@@ -33,8 +34,7 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [register] = useMutation(REGISTER_MUTATION);
+  const [register, { loading }] = useMutation(REGISTER_MUTATION);
   const [registerAlert, setRegisterAlert] = useState<AlertData | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,8 +49,6 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
   };
 
   const handleRegister = async () => {
-    setLoading(true);
-    setRegisterAlert(null);
     try {
       await register({ variables: { data: state } });
       setRegisterAlert({
@@ -65,13 +63,6 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
         severity: "error",
         message: `${translated}`,
       });
-    } finally {
-      setLoading(false);
-      setState({
-        email: "",
-        password: "",
-      });
-      setShowPassword(false);
     }
   };
 
@@ -79,6 +70,24 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
     e.preventDefault();
     handleRegister();
   };
+
+  useEffect(() => {
+    if (open) {
+      setRegisterAlert(null);
+      setState({ email: "", password: "" });
+      setShowPassword(false);
+    }
+  }, [open]);
+
+  useEffect(() => {
+    if (registerAlert?.severity === "success") {
+      const timer = setTimeout(() => {
+        handleClose();
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [registerAlert, handleClose]);
 
   return (
     <Dialog
@@ -98,50 +107,63 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
       <DialogContent
         sx={{ display: "flex", flexDirection: "column", gap: 2, width: "90%" }}
       >
-        <DialogContentText>
-          Wpisz swój adres email oraz zdefiniuj hasło.
-          {registerAlert !== null && (
-            <Alert severity={registerAlert.severity}>
-              {registerAlert.message}
-            </Alert>
-          )}
-        </DialogContentText>
-        <TextField
-          required
-          label="Email"
-          margin="normal"
-          name="email"
-          variant="outlined"
-          type="email"
-          fullWidth
-          autoComplete="username"
-          autoFocus
-          value={state.email}
-          onChange={handleChange}
-        />
-        <TextField
-          label="Hasło"
-          margin="normal"
-          name="password"
-          type={showPassword ? "text" : "password"}
-          variant="outlined"
-          autoComplete="new-password"
-          required
-          fullWidth
-          value={state.password}
-          onChange={handleChange}
-          slotProps={{
-            input: {
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton onClick={togglePasswordVisibility} edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
-            },
-          }}
-        />
+        {loading ? (
+          <CircularProgress size={50} thickness={5} />
+        ) : (
+          <>
+            {registerAlert !== null && (
+              <Alert severity={registerAlert.severity}>
+                {registerAlert.message}
+              </Alert>
+            )}
+            {!registerAlert && (
+              <>
+                <DialogContentText>
+                  Wpisz swój adres email oraz zdefiniuj hasło.
+                </DialogContentText>
+                <TextField
+                  required
+                  label="Email"
+                  margin="normal"
+                  name="email"
+                  variant="outlined"
+                  type="email"
+                  fullWidth
+                  autoComplete="username"
+                  autoFocus
+                  value={state.email}
+                  onChange={handleChange}
+                />
+                <TextField
+                  label="Hasło"
+                  margin="normal"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  variant="outlined"
+                  autoComplete="new-password"
+                  required
+                  fullWidth
+                  value={state.password}
+                  onChange={handleChange}
+                  slotProps={{
+                    input: {
+                      endAdornment: (
+                        <InputAdornment position="end">
+                          <IconButton
+                            onClick={togglePasswordVisibility}
+                            edge="end"
+                          >
+                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                          </IconButton>
+                        </InputAdornment>
+                      ),
+                    },
+                  }}
+                />
+              </>
+            )}
+          </>
+        )}
       </DialogContent>
       <DialogActions sx={{ pb: 3, px: 3 }}>
         <Button onClick={handleClose}>
