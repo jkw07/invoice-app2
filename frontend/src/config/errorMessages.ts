@@ -24,5 +24,3 @@ export const errorMessages = {
   INVALID_TOKEN: "Błąd dostępu.",
   TOKEN_EXPIRED_OR_INVALID: "Błąd dostępu.",
 } as const;
-
-export type ErrorMessageKey = keyof typeof errorMessages;
