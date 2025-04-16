@@ -1,4 +1,3 @@
-import { InvoiceBasic } from "../../../graphql/types/client";
 import { Status } from "../../../graphql/types/enums";
 import {
   Alert,
@@ -11,6 +10,7 @@ import {
   TableHead,
   TableRow,
 } from "@mui/material";
+import { InvoiceBasic } from "../../../graphql/types/invoice";
 
 interface InvoicesTableProps {
   invoices?: InvoiceBasic[];
@@ -72,7 +72,9 @@ const renderStatus = (status: Status) => {
   return <Chip label={text} color={color} size="small" />;
 };
 
-export default function InvoicesTable({ invoices = [] }: InvoicesTableProps) {
+export default function InvoicesSummaryTable({
+  invoices = [],
+}: InvoicesTableProps) {
   const notEmpty = invoices.length > 0;
   return (
     <>

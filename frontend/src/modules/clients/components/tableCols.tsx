@@ -21,7 +21,7 @@ export const tableColsClients = ({
       width: 200,
     },
     {
-      field: "taxId",
+      field: "tin",
       headerName: "NIP",
       width: 200,
     },

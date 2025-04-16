@@ -14,7 +14,7 @@ export class InvoiceResolver {
 
   @UseGuards(GqlAuthGuard)
   @Query(() => [Invoice])
-  async getInvoices(
+  async getInvoicesByCompany(
     @Context() context: { req: Request },
     @Args('companyId', { type: () => Int }) companyId: number,
   ) {

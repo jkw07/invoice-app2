@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import { CLIENT_BASIC_FIELDS } from "../fragments/clientFragments";
 import { CLIENT_FULL_FIELDS } from "../fragments/clientFragments";
+import { INVOICE_BASIC_FIELDS } from "../fragments/invoiceFragments";
 
 export const GET_CLIENTS_BY_COMPANY = gql`
   query GetClientsByCompany($companyId: Int!) {
@@ -16,14 +17,10 @@ export const GET_CLIENT_BY_ID = gql`
     getClientById(clientId: $clientId) {
       ...ClientFullFields
       invoices {
-        id
-        invoiceNo
-        issuedDate
-        totalAmount
-        dueDate
-        status
+        ...InvoiceBasicFields
       }
     }
   }
   ${CLIENT_FULL_FIELDS}
+  ${INVOICE_BASIC_FIELDS}
 `;

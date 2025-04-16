@@ -291,7 +291,7 @@ type Query {
   getCompanyById(companyId: Int!): Company!
   getDefaultCompanyByUser: Company!
   getInvoiceById(invoiceId: Int!): Invoice!
-  getInvoices(companyId: Int!): [Invoice!]!
+  getInvoicesByCompany(companyId: Int!): [Invoice!]!
   getPaymentMethodById(paymentId: Int!): Payment!
   getPaymentMethodsByUser: [Payment!]!
   getProductById(productId: Int!): Product!

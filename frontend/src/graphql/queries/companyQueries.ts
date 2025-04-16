@@ -30,6 +30,3 @@ export const GET_COMPANY_BY_ID_FULL = gql`
   }
   ${COMPANY_FULL_FIELDS}
 `;
-//nazwa operacji dla apollo
-//nazwa resolvera
-//przy kolejnych nowe nazwy query!!

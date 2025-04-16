@@ -5,7 +5,8 @@ import { ClientWithInvoices } from "../../../graphql/types/client";
 import { useClientById } from "../../../graphql/services/clientService";
 import { safeId } from "../../../utils/safeId";
 import { DefaultForm } from "../components/DefaultForm";
-import InvoicesTable from "../components/invoicesTable";
+import InvoicesSummaryTable from "../components/InvoicesSummaryTable";
+import { translateError } from "../../../utils/translateError";
 
 export const ClientInfo = () => {
   const { id: clientIdFromUrl } = useParams();
@@ -69,13 +70,13 @@ export const ClientInfo = () => {
           }
           sx={{ mb: 2 }}
         >
-          Wystąpił błąd: {error.message}
+          Wystąpił błąd: {translateError(error.message)}
         </Alert>
       )}
       {!showInvoices && (
         <DefaultForm formData={formData} isDisabled={true} hasSubmit={false} />
       )}
-      {showInvoices && <InvoicesTable invoices={formData.invoices} />}
+      {showInvoices && <InvoicesSummaryTable invoices={formData.invoices} />}
     </>
   );
 };
