@@ -42,6 +42,8 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
     hasUppercase: false,
   });
 
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.email);
+
   const isPasswordValid =
     passwordValidation.minLength &&
     passwordValidation.hasNumber &&
@@ -160,6 +162,19 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
                   autoFocus
                   value={state.email}
                   onChange={handleChange}
+                  slotProps={{
+                    input: {
+                      endAdornment: state.email ? (
+                        <InputAdornment position="end">
+                          {isEmailValid ? (
+                            <Check style={{ color: "green" }} />
+                          ) : (
+                            <X style={{ color: "red" }} />
+                          )}
+                        </InputAdornment>
+                      ) : null,
+                    },
+                  }}
                 />
                 <TextField
                   label="Hasło"
@@ -230,7 +245,7 @@ export const SignUp = ({ open, handleClose }: SignUpProps) => {
           <Button
             variant="contained"
             type="submit"
-            disabled={!isPasswordValid || loading}
+            disabled={!isPasswordValid || !isEmailValid || loading}
           >
             {loading ? "Zakładanie konta..." : "Załóż konto"}
           </Button>

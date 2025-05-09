@@ -34,6 +34,19 @@ export const InvoicesList = () => {
     }
   }, [data]);
 
+  if (!company?.id) {
+    return (
+      <>
+        <h1>Lista faktur</h1>
+        <div className="actions-container">
+          <Alert severity="error">
+            Brak firmy. Proszę dodać firmę, aby móc wyświetlić listę.
+          </Alert>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <h1>Lista faktur</h1>
