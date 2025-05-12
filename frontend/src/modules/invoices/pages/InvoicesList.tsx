@@ -5,17 +5,20 @@ import { Alert, Button } from "@mui/material";
 import { translateError } from "../../../utils/translateError";
 import { FilePlus } from "lucide-react";
 import { GET_INVOICES_BY_COMPANY } from "../../../graphql/queries/invoiceQueries";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import { safeId } from "../../../utils/safeId";
 import { InvoicesTableGrid } from "../components.tsx/InvoiceTableGrid";
 import "../../../styles/tables.scss";
 import { NavLink } from "react-router-dom";
+import { UPDATE_INVOICE_STATUS } from "../../../graphql/mutations/invoiceMutations";
+import { Status } from "../../../graphql/types/enums";
 
 export const InvoicesList = () => {
   const { company } = useUserStore();
   const [tableData, setTableData] = useState<InvoiceWithClient[]>(
     [] as InvoiceWithClient[]
   );
+  const [updateInvoiceStatus] = useMutation(UPDATE_INVOICE_STATUS);
 
   const [getInvoices, { data, loading, error, refetch }] = useLazyQuery(
     GET_INVOICES_BY_COMPANY,
@@ -33,6 +36,43 @@ export const InvoicesList = () => {
       setTableData(data.getInvoicesByCompany);
     }
   }, [data]);
+
+  useEffect(() => {
+    const updateOverdueStatuses = async () => {
+      if (!data?.getInvoicesByCompany) return;
+
+      const now = new Date();
+      const updatedInvoices = await Promise.all(
+        data.getInvoicesByCompany.map(async (invoice: InvoiceWithClient) => {
+          if (
+            invoice.status === Status.PENDING &&
+            new Date(invoice.dueDate) < now
+          ) {
+            try {
+              await updateInvoiceStatus({
+                variables: {
+                  id: invoice.id,
+                  status: Status.OVERDUE,
+                },
+              });
+              return { ...invoice, status: Status.OVERDUE };
+            } catch (err) {
+              console.error(
+                `Błąd aktualizacji statusu faktury ${invoice.id}`,
+                err
+              );
+              return invoice;
+            }
+          }
+          return invoice;
+        })
+      );
+      setTableData(updatedInvoices);
+    };
+
+    updateOverdueStatuses();
+  }, [data]);
+  //TODO spr czy aktualizacja statusów działa
 
   if (!company?.id) {
     return (
