@@ -5,6 +5,9 @@ import {
   MenuItem,
   TextField,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import { Save, RotateCcw, Trash2, Plus } from "lucide-react";
 import {
@@ -12,6 +15,8 @@ import {
   CreateInvoiceItemInput,
 } from "../../../graphql/types/invoice";
 import { Status, VatRateType } from "../../../graphql/types/enums";
+import { useUserStore } from "../../../store/currentUserStore";
+import { useState } from "react";
 
 interface Props {
   formData: CreateInvoiceInput;
@@ -34,13 +39,33 @@ export const DefaultForm = ({
   handleReset,
   loading = false,
 }: Props) => {
+  const { vatRates } = useUserStore();
+  const [vatSelectValue, setVatSelectValue] = useState<number | null>(null);
+
   const handleItemChange = (
     index: number,
     field: keyof CreateInvoiceItemInput,
     value: unknown
   ) => {
     const updated = [...invoiceItems];
-    updated[index] = { ...updated[index], [field]: value };
+
+    const original = updated[index];
+    const item = { ...original, [field]: value };
+
+    const quantity = Number(item.quantity) || 0;
+    const unitPrice = Number(item.unitPrice) || 0;
+    item.totalNet = quantity * unitPrice;
+
+    const taxRate = item.taxRate ?? 0;
+    if (item.taxType === VatRateType.STANDARD && taxRate > 0) {
+      item.totalTax = Math.round(item.totalNet * (taxRate / 100));
+    } else {
+      item.totalTax = 0;
+    }
+
+    item.totalGross = item.totalNet + (item.totalTax ?? 0);
+
+    updated[index] = item;
     setInvoiceItems(updated);
   };
 
@@ -97,22 +122,6 @@ export const DefaultForm = ({
             label="Typ faktury"
             name="invoiceType"
             value={formData.invoiceType}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Waluta"
-            name="currency"
-            value={formData.currency}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Opis"
-            name="description"
-            value={formData.description || ""}
             onChange={handleChange}
             fullWidth
             margin="normal"
@@ -192,13 +201,20 @@ export const DefaultForm = ({
         {invoiceItems.map((item, index) => (
           <Box
             key={index}
-            sx={{ display: "flex", gap: 2, alignItems: "center", mb: 2 }}
+            sx={{
+              display: "flex",
+              gap: 2,
+              alignItems: "center",
+              mb: 1,
+              width: "100%",
+            }}
           >
             <TextField
               label="Nazwa"
               value={item.name}
               onChange={(e) => handleItemChange(index, "name", e.target.value)}
               fullWidth
+              sx={{ maxWidth: 500 }}
             />
             <TextField
               label="Ilość"
@@ -207,10 +223,10 @@ export const DefaultForm = ({
               onChange={(e) =>
                 handleItemChange(index, "quantity", parseInt(e.target.value))
               }
-              sx={{ width: 100 }}
+              sx={{ width: 80 }}
             />
             <TextField
-              label="Cena netto"
+              label="Cena jedn. netto"
               type="number"
               value={item.unitPrice}
               onChange={(e) =>
@@ -218,21 +234,85 @@ export const DefaultForm = ({
               }
               sx={{ width: 120 }}
             />
+
+            <FormControl fullWidth sx={{ width: 120 }}>
+              <InputLabel id={`vat-rate-label-${index}`}>Stawka VAT</InputLabel>
+              <Select
+                labelId={`vat-rate-label-${index}`}
+                id={`vatRateSelect-${index}`}
+                value={vatSelectValue}
+                label="Stawka VAT"
+                onChange={(e) => {
+                  const selectedId = e.target.value as number;
+                  setVatSelectValue(selectedId);
+
+                  const selectedRate = vatRates?.find(
+                    (rate) => rate.id === selectedId
+                  );
+                  if (!selectedRate) return;
+
+                  handleItemChange(index, "taxType", selectedRate.type);
+                  handleItemChange(
+                    index,
+                    "taxRate",
+                    selectedRate.rate !== null
+                      ? Number(selectedRate.rate)
+                      : null
+                  );
+                }}
+              >
+                {vatRates?.map((vatRate) => (
+                  <MenuItem key={vatRate.id} value={vatRate.id}>
+                    {vatRate.type === "STANDARD"
+                      ? `${vatRate.rate}%`
+                      : vatRate.type === "EXEMPT"
+                      ? "zw"
+                      : "np"}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <TextField
-              select
-              label="VAT"
-              value={item.taxType}
+              label="Wartość netto"
+              InputProps={{ readOnly: true }}
+              type="number"
+              value={item.totalNet}
               onChange={(e) =>
-                handleItemChange(index, "taxType", e.target.value)
+                handleItemChange(index, "totalNet", parseInt(e.target.value))
               }
-              sx={{ width: 120 }}
-            >
-              {Object.values(VatRateType).map((v) => (
-                <MenuItem key={v} value={v}>
-                  {v}
-                </MenuItem>
-              ))}
-            </TextField>
+              sx={{ width: 150 }}
+            />
+            <TextField
+              label="Kwota VAT"
+              type="number"
+              value={item.totalTax}
+              slotProps={{
+                input: { readOnly: true },
+                inputLabel: { shrink: true },
+              }}
+              onChange={(e) =>
+                handleItemChange(index, "totalTax", parseInt(e.target.value))
+              }
+              sx={{ width: 150 }}
+            />
+            <TextField
+              slotProps={{
+                inputLabel: {
+                  shrink: true,
+                },
+                input: {
+                  readOnly: true,
+                },
+              }}
+              label="Wartość brutto"
+              type="number"
+              value={item.totalGross}
+              onChange={(e) =>
+                handleItemChange(index, "totalTax", parseInt(e.target.value))
+              }
+              sx={{ width: 150 }}
+            />
             <IconButton onClick={() => removeItem(index)} color="error">
               <Trash2 size={18} />
             </IconButton>
@@ -241,6 +321,24 @@ export const DefaultForm = ({
         <Button variant="outlined" startIcon={<Plus />} onClick={addNewItem}>
           Dodaj pozycję
         </Button>
+      </Box>
+      <Box sx={{ flex: 1 }}>
+        <TextField
+          label="Waluta"
+          name="currency"
+          value={formData.currency}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        <TextField
+          label="Uwagi"
+          name="description"
+          value={formData.description || ""}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
       </Box>
       <Box sx={{ display: "flex", justifyContent: "flex-end", gap: 2 }}>
         <Button

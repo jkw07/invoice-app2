@@ -19,6 +19,8 @@ interface AlertType {
   message: string;
 }
 
+//TODO: dodać kupującego (wybor z listy lub dodaj nowego, uwagi na sam koniec, przetlumaczyc status, typ faktury: do wyboru VAT, korekta itd, metoda płatności do wyboru lub dodaj nową, data zaplaty jeśli status PAID)
+
 export const NewInvoice = () => {
   const companyId = useUserStore((state) => state.company?.id);
   const [newInvoiceData, setNewInvoiceData] =

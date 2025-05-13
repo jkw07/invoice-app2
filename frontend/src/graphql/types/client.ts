@@ -1,4 +1,4 @@
-import { Status } from "./enums";
+import { InvoiceBasic } from "./invoice";
 
 export interface ClientBasic {
   id: number;
@@ -19,15 +19,6 @@ export interface ClientFull extends ClientBasic {
   province: string | null;
   county: string | null;
   municipality: string | null;
-}
-
-export interface InvoiceBasic {
-  id: number;
-  invoiceNo: string;
-  issuedDate: string;
-  totalAmount: number;
-  dueDate: string;
-  status: Status;
 }
 
 export interface ClientWithInvoices extends ClientFull {

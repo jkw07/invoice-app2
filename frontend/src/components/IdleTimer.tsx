@@ -5,8 +5,6 @@ import { logoutUser } from "../graphql/services/authService";
 import { Button } from "@mui/material";
 import { IDLE_TIMEOUT, WARNING_TIMEOUT } from "../config/idleTimers";
 
-//TODO spr czy jest remember me
-
 export const IdleTimer = () => {
   const user = useUserStore((state) => state.user);
   const showSnackbar = useSnackbarStore((state) => state.showSnackbar);
