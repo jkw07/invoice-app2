@@ -1,7 +1,7 @@
 import { Chip, IconButton, Tooltip } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { Edit, Trash2, Info } from "lucide-react";
-import { Status } from "../../../graphql/types/enums";
+import { Status, StatusTranslated } from "../../../graphql/types/enums";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 
 interface TableColsInvoicesProps {
@@ -25,7 +25,7 @@ const formatAmount = (amount?: number | string) => {
 };
 
 const renderStatusChip = (status: Status) => {
-  let text = "szkic";
+  let text = StatusTranslated.DRAFT;
   let color:
     | "default"
     | "primary"
@@ -36,28 +36,28 @@ const renderStatusChip = (status: Status) => {
 
   switch (status) {
     case Status.PAID:
-      text = "opłacona";
+      text = StatusTranslated.PAID;
       color = "success";
       break;
     case Status.PENDING:
-      text = "oczekująca";
+      text = StatusTranslated.PENDING;
       color = "primary";
       break;
     case Status.OVERDUE:
-      text = "po terminie";
+      text = StatusTranslated.OVERDUE;
       color = "error";
       break;
     case Status.CANCELLED:
-      text = "anulowana";
+      text = StatusTranslated.CANCELLED;
       color = "secondary";
       break;
     case Status.PARTIALLY_PAID:
-      text = "częściowo opłacona";
+      text = StatusTranslated.PARTIALLY_PAID;
       color = "warning";
       break;
     case Status.DRAFT:
     default:
-      text = "szkic";
+      text = StatusTranslated.DRAFT;
       color = "default";
   }
 

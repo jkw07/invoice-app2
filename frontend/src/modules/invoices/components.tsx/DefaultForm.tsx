@@ -8,15 +8,24 @@ import {
   FormControl,
   InputLabel,
   Select,
+  Typography,
 } from "@mui/material";
 import { Save, RotateCcw, Trash2, Plus } from "lucide-react";
 import {
   CreateInvoiceInput,
   CreateInvoiceItemInput,
 } from "../../../graphql/types/invoice";
-import { Status, VatRateType } from "../../../graphql/types/enums";
+import {
+  Status,
+  StatusTranslated,
+  VatRateType,
+} from "../../../graphql/types/enums";
 import { useUserStore } from "../../../store/currentUserStore";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useClientsByCompany } from "../../../graphql/services/clientService";
+import { ClientBasic } from "../../../graphql/types/client";
+
+//TODO pobrac payment methods, dodać ID tak jak client, oznaczyć pola required, suma brutto netto vat, tabelka wg vat i onChange dodać wszystko
 
 interface Props {
   formData: CreateInvoiceInput;
@@ -40,7 +49,17 @@ export const DefaultForm = ({
   loading = false,
 }: Props) => {
   const { vatRates } = useUserStore();
+  const { company } = useUserStore();
   const [vatSelectValue, setVatSelectValue] = useState<number | null>(null);
+  const [clientsList, setClientsList] = useState<ClientBasic[]>([]);
+
+  const { data: clientsData } = useClientsByCompany(company?.id);
+
+  useEffect(() => {
+    if (clientsData?.getClientsByCompany) {
+      setClientsList(clientsData.getClientsByCompany);
+    }
+  }, [clientsData]);
 
   const handleItemChange = (
     index: number,
@@ -68,6 +87,10 @@ export const DefaultForm = ({
     updated[index] = item;
     setInvoiceItems(updated);
   };
+
+  const selectedClient = clientsList.find(
+    (client) => client.id === formData.buyerId
+  );
 
   const addNewItem = () => {
     setInvoiceItems((prev) => [
@@ -121,6 +144,7 @@ export const DefaultForm = ({
           <TextField
             label="Typ faktury"
             name="invoiceType"
+            required
             value={formData.invoiceType}
             onChange={handleChange}
             fullWidth
@@ -128,26 +152,53 @@ export const DefaultForm = ({
           />
           <TextField
             select
-            label="Status"
-            name="status"
-            value={formData.status}
+            label="Klient"
+            name="buyerId"
+            required
+            value={formData.buyerId}
             onChange={handleChange}
             fullWidth
             margin="normal"
           >
-            {Object.values(Status).map((status) => (
-              <MenuItem key={status} value={status}>
-                {status}
+            {clientsList.map((client) => (
+              <MenuItem key={client.id} value={client.id}>
+                {client.name} ({client.tin})
               </MenuItem>
             ))}
           </TextField>
+          {selectedClient && (
+            <Box
+              mt={2}
+              p={2}
+              border={1}
+              borderRadius={2}
+              borderColor="grey.300"
+            >
+              <Typography variant="subtitle1">{selectedClient.name}</Typography>
+              <Typography variant="body2">
+                {selectedClient.street} {selectedClient.buildingNo}
+                {selectedClient.apartmentNo && `/${selectedClient.apartmentNo}`}
+                <br />
+                {selectedClient.zipCode} {selectedClient.city}
+              </Typography>
+              <Typography variant="body2">NIP: {selectedClient.tin}</Typography>
+              <Typography variant="body2">
+                Email: {selectedClient.email}
+              </Typography>
+              <Typography variant="body2">
+                Telefon: {selectedClient.phone}
+              </Typography>
+            </Box>
+          )}
         </Box>
+
         <Box sx={{ flex: 1 }}>
           <Divider>Terminy i płatność</Divider>
           <TextField
             type="date"
             label="Data wystawienia"
             name="issuedDate"
+            required
             value={formData.issuedDate}
             onChange={handleChange}
             fullWidth
@@ -168,6 +219,7 @@ export const DefaultForm = ({
             type="date"
             label="Termin płatności"
             name="dueDate"
+            required
             value={formData.dueDate}
             onChange={handleChange}
             fullWidth
@@ -176,6 +228,7 @@ export const DefaultForm = ({
           />
           <TextField
             label="Metoda płatności"
+            required
             name="paymentMethod"
             value={formData.paymentMethod}
             onChange={handleChange}
@@ -183,15 +236,33 @@ export const DefaultForm = ({
             margin="normal"
           />
           <TextField
-            type="date"
-            label="Data zapłaty"
-            name="paymentDate"
-            value={formData.paymentDate || ""}
+            select
+            label="Status"
+            name="status"
+            value={formData.status}
             onChange={handleChange}
             fullWidth
             margin="normal"
-            InputLabelProps={{ shrink: true }}
-          />
+          >
+            {Object.values(Status).map((status) => (
+              <MenuItem key={status} value={status}>
+                {StatusTranslated[status as keyof typeof StatusTranslated]}
+              </MenuItem>
+            ))}
+          </TextField>
+          {formData.status === Status.PAID && (
+            <TextField
+              type="date"
+              label="Data zapłaty"
+              name="paymentDate"
+              required={formData.status === Status.PAID}
+              value={formData.paymentDate || ""}
+              onChange={handleChange}
+              fullWidth
+              margin="normal"
+              InputLabelProps={{ shrink: true }}
+            />
+          )}
         </Box>
       </Box>
 
@@ -326,6 +397,7 @@ export const DefaultForm = ({
         <TextField
           label="Waluta"
           name="currency"
+          required
           value={formData.currency}
           onChange={handleChange}
           fullWidth

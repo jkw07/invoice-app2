@@ -9,7 +9,7 @@ export const emptyInvoice: CreateInvoiceInput = {
   invoiceType: "Faktura VAT",
   invoiceNo: "",
   issuedDate: new Date().toISOString().split("T")[0],
-  transactionDate: null,
+  transactionDate: new Date().toISOString().split("T")[0],
   dueDate: new Date().toISOString().split("T")[0],
   paymentMethod: "przelew",
   paymentDate: null,

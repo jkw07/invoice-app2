@@ -12,3 +12,12 @@ export enum Status {
   CANCELLED = "CANCELLED",
   PARTIALLY_PAID = "PARTIALLY_PAID",
 }
+
+export enum StatusTranslated {
+  DRAFT = "szkic",
+  PENDING = "wystawiona",
+  PAID = "opłacona",
+  OVERDUE = "po terminie",
+  CANCELLED = "anulowana",
+  PARTIALLY_PAID = "częściowo opłacona",
+}

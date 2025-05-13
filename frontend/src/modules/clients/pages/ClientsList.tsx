@@ -7,7 +7,6 @@ import { useUserStore } from "../../../store/currentUserStore";
 
 export const ClientsList = () => {
   const { company } = useUserStore();
-
   if (!company?.id) {
     return (
       <>
