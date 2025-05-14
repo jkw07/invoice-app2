@@ -25,7 +25,7 @@ import { useEffect, useState } from "react";
 import { useClientsByCompany } from "../../../graphql/services/clientService";
 import { ClientBasic } from "../../../graphql/types/client";
 
-//TODO pobrac payment methods, dodać ID tak jak client, oznaczyć pola required, suma brutto netto vat, tabelka wg vat i onChange dodać wszystko
+//TODO dodać ID tak jak client, oznaczyć pola required, suma brutto netto vat, tabelka wg vat i onChange dodać wszystko
 
 interface Props {
   formData: CreateInvoiceInput;

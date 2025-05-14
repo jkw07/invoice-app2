@@ -20,10 +20,17 @@ import { Building2 } from "lucide-react";
 import { AddNewCompany } from "./AddNewCompany";
 import { useVatRate } from "../graphql/services/vatRateService";
 import { translateError } from "../utils/translateError";
+import { usePaymentMethod } from "../graphql/services/paymentMethodsService";
 
 export const Topbar = () => {
-  const { company, setCompany, replaceCompany, user, setVatRates } =
-    useUserStore();
+  const {
+    company,
+    setCompany,
+    replaceCompany,
+    user,
+    setVatRates,
+    setPaymentMethods,
+  } = useUserStore();
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLButtonElement>(null);
   const { goToInvoicesModule } = useNavigation();
@@ -38,6 +45,7 @@ export const Topbar = () => {
 
   const { data: companiesData } = useCompaniesByUser();
   const { data: vatRatesData } = useVatRate();
+  const { data: paymentMethodsData } = usePaymentMethod();
 
   useEffect(() => {
     if (defaultCompanyData?.getDefaultCompanyByUser && !company) {
@@ -55,6 +63,12 @@ export const Topbar = () => {
       setVatRates(vatRatesData.getVatRates);
     }
   }, [vatRatesData, setVatRates]);
+
+  useEffect(() => {
+    if (paymentMethodsData?.getPaymentMethods) {
+      setPaymentMethods(paymentMethodsData.getPaymentMethods);
+    }
+  }, [paymentMethodsData, setPaymentMethods]);
 
   const handleClose = (event: Event | React.SyntheticEvent) => {
     if (

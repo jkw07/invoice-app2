@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { VatRate } from "../graphql/types/vatRate";
+import { PaymentMethod } from "../graphql/types/paymentMethods";
 
 type User = {
   id: string;
@@ -15,10 +16,12 @@ interface UserState {
   user: User | null;
   company: Company | null;
   vatRates: VatRate[] | null;
+  paymentMethods: PaymentMethod[] | null;
   setUser: (user: User | null) => void;
   setCompany: (company: Company | null) => void;
   replaceCompany: (company: Company | null) => void;
   setVatRates: (vatRates: VatRate[]) => void;
+  setPaymentMethods: (paymentMethods: PaymentMethod[]) => void;
 }
 
 const getUserFromStorage = (): User | null => {
@@ -35,6 +38,7 @@ export const useUserStore = create<UserState>((set) => ({
   user: getUserFromStorage(),
   company: getCompanyFromStorage(),
   vatRates: null,
+  paymentMethods: null,
   setUser: (user) => {
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
@@ -62,5 +66,8 @@ export const useUserStore = create<UserState>((set) => ({
   },
   setVatRates: (vatRates) => {
     set({ vatRates });
+  },
+  setPaymentMethods: (paymentMethods) => {
+    set({ paymentMethods });
   },
 }));
