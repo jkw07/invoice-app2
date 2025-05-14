@@ -25,8 +25,6 @@ import { useEffect, useState } from "react";
 import { useClientsByCompany } from "../../../graphql/services/clientService";
 import { ClientBasic } from "../../../graphql/types/client";
 
-//TODO dodać ID tak jak client, oznaczyć pola required, suma brutto netto vat, tabelka wg vat i onChange dodać wszystko
-
 interface Props {
   formData: CreateInvoiceInput;
   invoiceItems: CreateInvoiceItemInput[];
@@ -34,7 +32,9 @@ interface Props {
     React.SetStateAction<CreateInvoiceItemInput[]>
   >;
   handleSubmit: (e: React.FormEvent) => void;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
   handleReset: () => void;
   loading?: boolean;
 }
@@ -48,8 +48,7 @@ export const DefaultForm = ({
   handleReset,
   loading = false,
 }: Props) => {
-  const { vatRates } = useUserStore();
-  const { company } = useUserStore();
+  const { vatRates, paymentMethods, company } = useUserStore();
   const [vatSelectValue, setVatSelectValue] = useState<number | null>(null);
   const [clientsList, setClientsList] = useState<ClientBasic[]>([]);
 
@@ -92,11 +91,24 @@ export const DefaultForm = ({
     (client) => client.id === formData.buyerId
   );
 
+  useEffect(() => {
+    const total = invoiceItems.reduce(
+      (sum, item) => sum + (item.totalGross || 0),
+      0
+    );
+
+    handleChange({
+      target: {
+        name: "totalAmount",
+        value: total.toString(),
+      },
+    } as React.ChangeEvent<HTMLInputElement>);
+  }, [invoiceItems]);
+
   const addNewItem = () => {
     setInvoiceItems((prev) => [
       ...prev,
       {
-        invoiceId: 0,
         name: "",
         quantity: 1,
         unitPrice: 0,
@@ -182,12 +194,6 @@ export const DefaultForm = ({
                 {selectedClient.zipCode} {selectedClient.city}
               </Typography>
               <Typography variant="body2">NIP: {selectedClient.tin}</Typography>
-              <Typography variant="body2">
-                Email: {selectedClient.email}
-              </Typography>
-              <Typography variant="body2">
-                Telefon: {selectedClient.phone}
-              </Typography>
             </Box>
           )}
         </Box>
@@ -227,14 +233,34 @@ export const DefaultForm = ({
             InputLabelProps={{ shrink: true }}
           />
           <TextField
+            select
             label="Metoda płatności"
+            name="paymentId"
             required
-            name="paymentMethod"
-            value={formData.paymentMethod}
-            onChange={handleChange}
+            value={formData.paymentId || ""}
+            onChange={(e) => {
+              handleChange(e);
+              const selectedId = Number(e.target.value);
+              const selected = paymentMethods?.find((m) => m.id === selectedId);
+              if (selected) {
+                handleChange({
+                  target: {
+                    name: "paymentMethod",
+                    value: selected.method,
+                  },
+                } as unknown as React.ChangeEvent<HTMLInputElement>);
+              }
+            }}
             fullWidth
             margin="normal"
-          />
+          >
+            {paymentMethods?.map((method) => (
+              <MenuItem key={method.id} value={method.id}>
+                {method.method}
+              </MenuItem>
+            ))}
+          </TextField>
+
           <TextField
             select
             label="Status"
@@ -394,6 +420,10 @@ export const DefaultForm = ({
         </Button>
       </Box>
       <Box sx={{ flex: 1 }}>
+        <Typography variant="h6" sx={{ mb: 2 }}>
+          Łączna kwota brutto: {formData.totalAmount || "0.00"}{" "}
+          {formData.currency}
+        </Typography>
         <TextField
           label="Waluta"
           name="currency"

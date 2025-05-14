@@ -65,8 +65,8 @@ export const Topbar = () => {
   }, [vatRatesData, setVatRates]);
 
   useEffect(() => {
-    if (paymentMethodsData?.getPaymentMethods) {
-      setPaymentMethods(paymentMethodsData.getPaymentMethods);
+    if (paymentMethodsData?.getPaymentMethodsByUser) {
+      setPaymentMethods(paymentMethodsData.getPaymentMethodsByUser);
     }
   }, [paymentMethodsData, setPaymentMethods]);
 

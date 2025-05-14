@@ -6,7 +6,7 @@ export const UPDATE_INVOICE_STATUS = gql`
     $invoiceId: Int!
     $inputInvoice: UpdateInvoiceInput!
   ) {
-    updateInvoice(invoiceId: $invoiceId, inputInvoice: $input) {
+    updateInvoiceStatus(invoiceId: $invoiceId, inputInvoice: $inputInvoice) {
       id
     }
   }
@@ -15,7 +15,7 @@ export const UPDATE_INVOICE_STATUS = gql`
 export const ADD_INVOICE = gql`
   mutation addInvoiceWithItems(
     $inputInvoice: CreateInvoiceInput!
-    $inputItem: CreateInvoiceItemInput!
+    $inputItem: [CreateInvoiceItemInput!]!
   ) {
     addInvoiceWithItems(inputInvoice: $inputInvoice, inputItem: $inputItem) {
       ...InvoiceBasicFields

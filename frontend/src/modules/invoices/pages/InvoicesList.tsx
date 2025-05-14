@@ -51,8 +51,10 @@ export const InvoicesList = () => {
             try {
               await updateInvoiceStatus({
                 variables: {
-                  id: invoice.id,
-                  status: Status.OVERDUE,
+                  invoiceId: safeId(invoice.id),
+                  inputInvoice: {
+                    status: Status.OVERDUE,
+                  },
                 },
               });
               return { ...invoice, status: Status.OVERDUE };
@@ -72,7 +74,6 @@ export const InvoicesList = () => {
 
     updateOverdueStatuses();
   }, [data]);
-  //TODO spr czy aktualizacja statusów działa
 
   if (!company?.id) {
     return (

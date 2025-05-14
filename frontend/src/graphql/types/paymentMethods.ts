@@ -4,5 +4,5 @@ export interface PaymentMethod {
 }
 
 export interface GetPaymentMethodsQuery {
-  getPaymentMethods: PaymentMethod[];
+  getPaymentMethodsByUser: PaymentMethod[];
 }

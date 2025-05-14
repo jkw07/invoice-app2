@@ -34,12 +34,22 @@ export const NewInvoice = () => {
   });
   const { goToInvoicesModule } = useNavigation();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setNewInvoiceData((prev) => ({
       ...prev,
       [name]: value === "" ? null : value,
     }));
+  };
+
+  const parsedInvoiceData = {
+    ...newInvoiceData,
+    companyId: safeId(companyId),
+    buyerId: Number(newInvoiceData.buyerId),
+    paymentId: Number(newInvoiceData.paymentId),
+    totalAmount: Number(newInvoiceData.totalAmount),
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,14 +62,10 @@ export const NewInvoice = () => {
       setOpenDialog(true);
       return;
     }
-
     try {
       await addInvoiceWithItems({
         variables: {
-          inputInvoice: {
-            ...newInvoiceData,
-            companyId: safeId(companyId),
-          },
+          inputInvoice: parsedInvoiceData,
           inputItem: invoiceItems,
         },
         onCompleted: () => {
