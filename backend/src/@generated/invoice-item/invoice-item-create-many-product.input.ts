@@ -17,6 +17,9 @@ export class InvoiceItemCreateManyProductInput {
     @Field(() => Int, {nullable:false})
     invoiceId!: number;
 
+    @Field(() => String, {nullable:false})
+    name!: string;
+
     @Field(() => String, {nullable:true})
     unit?: string;
 

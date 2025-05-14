@@ -15,6 +15,9 @@ export class InvoiceItemCountOrderByAggregateInput {
     productId?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})
+    name?: `${SortOrder}`;
+
+    @Field(() => SortOrder, {nullable:true})
     unit?: `${SortOrder}`;
 
     @Field(() => SortOrder, {nullable:true})

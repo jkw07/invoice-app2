@@ -3,6 +3,7 @@ import { InputType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { IntFilter } from '../prisma/int-filter.input';
 import { IntNullableFilter } from '../prisma/int-nullable-filter.input';
+import { StringFilter } from '../prisma/string-filter.input';
 import { StringNullableFilter } from '../prisma/string-nullable-filter.input';
 import { DecimalFilter } from '../prisma/decimal-filter.input';
 import { EnumVatRateTypeFilter } from '../prisma/enum-vat-rate-type-filter.input';
@@ -31,6 +32,9 @@ export class InvoiceItemScalarWhereInput {
 
     @Field(() => IntNullableFilter, {nullable:true})
     productId?: IntNullableFilter;
+
+    @Field(() => StringFilter, {nullable:true})
+    name?: StringFilter;
 
     @Field(() => StringNullableFilter, {nullable:true})
     unit?: StringNullableFilter;

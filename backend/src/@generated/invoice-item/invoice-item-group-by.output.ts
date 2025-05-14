@@ -22,6 +22,9 @@ export class InvoiceItemGroupBy {
     @Field(() => Int, {nullable:true})
     productId?: number;
 
+    @Field(() => String, {nullable:false})
+    name!: string;
+
     @Field(() => String, {nullable:true})
     unit?: string;
 

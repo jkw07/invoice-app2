@@ -18,6 +18,9 @@ export class InvoiceItemOrderByWithRelationInput {
     @Field(() => SortOrderInput, {nullable:true})
     productId?: SortOrderInput;
 
+    @Field(() => SortOrder, {nullable:true})
+    name?: `${SortOrder}`;
+
     @Field(() => SortOrderInput, {nullable:true})
     unit?: SortOrderInput;
 

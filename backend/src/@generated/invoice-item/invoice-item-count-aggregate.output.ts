@@ -15,6 +15,9 @@ export class InvoiceItemCountAggregate {
     productId!: number;
 
     @Field(() => Int, {nullable:false})
+    name!: number;
+
+    @Field(() => Int, {nullable:false})
     unit!: number;
 
     @Field(() => Int, {nullable:false})

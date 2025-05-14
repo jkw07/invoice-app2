@@ -131,7 +131,7 @@ input CreateInvoiceInput {
 
 input CreateInvoiceItemInput {
   discount: Int
-  invoiceId: Int!
+  invoiceId: Int
   name: String!
   productId: Int
   quantity: Int!
@@ -208,6 +208,7 @@ type InvoiceItem {
   id: ID!
   invoice: Invoice!
   invoiceId: Int!
+  name: String!
   product: Product
   productId: Int
   quantity: Decimal!

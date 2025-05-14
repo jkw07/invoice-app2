@@ -10,27 +10,28 @@ import { VatRateCount } from './vat-rate-count.output';
 
 @ObjectType()
 export class VatRate {
-  @Field(() => ID, { nullable: false })
-  id!: number;
 
-  @Field(() => String, { nullable: true })
-  userId!: string | null;
+    @Field(() => ID, {nullable:false})
+    id!: number;
 
-  @Field(() => VatRateType, { nullable: false })
-  type!: `${VatRateType}`;
+    @Field(() => String, {nullable:true})
+    userId!: string | null;
 
-  @Field(() => GraphQLDecimal, { nullable: true })
-  rate!: Decimal | null;
+    @Field(() => VatRateType, {nullable:false})
+    type!: `${VatRateType}`;
 
-  @Field(() => Date, { nullable: false })
-  createdAt!: Date;
+    @Field(() => GraphQLDecimal, {nullable:true})
+    rate!: Decimal | null;
 
-  @Field(() => User, { nullable: true })
-  user?: User | null;
+    @Field(() => Date, {nullable:false})
+    createdAt!: Date;
 
-  @Field(() => [Product], { nullable: true })
-  products?: Array<Product>;
+    @Field(() => User, {nullable:true})
+    user?: User | null;
 
-  @Field(() => VatRateCount, { nullable: false })
-  _count?: VatRateCount;
+    @Field(() => [Product], {nullable:true})
+    products?: Array<Product>;
+
+    @Field(() => VatRateCount, {nullable:false})
+    _count?: VatRateCount;
 }

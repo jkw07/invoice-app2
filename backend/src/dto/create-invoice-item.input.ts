@@ -4,9 +4,9 @@ import { VatRateType } from 'src/@generated/prisma/vat-rate-type.enum';
 
 @InputType()
 export class CreateInvoiceItemInput {
-  @Field(() => Int)
+  @Field(() => Int, { nullable: true })
   @IsNumber()
-  invoiceId: number;
+  invoiceId?: number;
 
   @Field(() => Int, { nullable: true })
   @IsOptional()

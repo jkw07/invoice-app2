@@ -39,6 +39,12 @@ export class InvoiceRepository {
           ...inputInvoice,
           issuedDate: new Date(inputInvoice.issuedDate),
           dueDate: new Date(inputInvoice.dueDate),
+          transactionDate: inputInvoice.transactionDate
+            ? new Date(inputInvoice.transactionDate)
+            : null,
+          paymentDate: inputInvoice.paymentDate
+            ? new Date(inputInvoice.paymentDate)
+            : null,
         },
       });
       await prisma.invoiceItem.createMany({

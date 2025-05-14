@@ -11,42 +11,43 @@ import { ProductCount } from './product-count.output';
 
 @ObjectType()
 export class Product {
-  @Field(() => ID, { nullable: false })
-  id!: number;
 
-  @Field(() => Int, { nullable: false })
-  companyId!: number;
+    @Field(() => ID, {nullable:false})
+    id!: number;
 
-  @Field(() => String, { nullable: false })
-  name!: string;
+    @Field(() => Int, {nullable:false})
+    companyId!: number;
 
-  @Field(() => String, { nullable: true })
-  description!: string | null;
+    @Field(() => String, {nullable:false})
+    name!: string;
 
-  @Field(() => GraphQLDecimal, { nullable: false })
-  price!: Decimal;
+    @Field(() => String, {nullable:true})
+    description!: string | null;
 
-  @Field(() => String, { nullable: true })
-  unit!: string | null;
+    @Field(() => GraphQLDecimal, {nullable:false})
+    price!: Decimal;
 
-  @Field(() => Int, { defaultValue: 1, nullable: false })
-  vatRateId!: number;
+    @Field(() => String, {nullable:true})
+    unit!: string | null;
 
-  @Field(() => Date, { nullable: false })
-  createdAt!: Date;
+    @Field(() => Int, {defaultValue:1,nullable:false})
+    vatRateId!: number;
 
-  @Field(() => Date, { nullable: false })
-  updatedAt!: Date;
+    @Field(() => Date, {nullable:false})
+    createdAt!: Date;
 
-  @Field(() => Company, { nullable: false })
-  company?: Company;
+    @Field(() => Date, {nullable:false})
+    updatedAt!: Date;
 
-  @Field(() => VatRate, { nullable: false })
-  vatRate?: VatRate;
+    @Field(() => Company, {nullable:false})
+    company?: Company;
 
-  @Field(() => [InvoiceItem], { nullable: true })
-  invoiceItems?: Array<InvoiceItem>;
+    @Field(() => VatRate, {nullable:false})
+    vatRate?: VatRate;
 
-  @Field(() => ProductCount, { nullable: false })
-  _count?: ProductCount;
+    @Field(() => [InvoiceItem], {nullable:true})
+    invoiceItems?: Array<InvoiceItem>;
+
+    @Field(() => ProductCount, {nullable:false})
+    _count?: ProductCount;
 }

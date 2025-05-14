@@ -20,6 +20,9 @@ export class InvoiceItem {
     @Field(() => Int, {nullable:true})
     productId!: number | null;
 
+    @Field(() => String, {nullable:false})
+    name!: string;
+
     @Field(() => String, {nullable:true})
     unit!: string | null;
 

@@ -4,6 +4,7 @@ export enum InvoiceItemScalarFieldEnum {
     id = "id",
     invoiceId = "invoiceId",
     productId = "productId",
+    name = "name",
     unit = "unit",
     quantity = "quantity",
     unitPrice = "unitPrice",

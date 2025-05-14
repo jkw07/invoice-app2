@@ -3,6 +3,7 @@ import { InputType } from '@nestjs/graphql';
 import { Type } from 'class-transformer';
 import { IntWithAggregatesFilter } from '../prisma/int-with-aggregates-filter.input';
 import { IntNullableWithAggregatesFilter } from '../prisma/int-nullable-with-aggregates-filter.input';
+import { StringWithAggregatesFilter } from '../prisma/string-with-aggregates-filter.input';
 import { StringNullableWithAggregatesFilter } from '../prisma/string-nullable-with-aggregates-filter.input';
 import { DecimalWithAggregatesFilter } from '../prisma/decimal-with-aggregates-filter.input';
 import { EnumVatRateTypeWithAggregatesFilter } from '../prisma/enum-vat-rate-type-with-aggregates-filter.input';
@@ -31,6 +32,9 @@ export class InvoiceItemScalarWhereWithAggregatesInput {
 
     @Field(() => IntNullableWithAggregatesFilter, {nullable:true})
     productId?: IntNullableWithAggregatesFilter;
+
+    @Field(() => StringWithAggregatesFilter, {nullable:true})
+    name?: StringWithAggregatesFilter;
 
     @Field(() => StringNullableWithAggregatesFilter, {nullable:true})
     unit?: StringNullableWithAggregatesFilter;

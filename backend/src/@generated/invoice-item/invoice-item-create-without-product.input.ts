@@ -11,6 +11,9 @@ import { InvoiceCreateNestedOneWithoutInvoiceItemsInput } from '../invoice/invoi
 @InputType()
 export class InvoiceItemCreateWithoutProductInput {
 
+    @Field(() => String, {nullable:false})
+    name!: string;
+
     @Field(() => String, {nullable:true})
     unit?: string;
 

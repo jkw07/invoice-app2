@@ -18,6 +18,9 @@ export class InvoiceItemMinAggregate {
     productId?: number;
 
     @Field(() => String, {nullable:true})
+    name?: string;
+
+    @Field(() => String, {nullable:true})
     unit?: string;
 
     @Field(() => GraphQLDecimal, {nullable:true})
