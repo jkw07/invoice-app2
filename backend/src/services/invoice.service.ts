@@ -115,4 +115,23 @@ export class InvoiceService {
     await this.cacheManager.del(`invoicesList:${invoice.companyId}`);
     return updated;
   }
+
+  async updateInvoiceStatus(
+    userId: string,
+    invoiceId: number,
+    inputInvoice: UpdateInvoiceInput,
+  ): Promise<Invoice> {
+    const invoice = await this.invoiceRepository.getInvoiceById(invoiceId);
+    if (!invoice) {
+      throw new NotFoundException('INVOICE_NOT_FOUND');
+    }
+    await this.checkAccessOrThrow(userId, invoice.companyId);
+    const updated = await this.invoiceRepository.updateInvoiceStatus(
+      invoiceId,
+      inputInvoice,
+    );
+    await this.cacheManager.del(`invoice:${invoice.id}`);
+    await this.cacheManager.del(`invoicesList:${invoice.companyId}`);
+    return updated;
+  }
 }

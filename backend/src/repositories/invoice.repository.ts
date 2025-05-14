@@ -131,4 +131,14 @@ export class InvoiceRepository {
       });
     });
   }
+
+  async updateInvoiceStatus(
+    invoiceId: number,
+    inputInvoice: UpdateInvoiceInput,
+  ): Promise<Invoice> {
+    return this.prisma.invoice.update({
+      where: { id: invoiceId },
+      data: { ...inputInvoice },
+    });
+  }
 }

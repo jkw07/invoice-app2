@@ -75,6 +75,21 @@ export class InvoiceResolver {
       inputItem,
     );
   }
+
+  @UseGuards(GqlAuthGuard)
+  @Mutation(() => Invoice)
+  async updateInvoiceStatus(
+    @Context() context: { req: Request },
+    @Args('invoiceId', { type: () => Int }) invoiceId: number,
+    @Args('inputInvoice') inputInvoice: UpdateInvoiceInput,
+  ) {
+    const userId = getUserIdFromContext(context);
+    return this.invoiceService.updateInvoiceStatus(
+      userId,
+      invoiceId,
+      inputInvoice,
+    );
+  }
 }
 
 function getUserIdFromContext(context: { req: Request }): string {

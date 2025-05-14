@@ -245,6 +245,7 @@ type Mutation {
   register(data: RegisterInput!): AuthPayload!
   updateClient(clientId: Int!, input: UpdateClientInput!): Client!
   updateCompany(companyId: Int!, input: UpdateCompanyInput!): Company!
+  updateInvoiceStatus(inputInvoice: UpdateInvoiceInput!, invoiceId: Int!): Invoice!
   updateInvoiceWithItems(inputInvoice: UpdateInvoiceInput!, inputItem: [CreateInvoiceItemInput!]!, invoiceId: Int!): Invoice!
   updatePaymentMethod(input: UpdatePaymentInput!, paymentId: Int!): Payment!
   updateProduct(input: UpdateProductInput!, productId: Int!): Product!
